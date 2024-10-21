@@ -197,7 +197,7 @@ export const getCaseHistory=(applicationId)=>{
 }
 export const updateApplicationStatus =( data)=>{
     return async(dispatch)=>{
-        dispatch(updateLoading(true))
+        // dispatch(updateLoading(true))
         try{
             const response = await axios.put(`${ApplicationAPIs.editApplication}`, data, {
                 headers: {
@@ -205,13 +205,13 @@ export const updateApplicationStatus =( data)=>{
                 }
             });
             if(response.status == 200){
-                dispatch(updateLoading(false))
+                // dispatch(updateLoading(false))
                
                 // dispatch(updateStatusState(response.data.data))
                 toast.success(`Status updated successfully`)
             }
         }catch(error){
-            dispatch(updateLoading(false))
+            // dispatch(updateLoading(false))
             toast.error(error.response.data.error)
         }
     }
