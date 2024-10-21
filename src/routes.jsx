@@ -29,59 +29,61 @@ import ProtectedRoute from "./wrappers/ProtectedRoute";
 import SubAdminManagement from "./pages/dashboard/admin/SubAdminManagement/subadminmanagement";
 import SubadminPage from "./pages/dashboard/admin/SubAdminManagement/createSubAdmin";
 import { element } from "prop-types";
-import CouponForm from "./pages/dashboard/admin/CouponManagement/CreateCoupon";
-import CouponList from "./pages/dashboard/admin/CouponManagement/coupounManagement";
-import UserManagement from "./pages/dashboard/admin/UserManagement/index";
-import CreateUser from "./pages/dashboard/admin/UserManagement/CreateUser";
-import ElementsPage from "./pages/dashboard/admin/MastersSettings/Elements/index";
-import AttributesPage from "./pages/dashboard/admin/MastersSettings/Attributes";
-import ValidFormElementAttributesPage from "./pages/dashboard/admin/MastersSettings/Valid Form Attributes";
-import RegexElements from "./pages/dashboard/admin/MastersSettings/Regex";
-import CreateRegex from "./pages/dashboard/admin/MastersSettings/Regex/createRegex";
-import Category from "./pages/dashboard/admin/MastersSettings/Category";
-import AddCategory from "./pages/dashboard/admin/MastersSettings/Category/AddCategory";
-import SubCategory from "./pages/dashboard/admin/MastersSettings/SubCategory"
-import AddSubCategory from "./pages/dashboard/admin/MastersSettings/SubCategory/AddSubCategory";
-import Cms from "./pages/dashboard/admin/CMS";
-import AddContent from "./pages/dashboard/admin/CMS/AddContent";
-import Department from "./pages/dashboard/admin/MastersSettings/Department";
-import AddDepartment from "./pages/dashboard/admin/MastersSettings/Department/AddDepartment";
-import ViewUser from "./pages/dashboard/admin/UserManagement/ViewUser";
-import ViewAllBusiness from "./pages/dashboard/admin/UserManagement/ViewAllBusiness";
-import InvestorManagement from "./pages/dashboard/admin/InvestorManagement";
-import ViewInvestor from "./pages/dashboard/admin/InvestorManagement/ViewInvestor";
-import Offer from "./pages/dashboard/admin/Offer";
-import CreateOffer from "./pages/dashboard/admin/Offer/CreateOffer";
-import BannerManagement from "./pages/dashboard/admin/BannerManagement";
-import CreateBanner from "./pages/dashboard/admin/BannerManagement/CreateBanner";
-import ApplicationManagement from "./pages/dashboard/admin/ApplicationManagement";
-import CreateApplication from "./pages/dashboard/admin/ApplicationManagement/CreateApplication";
-import TeamNote from "./pages/dashboard/admin/ApplicationManagement/TeamNote";
-import AddTeamNote from "./pages/dashboard/admin/ApplicationManagement/AddTeamNote";
-import Faq from "./pages/dashboard/admin/FAQ";
-import CreateFaq from "./pages/dashboard/admin/FAQ/CreateFaq";
-import DocumentManagement from "./pages/dashboard/admin/DocumentManagement";
-import ParntnerShipReistration from "./pages/dashboard/admin/DocumentManagement/PartnershipRegistration";
-import CreateInvestor from "./pages/dashboard/admin/InvestorManagement/CreateInvestor";
-import RedirectToDashboard from "./components/RoutingComponent/RedirectToDashboard";
-import NoNetwork from "./pages/NoNetwork/NoNetwork";
-import ViewFaq from "./pages/dashboard/admin/FAQ/ViewFaq";
-import ServiceSteps from "./pages/dashboard/admin/StepManagement";
-import CreateSteps from "./pages/dashboard/admin/StepManagement/CreateSteps";
-import Subscriptions from "./pages/dashboard/admin/Subscriptions";
-import AddSubscriptions from "./pages/dashboard/admin/Subscriptions/AddSubscriptions"
-import Service from "./pages/dashboard/admin/Services";
-import ServiceForm from "./pages/dashboard/admin/Services/ServiceForm";
-import ServiceFaqs from "./pages/dashboard/admin/FAQ/ServiceFAQs";
-import ValidFormElementPage from "./pages/dashboard/admin/MastersSettings/Valid Form Elements";
-import AddElement from "./pages/dashboard/admin/MastersSettings/Valid Form Elements/AddElement";
-import Add from "./pages/dashboard/admin/MastersSettings/Valid Form Attributes/Add";
-import AddFormElement from "./pages/dashboard/admin/MastersSettings/Elements/AddFormElement";
-import AddAttribute from "./pages/dashboard/admin/MastersSettings/Attributes/AddAttribute";
-import VideoIntro from "./pages/dashboard/admin/VideoIntro";
-import UpdateVideo from "./pages/dashboard/admin/VideoIntro/UpdateVideo";
-import ViewDocument from "./pages/dashboard/admin/DocumentManagement/ViewDocument";
-import AddNote from "./pages/dashboard/admin/ApplicationManagement/AddNote";
+import FolderDocuments from "./pages/dashboard/admin/DocumentManagement/DocumentFolders";
+const CouponForm = lazy(() => import('./pages/dashboard/admin/CouponManagement/CreateCoupon'));
+const CouponList = lazy(() => import('./pages/dashboard/admin/CouponManagement/coupounManagement'));
+const UserManagement = lazy(() => import('./pages/dashboard/admin/UserManagement/index'));
+const CreateUser = lazy(() => import('./pages/dashboard/admin/UserManagement/CreateUser'));
+const ElementsPage = lazy(() => import('./pages/dashboard/admin/MastersSettings/Elements/index'));
+const AttributesPage = lazy(() => import('./pages/dashboard/admin/MastersSettings/Attributes'));
+const ValidFormElementAttributesPage = lazy(() => import('./pages/dashboard/admin/MastersSettings/Valid Form Attributes'));
+const RegexElements = lazy(() => import('./pages/dashboard/admin/MastersSettings/Regex'));
+const CreateRegex = lazy(() => import('./pages/dashboard/admin/MastersSettings/Regex/createRegex'));
+const Category = lazy(() => import('./pages/dashboard/admin/MastersSettings/Category'));
+const AddCategory = lazy(() => import('./pages/dashboard/admin/MastersSettings/Category/AddCategory'));
+const SubCategory = lazy(() => import('./pages/dashboard/admin/MastersSettings/SubCategory'));
+const AddSubCategory = lazy(() => import('./pages/dashboard/admin/MastersSettings/SubCategory/AddSubCategory'));
+const Cms = lazy(() => import('./pages/dashboard/admin/CMS'));
+const AddContent = lazy(() => import('./pages/dashboard/admin/CMS/AddContent'));
+const Department = lazy(() => import('./pages/dashboard/admin/MastersSettings/Department'));
+const AddDepartment = lazy(() => import('./pages/dashboard/admin/MastersSettings/Department/AddDepartment'));
+const ViewUser = lazy(() => import('./pages/dashboard/admin/UserManagement/ViewUser'));
+const ViewAllBusiness = lazy(() => import('./pages/dashboard/admin/UserManagement/ViewAllBusiness'));
+const InvestorManagement = lazy(() => import('./pages/dashboard/admin/InvestorManagement'));
+const ViewInvestor = lazy(() => import('./pages/dashboard/admin/InvestorManagement/ViewInvestor'));
+const Offer = lazy(() => import('./pages/dashboard/admin/Offer'));
+const CreateOffer = lazy(() => import("./pages/dashboard/admin/Offer/CreateOffer"));
+const BannerManagement = lazy(() => import("./pages/dashboard/admin/BannerManagement"));
+const CreateBanner = lazy(() => import("./pages/dashboard/admin/BannerManagement/CreateBanner"));
+const ApplicationManagement = lazy(() => import("./pages/dashboard/admin/ApplicationManagement"));
+const CreateApplication = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/CreateApplication"));
+const TeamNote = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/TeamNote"));
+const Faq = lazy(() => import("./pages/dashboard/admin/FAQ"));
+const CreateFaq = lazy(() => import("./pages/dashboard/admin/FAQ/CreateFaq"));
+const DocumentManagement = lazy(() => import("./pages/dashboard/admin/DocumentManagement"));
+const ParntnerShipReistration = lazy(() => import("./pages/dashboard/admin/DocumentManagement/PartnershipRegistration"));
+const CreateInvestor = lazy(() => import("./pages/dashboard/admin/InvestorManagement/CreateInvestor"));
+const NoNetwork = lazy(() => import("./pages/NoNetwork/NoNetwork"));
+const ViewFaq = lazy(() => import("./pages/dashboard/admin/FAQ/ViewFaq"));
+const ServiceSteps = lazy(() => import("./pages/dashboard/admin/StepManagement"));
+const CreateSteps = lazy(() => import("./pages/dashboard/admin/StepManagement/CreateSteps"));
+const Subscriptions = lazy(() => import("./pages/dashboard/admin/Subscriptions"));
+const AddSubscriptions = lazy(() => import("./pages/dashboard/admin/Subscriptions/AddSubscriptions"));
+const Service = lazy(() => import("./pages/dashboard/admin/Services"));
+const ServiceForm = lazy(() => import("./pages/dashboard/admin/Services/ServiceForm"));
+const ServiceFaqs = lazy(() => import("./pages/dashboard/admin/FAQ/ServiceFAQs"));
+const ValidFormElementPage = lazy(() => import("./pages/dashboard/admin/MastersSettings/Valid Form Elements"));
+const AddElement = lazy(() => import("./pages/dashboard/admin/MastersSettings/Valid Form Elements/AddElement"));
+const Add = lazy(() => import("./pages/dashboard/admin/MastersSettings/Valid Form Attributes/Add"));
+const AddFormElement = lazy(() => import("./pages/dashboard/admin/MastersSettings/Elements/AddFormElement"));
+const AddAttribute = lazy(() => import("./pages/dashboard/admin/MastersSettings/Attributes/AddAttribute"));
+const VideoIntro = lazy(() => import("./pages/dashboard/admin/VideoIntro"));
+const UpdateVideo = lazy(() => import("./pages/dashboard/admin/VideoIntro/UpdateVideo"));
+const ViewDocument = lazy(() => import("./pages/dashboard/admin/DocumentManagement/ViewDocument"));
+const AddNote = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/AddNote"));
+const CaseHistory = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/CaseHistory"));
+const AddFieldNote = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/AddFieldNote"));
+const FieldNote = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/FieldNote"));
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -294,8 +296,20 @@ const adminRoutes = [
     element:<TeamNote/>
   },
   {
+    path:"admin/field-history",
+    element:<FieldNote/>
+  },
+  {
+    path:"admin/case-history",
+    element:<CaseHistory/>
+  },
+  {
     path:"admin/team-note/create-note",
     element:<AddNote/>
+  },
+  {
+    path:"admin/team-note/create-field-note",
+    element:<AddFieldNote/>
   },
   {
     path:"admin/FAQ/",
@@ -480,6 +494,10 @@ const adminRoutes = [
     element : <DocumentManagement/>
   },
   {
+    path : "admin/document-management/documents/:folderId", 
+    element : <FolderDocuments />
+  },
+  {
     path : "admin/document-management/view-document", 
     element : <ViewDocument/>
   },
@@ -534,9 +552,7 @@ const authRoutes = [
 const routes = [
   {
     path: "/",
-    element: <Dashboard />,
-    // element: <Dashboard/>,
-    children: adminRoutes,
+    element: <Navigate to="/dashboard/admin/home" />,    // element: <Dashboard/>,
   }
   ,
   {

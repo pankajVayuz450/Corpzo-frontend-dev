@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Children, useCallback, useEffect, useState } from 'react';
 import {
   Input,
   Option,
@@ -12,11 +12,11 @@ import Breadcrumb from '@/widgets/layout/TopNavigation';
 import DocumentForm from './DocumentForm';
 import TitleComponent from '@/components/common/TitleComponent';
 import { formatReadableDate, throttle } from '@/Helpers/globalfunctions';
-import { NavLink, useSearchParams } from 'react-router-dom';
-import { getAllDocuments } from '@/redux/admin/actions/Document';
+import { NavLink, useParams, useSearchParams } from 'react-router-dom';
+import { getAllDocuments, getFolderDocuments } from '@/redux/admin/actions/Document';
 import HeaderTitle from '@/components/common/HeaderTitle';
 
-const DocumentManagement = () => {
+const FolderDocuments = () => {
   const [openFile, setOpenFile] = useState(false);   // For file modal
   const [openFolder, setOpenFolder] = useState(false); // For folder modal
   const [selectedId, setSelectedId] = useState(null); // To store the ID of the item being edited
@@ -24,14 +24,14 @@ const DocumentManagement = () => {
   const { isFetching, documentList, isAdding } = useSelector((state) => state.document);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
-  const [folderId, setFolderId] = useState(null)
   // Function to toggle file modal with id
   const handleFileModal = (id = null, folderId) => {
     setSelectedId(id); // Set the selected id for file editing
     setOpenFile(!openFile);
-    setFolderId(folderId)
+   
   };
 
+  const {folderId} = useParams()
   // Function to toggle folder modal with id
   const handleFolderModal = (id) => {
     console.log(id, "id a rahi hai yar")
@@ -42,7 +42,7 @@ const DocumentManagement = () => {
   };
 
   const handleFileUploadFOrDoc = (folderId) => {
-    setFolderId(folderId); // Set folderId in state
+    // Set folderId in state
     console.log(folderId, "folderId");
     handleFileModal(null, folderId); // Pass folderId to handleFileModal
   };
@@ -68,14 +68,9 @@ const DocumentManagement = () => {
 
   // Automatically fetch documents based on searchParams
   useEffect(() => {
-    const query = searchParams.get('search') || '';
-    const page = searchParams.get('page') || 1;
-    const limit = searchParams.get('limit') || 10;
+    dispatch(getFolderDocuments(folderId));
+  }, [ dispatch]);
 
-    setSearchQuery(query);
-
-    dispatch(getAllDocuments(limit, page, query));
-  }, [searchParams, dispatch]);
   useEffect(() => {
     if (!isAdding) {
       setOpenFile(false);
@@ -87,23 +82,26 @@ const DocumentManagement = () => {
     {
       name: 'Document Management',
       url: '/dashboard/admin/document-management',
+        children : [{
+            name: 'Folder Documents',
+            url: '',
+        }]
     }
   ];
 
   return (
     <div className='w-full mt-4'>
       <TitleComponent title={"CORPZO | Document Management"} />
-      <HeaderTitle title="Document Management" totalCount={documentList.length}/>
+      <HeaderTitle title="Document Files" totalCount={documentList.length}/>
       <Breadcrumb items={breadcrumbData} />
-
-      <div className='flex gap-4 justify-between items-center w-full mb-4 mt-4'>
+      {/* <div className='flex gap-4 justify-between items-center w-full mb-4 mt-4'>
         <div className='w-[20%]'>
           <Select label='Add Folder/File'>
             <Option onClick={() => handleFolderModal()}>Create Folder</Option>
             <Option onClick={() => handleFileModal()}>Add File</Option>
           </Select>
         </div>
-      </div>
+      </div> */}
 
       <>
         {
@@ -116,23 +114,22 @@ const DocumentManagement = () => {
                   <thead className="bg-gray-50">
                     <tr>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Folder Name
+                        Document Name
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Created Date
                       </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {documentList && documentList.map((form, index) => (
                       <tr key={index}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{form.folderName}</div>
+                          <div className="text-sm text-gray-500">{form.name}</div>
                         </td>
-
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                         </td>
@@ -143,7 +140,7 @@ const DocumentManagement = () => {
                             </span>
                           </div>
                         </td> */}
-                        <td className="px-6 py-4">
+                        {/* <td className="px-6 py-4">
                           <div className="flex space-x-2">
                             <button
                               onClick={form.folderId ? () => handleFolderModal(form.folderId) : () => handleFileModal(form.fileId)}
@@ -152,13 +149,10 @@ const DocumentManagement = () => {
                               Edit
                             </button>
                             {form._id && 
-                              <button className="text-blue-500 hover:text-blue-700" onClick={() => handleFileUploadFOrDoc(form._id)}>add document</button>
+                              <button  onClick={() => handleFileUploadFOrDoc(form._id)}>add document</button>
                             }
-                            <NavLink className="text-blue-500 hover:text-blue-700" to={`/dashboard/admin/document-management/documents/${form._id}`}>
-                              view documents
-                            </NavLink>
                           </div>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>
@@ -175,11 +169,11 @@ const DocumentManagement = () => {
 
       {/* <DocumentForm open={openFile} handleOpen={handleFileModal} modalType="file" selectedId={selectedId}/>
       <DocumentForm open={openFolder} handleOpen={handleFolderModal} modalType="folder" selectedId={selectedId}/> */}
-      <DocumentForm open={openFile} handleOpen={handleFileModal} modalType="file" folderId={folderId} id={selectedId} />
-      <DocumentForm open={openFolder} handleOpen={handleFolderModal} modalType="folder" id={selectedId} />
+      {/* <DocumentForm open={openFile} handleOpen={handleFileModal} modalType="file" folderId={folderId} id={selectedId} />
+      <DocumentForm open={openFolder} handleOpen={handleFolderModal} modalType="folder" id={selectedId} /> */}
 
     </div>
   );
 };
 
-export default DocumentManagement;
+export default FolderDocuments;

@@ -1,12 +1,10 @@
 import PropTypes from "prop-types";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Accordion,
   AccordionBody,
   AccordionHeader,
   Button,
-  IconButton,
   List,
   ListItem,
   ListItemPrefix,
@@ -15,12 +13,10 @@ import {
 import { useMaterialTailwindController, setOpenSidenav } from "@/context";
 import {
   HomeIcon,
-  UserCircleIcon,
   TableCellsIcon,
   ServerStackIcon,
   RectangleStackIcon,
   ChevronDownIcon,
-  PresentationChartBarIcon,
   ChevronRightIcon,
 } from "@heroicons/react/24/solid";
 import { FaUserGroup } from "react-icons/fa6";
@@ -28,7 +24,6 @@ import { BiSolidOffer } from "react-icons/bi";
 import { FaImages, FaQuestion, FaUsersCog } from "react-icons/fa";
 import { IoDocuments, } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
-import { PiSteps } from "react-icons/pi";
 import { MdRoomService } from "react-icons/md";
 import { FaVideo } from "react-icons/fa6";
 
@@ -57,13 +52,10 @@ export function Sidenav({ brandImg, brandName, routes }) {
     setOpen(open === value ? 0 : value);
   };
 
-  const handleActive = (path) => {
-
-  }
   return (
     <aside
       className={`${sidenavTypes[sidenavType]} ${openSidenav ? "translate-x-0" : "-translate-x-80"
-        } overflow-y-scroll z-1000 no-scrollbar fixed inset-0  my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100
+        } overflow-y-scroll z-[30] no-scrollbar fixed inset-0  my-4 ml-4 h-[calc(100vh-32px)] w-72 rounded-xl transition-transform duration-300 xl:translate-x-0 border border-blue-gray-100
       [&::-webkit-scrollbar]:w-2
       [&::-webkit-scrollbar-track]:rounded-full
      [&::-webkit-scrollbar-track]:bg-gray-100
@@ -295,7 +287,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
               )}
             </NavLink>
           </li>
-          <li key={name}>
+          {/* <li key={name}>
             <NavLink to={`/dashboard/admin/banner-management`}>
               {({ isActive }) => (
                 <Button
@@ -320,7 +312,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
                 </Button>
               )}
             </NavLink>
-          </li>
+          </li> */}
           <li key={name}>
             <NavLink to={`/dashboard/admin/faq`}>
               {({ isActive }) => (

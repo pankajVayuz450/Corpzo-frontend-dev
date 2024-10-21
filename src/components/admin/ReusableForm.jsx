@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaSpinner } from 'react-icons/fa';
 
 // Reusable Heading Component
 const Heading = ({ text }) => {
@@ -33,13 +34,18 @@ const TextArea = ({ placeholder, value, onChange, error, touched }) => {
 };
 
 // Reusable Button Component
-const Button = ({ buttonText }) => {
+const Button = ({ buttonText, loading }) => {
   return (
     <button
       className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      type="submit" // Change type to submit for Formik
+      type="submit" // Keep type as submit for form submission
+      disabled={loading} // Disable the button while loading
     >
-      {buttonText}
+      {loading ? (
+        <FaSpinner className="animate-spin text-white text-xl inline" />
+      ) : (
+        buttonText
+      )}
     </button>
   );
 };
@@ -57,6 +63,7 @@ const ReusableForm = ({
   handleChange,
   errors,
   touched,
+  loading
 }) => {
   return (
     <form onSubmit={handleSubmit} className="p-4 w-full max-w-md mx-auto bg-white shadow-md rounded-md">
@@ -72,7 +79,7 @@ const ReusableForm = ({
         touched={touched.note} // Pass touched state
       />
       <div className="mt-4">
-        <Button buttonText={buttonText} />
+        <Button buttonText={buttonText} loading={loading} /> {/* Pass loading to Button */}
       </div>
     </form>
   );

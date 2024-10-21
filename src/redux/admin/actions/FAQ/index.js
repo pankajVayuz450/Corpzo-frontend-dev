@@ -69,9 +69,6 @@ export const getServiceFaqs =(serviceId)=>{
         }catch(error){
             dispatch(updateLoading(false));
             console.log(error)
-            if(error.response.data.statusCode === 400){
-                toast.warn(error.response.data.message)
-            }
         }
     }
 }
@@ -85,10 +82,10 @@ export const addServiceFaq =(serviceFaqs)=>{
                     Authorization : `Bearer ${authToken}`
                 }
             })
-            console.log(response, "add service faqs faq response")
+            console.log(response, " ")
             if(response.status === 200){
                 dispatch(updateAdding(false))
-                // toast.success(response.data.message);
+                toast.success(response.data.message);
                 // navigate(`/dashboard/admin/faq`)
             }
         }catch(error){

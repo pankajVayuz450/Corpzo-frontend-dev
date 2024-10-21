@@ -4,7 +4,8 @@ import axios from 'axios';
 // import { getCategoryList, updateLoading, addCategory, deleteCategoryById, getSingleCategoryById, updateStatusState } from '@/redux/admin/slices/MasterSettings/CategorySlice/categorySlice';
 // import { toast } from 'react-toastify/dist/components';
 import { toast } from 'react-toastify';
-import { getApplications, getApplicationsFormData, getCaseHistoryList, getNoteList, updateLoading, updateStatusState } from '../../slices/AppliationManagement/Index';
+import { commentLoading, getAgentList, getApplications, getApplicationsFormData, getCaseHistoryList, getNoteList, manageUpdateCommentState, manageUpdateStatusState, updateApplicationStatusLoading, updateLoading, updateStatusState } from '../../slices/AppliationManagement/Index';
+import { FaTruckPlane } from 'react-icons/fa6';
 const token  = localStorage.getItem('authToken');
 export const getAllApplications =(page = 1, search="")=>{
    
@@ -43,7 +44,7 @@ export const getApplicationForm =(applicationId, userId,formId)=>{
     return async(dispatch)=>{
         try{
             dispatch(updateLoading(true));
-            let api = `${ApplicationAPIs.getApplication}?applicationId=${applicationId}&userId=${userId}&formId=${formId}`
+            let api = `${ApplicationAPIs.getFormJson}?applicationId=${applicationId}&userId=${userId}&formId=${formId}`
           
          
             const response = await axios.get(`${api}`, {
@@ -66,6 +67,8 @@ export const getApplicationForm =(applicationId, userId,formId)=>{
 
 export const addNoteAndField=(data)=>{
     return async(dispatch)=>{
+
+        dispatch(updateLoading(true))
         try{
             const response = await axios.post(ApplicationAPIs.addNote, data, {
                 headers : {
@@ -74,10 +77,12 @@ export const addNoteAndField=(data)=>{
             })
             if(response.status === 201){
                 // dispatch(addCategory(response.data.data))
+                dispatch(updateLoading(false))
                 toast.success(`Note added successfully`)
                 // navigate(`/dashboard/admin/masterSettings/Category`)
             }
         }catch(error){
+            dispatch(updateLoading(false))
            
             toast.error(error.response.data.error)
         }
@@ -85,6 +90,7 @@ export const addNoteAndField=(data)=>{
 }
 export const addNoteComment=(data)=>{
     return async(dispatch)=>{
+        dispatch(commentLoading(true))
         try{
             const response = await axios.post(ApplicationAPIs.addNoteComment, data, {
                 headers : {
@@ -92,11 +98,14 @@ export const addNoteComment=(data)=>{
                 }
             })
             if(response.status === 201){
+                dispatch(commentLoading(false))
+                dispatch(manageUpdateCommentState(data))
                 // dispatch(addCategory(response.data.data))
                 toast.success(`Comment  added successfully`)
                 // navigate(`/dashboard/admin/masterSettings/Category`)
             }
         }catch(error){
+            dispatch(commentLoading(false))
            
             toast.error(error.response.data.error)
         }
@@ -123,6 +132,49 @@ export const getNoteAndComment=(noteId)=>{
         }
     }
 }
+export const getActiveAgent=(agent)=>{
+    return async(dispatch)=>{
+        try{
+            dispatch(updateLoading(true));
+        
+            const response = await axios.get(`${ApplicationAPIs.getAgent}?role=${agent}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            if(response.status == 200){
+                dispatch(getAgentList(response.data.data))
+                dispatch(updateLoading(false))
+            }
+        }catch(error){
+            console.log(error)
+            dispatch(updateLoading(false))
+        }
+    }
+}
+export const addCaseHistory=(data)=>{
+    return async(dispatch)=>{
+        dispatch(commentLoading(true))
+        try{
+            const response = await axios.post(ApplicationAPIs.getCaseHistory, data, {
+                headers : {
+                    Authorization : `Bearer ${token}`
+                }
+            })
+            if(response.status === 201){
+                dispatch(commentLoading(false))
+                // dispatch(manageUpdateCommentState(data))
+                // dispatch(addCategory(response.data.data))
+                // toast.success(`Case added successfully`)
+                // navigate(`/dashboard/admin/masterSettings/Category`)
+            }
+        }catch(error){
+            dispatch(commentLoading(false))
+           
+            toast.error(error.response.data.error)
+        }
+    }
+}
 export const getCaseHistory=(applicationId)=>{
     return async(dispatch)=>{
         try{
@@ -143,14 +195,9 @@ export const getCaseHistory=(applicationId)=>{
         }
     }
 }
-
-
-
-
-
-
 export const updateApplicationStatus =( data)=>{
     return async(dispatch)=>{
+        dispatch(updateLoading(true))
         try{
             const response = await axios.put(`${ApplicationAPIs.editApplication}`, data, {
                 headers: {
@@ -158,17 +205,20 @@ export const updateApplicationStatus =( data)=>{
                 }
             });
             if(response.status == 200){
-                console.log(response.data, "single category")
+                dispatch(updateLoading(false))
+               
                 // dispatch(updateStatusState(response.data.data))
                 toast.success(`Status updated successfully`)
             }
         }catch(error){
+            dispatch(updateLoading(false))
             toast.error(error.response.data.error)
         }
     }
 }
 export const manageApplicationFormStatus =( data)=>{
     return async(dispatch)=>{
+        dispatch(updateApplicationStatusLoading(true))
         try{
             const response = await axios.put(`${ApplicationAPIs.manageApplication}`, data, {
                 headers: {
@@ -176,11 +226,14 @@ export const manageApplicationFormStatus =( data)=>{
                 }
             });
             if(response.status == 200){
+                dispatch(updateApplicationStatusLoading(false))
+                dispatch(manageUpdateStatusState(data))
                 console.log(response.data, "single category")
                 // dispatch(updateStatusState(response.data.data))
                 toast.success(`Status updated successfully`)
             }
         }catch(error){
+            dispatch(updateApplicationStatusLoading(false))
             toast.error(error.response.data.error)
         }
     }

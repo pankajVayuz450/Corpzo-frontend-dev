@@ -38,7 +38,7 @@ const ServiceSteps = () => {
     }
     console.log(stepsList, "steps list")
     useEffect(()=>{
-        dispatch(getAllSteps());
+        dispatch(getAllSteps(serviceId));
     }, [])
 
     const handleDelete=(id)=>{

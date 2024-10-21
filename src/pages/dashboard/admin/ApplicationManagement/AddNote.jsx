@@ -3,12 +3,24 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup'; // Import Yup for validation
 import ReusableForm from '@/components/admin/ReusableForm';
 import { addNoteAndField } from '@/redux/admin/actions/ApplicationManagement';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDataByApplicationId } from './helper';
+import { formatReadableDate } from '@/Helpers/globalfunctions';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import TitleComponent from '@/components/common/TitleComponent';
+
 
 const AddNote = () => {
+  const { applicationsList, totalCount, isFetching, applicationId } = useSelector((state) => state.applications)
+
   const dispatch = useDispatch();
 
-  
+
+  const userData = getUserDataByApplicationId(applicationsList, applicationId);
+  console.log(userData);
+
+
   const formik = useFormik({
     initialValues: {
       note: '',
@@ -22,32 +34,66 @@ const AddNote = () => {
       // alert(`Add button clicked! Note: ${values.note}`);
 
       dispatch(addNoteAndField({
-        "applicationId": "a20814d6-a4d6-42db-853d-afca0a3b13f4",
+        "applicationId": applicationId,
         // "cloneFormFieldId":"66ea796bb807a921aa3b8c84",
         "noteContent": values.note
       }));
 
-      
+
       // Here you can handle the submission logic
     },
   });
+  const breadcrumbData = [
+    {
+      
+        
+          name: 'Application',
+          children: [
+            {
+              name: 'Application Form',
+              url: '/dashboard/admin/add-application',
+              children: [
+                {
+                  name:  'Team Note',
+                  url:'/dashboard/admin/team-history',
+                  children:[
+                   {
+                    name:"Add",
+                     url:"/dashboard/admin/team-note/create-note"
+                   }
+
+                  ]
+                },
+              ],
+            },
+          ],
+    }
+  ];
 
 
 
   return (
-    <ReusableForm
+
+    <>
+      <Breadcrumb items={breadcrumbData}/>
+      <TitleComponent title={"CORPZO |Field Name Note"} />
+      <HeaderTitle title="Field Name Note" />
+      <ReusableForm
       headingText="Team Note"
-      nameText="Name: Lucky Singh"
-      dateText="Date: October 16, 2024"
+      nameText={`Name: ${userData?.name}`}
+      dateText={`Date: ${formatReadableDate(Date())}`}
       labelText="Add Note"
       placeholderText="Enter your description here..."
-      buttonText="Add"
+      buttonText={"Add"}
+      loading={isFetching}
       values={formik.values} // Pass Formik values
       handleChange={formik.handleChange} // Pass Formik handleChange
       handleSubmit={formik.handleSubmit} // Pass Formik handleSubmit
       errors={formik.errors} // Pass Formik errors
       touched={formik.touched} // Pass Formik touched state
     />
+    </>
+   
   );
 };
 

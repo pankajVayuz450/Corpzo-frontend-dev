@@ -15,11 +15,12 @@ import { formatReadableDate } from '@/Helpers/globalfunctions';
 import { CiSearch } from "react-icons/ci";
 import { toast } from 'react-toastify';
 import { MdClear } from "react-icons/md";
-import { updateEditPage } from '@/redux/admin/slices/Service';
+import { handleStepValue, updateEditPage } from '@/redux/admin/slices/Service';
 import { BsThreeDotsVertical } from "react-icons/bs";
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import Pagination from '@/components/common/Pagination';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
+import HeaderTitle from '@/components/common/HeaderTitle';
 
 const Service = () => {
 
@@ -115,15 +116,21 @@ const Service = () => {
           name: 'Service Management',
     }
   ];
+  const handleCreateService=()=>{
+    dispatch(handleStepValue(0))
+    navigate('/dashboard/admin/services/create-service')
+  }
   return (
-    <div className='w-full'>
+    <>
+      <HeaderTitle title="Service Management" totalCount={totalCount}/>
       <Breadcrumb items={breadcrumbData}/>
       <TitleComponent title={"CORPZO | Service"}></TitleComponent>
+    <div className='w-full mt-4'>
       <div className='flex gap-4 justify-between items-center w-full mb-4'>
-        <NavLink to="/dashboard/admin/services/create-service" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+        <button onClick={handleCreateService} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Create Service
-        </NavLink>
-        <SearchBoxNew queryParam='sarch'/>
+        </button>
+        <SearchBoxNew queryParam='search'/>
       </div>
       {
         isFetching ? (
@@ -132,7 +139,7 @@ const Service = () => {
           <>
             {
               serviceList && serviceList.length > 0 ? (
-                <div className="overflow-x-auto min-h-[25rem]">
+                <div className="overflow-x-auto overflow-y-hidden min-h-[25rem]">
                   <table className="min-w-fullm min-h- divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -188,14 +195,17 @@ const Service = () => {
                             {openDropdownId === form._id && (
                               <ul
                                 role="menu"
-                                className="absolute right-[4rem] z-40 min-w-[100px] overflow-auto rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg focus:outline-none"
-                              >
+                                // className="absolute right-[4rem] z-40 min-w-[100px] overflow-auto rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg focus:outline-none"
+                                className={`absolute right-[4rem] z-40 min-w-[100px] overflow-auto rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg focus:outline-none ${
+                                  index === 8 || index === 9 ? '-bottom-[5%] mb-2 mr-4' : 'top-10 mt-2'
+                                }`}
+>
                                 <NavLink to={`/dashboard/admin/steps/${form._id}`}>
                                   <li className="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-1 transition-all hover:bg-slate-100">
                                     Step
                                   </li>
                                 </NavLink>
-                                {!form.isOneTime && <NavLink to={`/dashboard/admin/subscriptions/${form._id}`}>
+                                {form.isOneTime === false && <NavLink to={`/dashboard/admin/subscriptions/${form._id}`}>
                                   <li className="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-1 transition-all hover:bg-slate-100">
                                     Subscription
                                   </li>
@@ -220,7 +230,7 @@ const Service = () => {
                 </div>
               ) : (
                 <div className="flex justify-center items-center h-screen">
-                  <img src="/img/Nodata.svg" className="w-[50%]" alt="No data found" />
+                  <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
                 </div>)
             }
           </>
@@ -228,6 +238,7 @@ const Service = () => {
       }
        {!isFetching && totalCount > 10 && <Pagination totalItems={totalCount} itemsPerPage={10}></Pagination>}
     </div>
+    </>
   );
 }
 

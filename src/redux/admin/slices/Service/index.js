@@ -22,6 +22,7 @@ const initialState = {
   uploadVideoLoading: false,
   buttonContent : "Upload Video",
   updateHeader : "", 
+  stepValue : 0
 };
 
 
@@ -57,13 +58,18 @@ const serivceSlice = createSlice({
       console.log(action.payload, "service slice video url");
       if (action.payload.fieldName === "deliverable") {
         state.delivrableVideoUrl = action.payload.url;
+        state.stepValue = 1
       } else if (action.payload.fieldName === "step") {
         state.stepsVideoUrl = action.payload.url;
+        state.stepValue = 2
       } else if (action.payload.fieldName === "document") {
         state.documentVideoUrl = action.payload.url;
+        state.stepValue = 2
       }
-    }
-    ,
+    },
+    handleStepValue : (state, action)=>{
+      state.stepValue = action.payload || 0;
+    }, 
     updateUploadLoading: (state, action) => {
       state.uploadVideoLoading = action.payload;
     },
@@ -115,6 +121,6 @@ const serivceSlice = createSlice({
     }
   },
 });
-export const { getServices, updateUploadLoading,updateHeader, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1 } = serivceSlice.actions;
+export const { getServices, updateUploadLoading,updateHeader,handleStepValue, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1 } = serivceSlice.actions;
 
 export default serivceSlice.reducer;

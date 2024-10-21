@@ -1,4 +1,4 @@
-import React, { useEffect ,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCoupon, getAllCoupons, updateCoupon } from '@/redux/admin/actions/coupon';
@@ -10,10 +10,11 @@ import { Switch, Typography } from '@material-tailwind/react';
 import { getActiveBusinessEmail, getAllActiveCategories, getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
 import Select from 'react-select';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
 
 const CouponForm = () => {
   const { id } = useParams();
-  const { couponsList, isCouponCreating,isCouponUpdating } = useSelector((state) => state.coupons);
+  const { couponsList, isCouponCreating, isCouponUpdating } = useSelector((state) => state.coupons);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
 
@@ -56,15 +57,28 @@ const CouponForm = () => {
 
 
   const validationSchema = Yup.object({
-    couponTitle: Yup.string().required('Title is required'),
+    couponTitle: Yup.string()
+      .matches(/^\S/, "Coupon Title cannot contain spaces")
+      .max(35, "Coupon title must be atmost 35 characters").required('Title is required'),
     discount: Yup.number()
       .required('Discount is required')
-      .min(0, 'Discount must be a positive number')
       .max(100, 'Discount must be less than or equal to 100'),
     validity: Yup.date()
       .required('Validity is required')
       .min(new Date(), 'Validity must be a future date'),
+    categoryId: Yup.array()
+      .of(Yup.string().required('At least one category is required'))
+      .min(1, 'At least one category must be selected'),
+    subCategoryId: Yup.array()
+      .of(Yup.string().required('At least one sub-category is required'))
+      .min(1, 'At least one sub-category must be selected'),
+    // activeBusinessEmail: Yup.array()
+    //   .of(Yup.string().required('At least one business email is required'))
+    //   .min(1, 'At least one business email must be selected'),
+    oneTime: Yup.boolean(),
+    multiUse: Yup.boolean(),
   });
+
 
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
     console.log("handle submit called ")
@@ -110,7 +124,7 @@ const CouponForm = () => {
     }
   };
 
-  const handleResetForm = (resetForm)=>{
+  const handleResetForm = (resetForm) => {
 
     setSelectedCoupon({})
     resetForm()
@@ -119,210 +133,200 @@ const CouponForm = () => {
 
   const breadcrumbData = [
     {
-      
-      
-              name: 'Coupon',
-              url: '/dashboard/admin/coupounmanagement',
-              children: [
-                {
-                  name: id ? 'Update Coupon' : 'Create Coupon',
-                  url: id
-                    ? ''
-                    : '/dashboard/admin/couponmanagement/create-coupon',
-                },
-          ],
+
+
+      name: 'Coupon',
+      url: '/dashboard/admin/coupounmanagement',
+      children: [
+        {
+          name: id ? 'Update Coupon' : 'Create Coupon',
+          url: id
+            ? ''
+            : '/dashboard/admin/couponmanagement/create-coupon',
+        },
+      ],
     }
   ];
 
   return (
-   <>
-    <Breadcrumb items={breadcrumbData}/>
-     <div className="p-6 bg-white shadow-md rounded-lg">
-     
-     <h1 className="text-2xl font-semibold mb-4">{id ? 'Update Coupon' : 'Create Coupon'}</h1>
-     
-     <Formik
-       enableReinitialize
-       initialValues={{
-         couponTitle: selectedCoupon?.couponTitle || '',
-         discount: selectedCoupon?.discount || '',
-         validity: selectedCoupon?.validity ? selectedCoupon.validity.split('T')[0] : '',
-         active: selectedCoupon?.active || false,
-         categoryId: selectedCoupon?.categoryIds || [],
-         subCategoryId: selectedCoupon?.subCategoryIds || [],
-         oneTime: selectedCoupon?.usageType === 'One Time',
-         multiUse: selectedCoupon?.usageType === 'Multi Use',
-         activeBusinessEmail: selectedCoupon?.businesses || []
-       }}
-       validationSchema={validationSchema}
-       onSubmit={handleSubmit}
+    <>
+      <Breadcrumb items={breadcrumbData} />
+      <HeaderTitle title={id ? "Update Coupon" : "Create Coupon"} />
+      <div className="p-6 bg-white shadow-md rounded-lg">
 
-     >
-       {({ isSubmitting, resetForm, setFieldValue, values, handleBlur, touched,
-         handleChange, setFieldTouched,
-         errors, }) => (
-         <Form className="space-y-4">
-           <div>
-             <label htmlFor="couponTitle" className="block text-sm font-medium text-gray-700">Coupon Title</label>
-             <Field
-               type="text"
-               name="couponTitle"
-               id="couponTitle"
-                maxLength="50"
-               
-               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-             />
-             <ErrorMessage name="couponTitle" component="div" className="text-red-500 text-sm mt-1" />
-           </div>
-           <div>
-             <label htmlFor="discount" className="block text-sm font-medium text-gray-700">Discount (%)</label>
-             <Field
-               type="number"
-               name="discount"
-               id="discount"
-                max="999"
-               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-             />
-             <ErrorMessage name="discount" component="div" className="text-red-500 text-sm mt-1" />
-           </div>
-           <div>
-             <label htmlFor="validity" className="block text-sm font-medium text-gray-700">Validity Date</label>
-             <Field
-               type="date"
-               name="validity"
-               id="validity"
-               className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-             />
-             <ErrorMessage name="validity" component="div" className="text-red-500 text-sm mt-1" />
-           </div>
+        <Formik
+          enableReinitialize
+          initialValues={{
+            couponTitle: selectedCoupon?.couponTitle || '',
+            discount: selectedCoupon?.discount || '',
+            validity: selectedCoupon?.validity ? selectedCoupon.validity.split('T')[0] : '',
+            active: selectedCoupon?.active || false,
+            categoryId: selectedCoupon?.categoryIds || [],
+            subCategoryId: selectedCoupon?.subCategoryIds || [],
+            oneTime: selectedCoupon?.usageType === 'One Time',
+            multiUse: selectedCoupon?.usageType === 'Multi Use',
+            activeBusinessEmail: selectedCoupon?.businesses || []
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
 
-           <div>
-             <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
-               Select Category
-             </Typography>
-             <Select
-               isMulti
-               name="categoryId"
-               options={formattedActiveCategoryList}
-               className="basic-multi-select"
-               classNamePrefix="select"
-               value={formattedActiveCategoryList?.filter(option => values?.categoryId.includes(option.value))}
-               onChange={(selectedOptions) => {
-                 const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                 console.log("check the cetegory value ..........", selectedValues)
-                 setFieldValue("categoryId", selectedValues);
-                 if (selectedValues.length > 0) {
-                   dispatch(getAllActiveSubCategoriesAll({ sectionIds: selectedValues }));
-                 }
+        >
+          {({ isSubmitting, resetForm, setFieldValue, values, handleBlur, touched,
+            handleChange, setFieldTouched,
+            errors, }) => (
+            <Form className="space-y-4">
+              <div>
+                <label htmlFor="couponTitle" className="block text-sm font-medium text-gray-700">Coupon Title</label>
+                <Field
+                  type="text"
+                  name="couponTitle"
+                  id="couponTitle"
+                  maxLength="35"
 
-               }}
-               onBlur={() => setFieldTouched('categoryId', true)}
-             />
-             {errors.categoryId && touched.categoryId && <p className='text-sm text-red-500'>{errors.categoryId}</p>}
-           </div>
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                />
+                <ErrorMessage name="couponTitle" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div>
+                <label htmlFor="discount" className="block text-sm font-medium text-gray-700">Discount (%)</label>
+                <Field
+                  type="number"
+                  name="discount"
+                  id="discount"
+                  max="999"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                />
+                <ErrorMessage name="discount" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
+              <div>
+                <label htmlFor="validity" className="block text-sm font-medium text-gray-700">Validity Date</label>
+                <Field
+                  type="date"
+                  name="validity"
+                  id="validity"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
+                />
+                <ErrorMessage name="validity" component="div" className="text-red-500 text-sm mt-1" />
+              </div>
 
+              <div>
+                <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
+                  Select Category
+                </Typography>
+                <Select
+                  isMulti
+                  name="categoryId"
+                  options={formattedActiveCategoryList}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  value={formattedActiveCategoryList?.filter(option => values?.categoryId.includes(option.value))}
+                  onChange={(selectedOptions) => {
+                    const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                    console.log("check the cetegory value ..........", selectedValues)
+                    setFieldValue("categoryId", selectedValues);
+                    if (selectedValues.length > 0) {
+                      dispatch(getAllActiveSubCategoriesAll({ sectionIds: selectedValues }));
+                    }
 
-           <div>
-             <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
-               Select Sub Category
-             </Typography>
-             <Select
-               isMulti
-               name="subCategoryId"
-               options={formattedActiveSubCategoryList}
-               className="basic-multi-select"
-               classNamePrefix="select"
-               value={formattedActiveSubCategoryList?.filter(option => values?.subCategoryId?.includes(option?.value))}
-               onChange={(selectedOptions) => {
-                 const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                 console.log("check the sub cetegory value ..........", selectedValues)
-                 setFieldValue("subCategoryId", selectedValues);
-               }}
-               onBlur={() => setFieldTouched('subCategoryId', true)}
-             />
-             {errors.subCategoryId && touched.subCategoryId && <p className='text-sm text-red-500'>{errors.subCategoryId}</p>}
-           </div>
-
-           <div>
-             <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
-               Businesses
-             </Typography>
-             <Select
-               isMulti
-               name="activeBusinessEmail"
-               options={formattedActiveBusinessEmail}
-               className="basic-multi-select"
-               classNamePrefix="select"
-               value={formattedActiveBusinessEmail?.filter(option => values?.activeBusinessEmail?.includes(option?.value))}
-               onChange={(selectedOptions) => {
-                 const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                 console.log("check the sub cetegory value ..........", selectedValues)
-                 setFieldValue("activeBusinessEmail", selectedValues);
-
-               }}
-               onBlur={() => setFieldTouched('activeBusinessEmail', true)}
-             />
-             {errors.activeBusinessEmail && touched.activeBusinessEmail && <p className='text-sm text-red-500'>{errors.activeBusinessEmail}</p>}
-           </div>
+                  }}
+                  onBlur={() => setFieldTouched('categoryId', true)}
+                />
+                {errors.categoryId && touched.categoryId && <p className='text-sm text-red-500'>{errors.categoryId}</p>}
+              </div>
 
 
-           <label htmlFor="active" className="block text-sm font-medium text-gray-700">Usage Type</label>
+              <div>
+                <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
+                  Select Sub Category
+                </Typography>
+                <Select
+                  isMulti
+                  name="subCategoryId"
+                  options={formattedActiveSubCategoryList}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  value={formattedActiveSubCategoryList?.filter(option => values?.subCategoryId?.includes(option?.value))}
+                  onChange={(selectedOptions) => {
+                    const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                    console.log("check the sub cetegory value ..........", selectedValues)
+                    setFieldValue("subCategoryId", selectedValues);
+                  }}
+                  onBlur={() => setFieldTouched('subCategoryId', true)}
+                />
+                {errors.subCategoryId && touched.subCategoryId && <p className='text-sm text-red-500'>{errors.subCategoryId}</p>}
+              </div>
 
-           <div className='flex gap-5'>
-           <label>
- <input
-   type="checkbox"
-   name="oneTime"
-   checked={values?.oneTime}
-   onChange={(e) => {
-     setFieldValue('oneTime', e.target.checked);  // Update 'oneTime' value
-     if (e.target.checked) {
-       setFieldValue('multiUse', false);  // Reset 'multiUse' when 'oneTime' is checked
-     }
-   }}
- />
- One Time
-</label>
+              <div>
+                <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
+                  Businesses
+                </Typography>
+                <Select
+                  isMulti
+                  name="activeBusinessEmail"
+                  options={formattedActiveBusinessEmail}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  value={formattedActiveBusinessEmail?.filter(option => values?.activeBusinessEmail?.includes(option?.value))}
+                  onChange={(selectedOptions) => {
+                    const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                    console.log("check the sub cetegory value ..........", selectedValues)
+                    setFieldValue("activeBusinessEmail", selectedValues);
 
-<label>
- <input
-   type="checkbox"
-   name="multiUse"
-   checked={values?.multiUse}
-   onChange={(e) => {
-     setFieldValue('multiUse', e.target.checked);  // Update 'multiUse' value
-     if (e.target.checked) {
-       setFieldValue('oneTime', false);  // Reset 'oneTime' when 'multiUse' is checked
-     }
-   }}
- />
- Multi Use
-</label>
-           </div>
+                  }}
+                  onBlur={() => setFieldTouched('activeBusinessEmail', true)}
+                />
+                {errors.activeBusinessEmail && touched.activeBusinessEmail && <p className='text-sm text-red-500'>{errors.activeBusinessEmail}</p>}
+              </div>
 
-           <div className="flex space-x-4">
-             <button
-               type="submit"
-               disabled={isCouponCreating|| isCouponUpdating}
-               className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-             >
-               {isCouponCreating ? <TailSpin color="#fff" height={20} width={20} /> : id ? 'Update Coupon' : 'Create Coupon'}
-             </button>
-             <button
-               type="button"
-               onClick={() => handleResetForm(resetForm)}
-             
-               className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50"
-             >
 
-               Reset Form
-             </button>
-           </div>
-         </Form>
-       )}
-     </Formik>
-   </div>
-   </>
+              <label htmlFor="active" className="block text-sm font-medium text-gray-700">Usage Type</label>
+
+              <div className='flex gap-5'>
+                <label>
+                  <input
+                    type="checkbox"
+                    name="oneTime"
+                    checked={values?.oneTime}
+                    onChange={(e) => {
+                      setFieldValue('oneTime', e.target.checked);  // Update 'oneTime' value
+                      if (e.target.checked) {
+                        setFieldValue('multiUse', false);  // Reset 'multiUse' when 'oneTime' is checked
+                      }
+                    }}
+                  />
+                  One Time
+                </label>
+
+                <label>
+                  <input
+                    type="checkbox"
+                    name="multiUse"
+                    checked={values?.multiUse}
+                    onChange={(e) => {
+                      setFieldValue('multiUse', e.target.checked);  // Update 'multiUse' value
+                      if (e.target.checked) {
+                        setFieldValue('oneTime', false);  // Reset 'oneTime' when 'multiUse' is checked
+                      }
+                    }}
+                  />
+                  Multi Use
+                </label>
+              </div>
+
+              <div className="flex space-x-4">
+                <button
+                  type="submit"
+                  disabled={isCouponCreating || isCouponUpdating}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                >
+                  {isCouponCreating ? <TailSpin color="#fff" height={20} width={20} /> : id ? 'Update Coupon' : 'Create Coupon'}
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </div>
+    </>
   );
 };
 

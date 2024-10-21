@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { RxCross2 } from "react-icons/rx";
+import { toast } from 'react-toastify';
 
 const SearchBoxNew = ({ placeholder = "Search", queryParam = "search"}) => {
   const [searchParams,setSearchParams] = useSearchParams();
@@ -18,6 +19,15 @@ const SearchBoxNew = ({ placeholder = "Search", queryParam = "search"}) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    // Validation
+    if (searchValue.length < 1) {
+      toast.warn("Search term must be at least 1 character long");
+      return;
+    }
+    if (searchValue.length > 50) {
+      toast.warn("Search term cannot exceed 50 characters");
+      return;
+    }
     if (searchValue.trim() === "") {
       // Remove the search parameter if the search is cleared
       searchParams.delete(queryParam);
@@ -46,6 +56,7 @@ const SearchBoxNew = ({ placeholder = "Search", queryParam = "search"}) => {
         onChange={(e) => setSearchValue(e.target.value)}
         placeholder={placeholder}
         className="px-3 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        maxLength={50}
       />
       <button
         type="submit"
@@ -54,7 +65,10 @@ const SearchBoxNew = ({ placeholder = "Search", queryParam = "search"}) => {
       >
         Search
       </button>
-     {searchValue && <RxCross2  className='cursor-pointer' onClick={handleCrossButton} />}
+      {searchParams.get(queryParam) && (
+        <RxCross2 className='cursor-pointer' onClick={handleCrossButton} />
+      )}
+
 
 
     </form>

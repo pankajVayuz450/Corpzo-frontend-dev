@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import {
   Input,
   Spinner,
@@ -15,7 +15,10 @@ import { validationSchema } from './ValidationSchema';
 import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 import ReactQuill from 'react-quill';
 import { validateNumber } from '@/Helpers/globalfunctions';
+import 'react-quill/dist/quill.snow.css';
 import { addSubscriptions, getAllSubscriptions, editSubscriptions } from '@/redux/admin/actions/Subscriptions';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 const initialValues = {
   title: "",
   description: "",
@@ -112,16 +115,18 @@ const AddSubscriptions = () => {
     });
   });
 
-  const modules = {
+  const modules = useMemo(() => ({
     toolbar: {
       container: [['bold', 'italic', 'underline'], [{ list: 'bullet' }]],
     },
-    maxlength: { maxLength: MAX_EDITOR_LENGTH }, // Use the custom maxlength module
-  };
+    maxlength: { maxLength: MAX_EDITOR_LENGTH }, // Custom maxlength module
+  }), []);
 
   return (
+    <>
     <div className='relative'>
       <TitleComponent title={id ? "CORPZO | Edit Subscription" : "CORPZO | Create Subscription"} />
+     
       <h1 className="text-xl md:text-3xl font-semibold mb-4">{id !== undefined ? "Edit Subscription" : "Create Subscription"}</h1>
       {
         id !== undefined && isFetching ? (
@@ -154,14 +159,13 @@ const AddSubscriptions = () => {
             <ReactQuill
               className='h-50'
               theme="snow"
-              placeholder={"Write Description here..."}
+              placeholder={"Write something awesome..."}
               onChange={(value) => setFieldValue("description", value)}
               onBlur={() => setFieldTouched('description', true)}
               name="description"
-
               value={values.description}
               modules={modules}
-              readOnly={false} 
+              readOnly={false}
             />
             {errors.description && touched.description && <p className='text-sm text-red-500'>{errors.description}</p>}
             <Typography variant="small" color="blue-gray" className="mb-1 font-medium">
@@ -263,6 +267,7 @@ const AddSubscriptions = () => {
         )
       }
     </div>
+    </>
   )
 }
 

@@ -7,6 +7,7 @@ const authToken = localStorage.getItem('authToken');
 
 export const getAllServices = (limit = 10, page = 1, search = "", id) => {
 
+    console.log(search, "searchhh from service")
     return async (dispatch) => {
         try {
             dispatch(updateLoading(true));
@@ -123,8 +124,6 @@ export const getAllActiveCategories = (active) => {
 export const getAllActiveSubCategories = (categoryId) => {
     console.log(categoryId, "categoryId................")
     return async (dispatch) => {
-
-        dispatch(updateLoading(true));
         try {
 
             let api = `${serviceAPIs.getActiveSubCategories}?sectionId=${categoryId}`
@@ -145,7 +144,7 @@ export const getAllActiveSubCategories = (categoryId) => {
 
         } finally {
 
-            dispatch(updateLoading(false));
+            
 
         }
     };

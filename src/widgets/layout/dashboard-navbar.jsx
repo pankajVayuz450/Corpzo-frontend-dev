@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import Navigation from "./TopNavigation";
+import { getRouteDetails } from "@/Helpers/globalfunctions";
 
 export function DashboardNavbar({ onSignOut }) {
   const [controller, dispatch] = useMaterialTailwindController();
@@ -28,12 +29,14 @@ export function DashboardNavbar({ onSignOut }) {
   const faqCount = useSelector((state) => state.faq.totalCount);
   const { totalRecords } = useSelector((state) => state.userMgmt)
 
-  const { totalCount } = useSelector((state) => state.service)
+  // const { totalCount } = useSelector((state) => state.service)
   const pathElements = useMemo(() => {
     return pathname.split("/").filter((el) => el !== "");
   }, [pathname]);
 
   const navigate = useNavigate()
+  const { totalCount, title } = getRouteDetails(pathname);
+
   const getTotalRecords = (path) => {
     switch (true) {
       case path === '/dashboard/admin/masterSettings/Category':
@@ -193,7 +196,7 @@ export function DashboardNavbar({ onSignOut }) {
             openSidenav ? <><IconButton
               size="sm"
               ripple={false}
-              className="fixed z-9999 left-0 top-0 grid rounded-br-none rounded-tl-none md:block xl:hidden"
+              className="fixed z-[1000] left-0 top-0 grid  md:block xl:hidden"
               onClick={() => setOpenSidenav(dispatch, false)}
             >
               <XMarkIcon strokeWidth={2.5} className="h-5 w-5 text-white" />
@@ -202,63 +205,20 @@ export function DashboardNavbar({ onSignOut }) {
                 <IconButton
                   size="sm"
                   ripple={false}
-                  className="fixed z-100 left-0 top-0 grid rounded-br-none rounded-tl-none md:block xl:hidden"
+                  className="fixed z-100 left-0 top-0 grid  md:block xl:hidden"
                   onClick={() => setOpenSidenav(dispatch, true)}
                 >
-                  <Bars3Icon strokeWidth={2.5} className="h-5 w-5 text-white" />
+                  <Bars3Icon strokeWidth={1.5} className="h-5 w-5 text-white" />
                 </IconButton>
               </>
           }
-
-          {/* <Breadcrumbs
-            className={`bg-transparent p-0 transition-all ${fixedNavbar ? "mt-1" : ""
-              }`}
-          >
-            {
-              pathElements.length === 5 ? (
-                pathElements.slice(2, 4).map((path) => (
-                  <Typography
-                    key={path} // Add a unique key for each element
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal opacity-50"
-                  >
-                    {path}
-                  </Typography>
-                ))
-              ) : pathElements.length === 4 ? (
-                pathElements.slice(2, 4).filter(path => !isObjectId(path)).map((path) => (
-                  <Typography
-                    key={path} // Add a unique key for each element
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal opacity-50"
-                  >
-                    {path}
-                  </Typography>
-                ))
-              ) : (
-                pathElements.slice(3, 5).map((path) => (
-                  <Typography
-                    key={path} // Add a unique key for each element
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal opacity-50"
-                  >
-                    {path}
-                  </Typography>
-                ))
-              )
-            }
-
-          </Breadcrumbs> */}
-          <Navigation items={pathElements} />
-          <div className="flex flex-row gap-4 items-center">
+          {/* <Navigation items={pathElements} /> */}
+          {/* <div className="flex flex-row gap-4 items-center">
             <ChevronLeftIcon className="fill-black h-5 w-5 cursor-pointer" onClick={() => navigate(-1)} />
             <Typography variant="h6" color="blue-gray">
-              {`${count.title} ${count.totalCount !== (null || 0) ? `(${count.totalCount})` : ''}`}
+              {`${title} ${totalCount !== (null || 0) ? `(${totalCount})` : ''}`}
             </Typography>
-          </div>
+          </div> */}
         </div>
         <div className="flex items-center space-x-4">
           <Button

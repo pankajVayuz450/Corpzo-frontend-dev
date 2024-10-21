@@ -10,7 +10,6 @@ const DynamicStatusSelect = ({ statusList = [], currentStatus, onStatusChange,in
       setSelectedStatus(currentStatus);
     }
 
-    console.log("check current status ..",selectedStatus)
 
   }, [currentStatus]);
 

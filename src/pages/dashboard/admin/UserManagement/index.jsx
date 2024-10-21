@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import { throttle } from "@/Helpers/globalfunctions";
 import { updateEditPage } from "@/redux/admin/slices/UserManagement";
 import Pagination from "@/components/common/Pagination";
+import SearchBoxNew from "@/components/common/SearchBoxNew";
 const UserManagement = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -42,10 +43,6 @@ const UserManagement = () => {
     const newStatus = !form.active;
     console.log(form, "form data ")
     const data = {
-      name: form.name,
-      gender: form.gender,
-      email: form.email,
-      phone: form.phone,
       active: newStatus,
     }
     dispatch(updateStatus(form.userId, data));
@@ -114,27 +111,7 @@ const UserManagement = () => {
         <NavLink to="/dashboard/admin/usermanagement/create-user" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Create User
         </NavLink>
-        <div className='w-[30%] flex gap-4 justify-end items-center mb-4'>
-          <div className="flex items-center justify-center relative">
-            <Input
-              size="sm"
-              placeholder="Search..."
-              className="!border-t-blue-gray-200 focus:!border-t-gray-500 w-full"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleKeyDown}
-              value={searchQuery}
-            />
-            <span className='absolute right-2'><button>
-              <CiSearch />
-            </button></span>
-          </div>
-          {searchQuery.length > 0 && <button onClick={handleClearFilter}>
-            <MdClear />
-          </button>}
-        </div>
+        <SearchBoxNew queryParam="search"/>
       </div>
 
       {isUsersFetching ?

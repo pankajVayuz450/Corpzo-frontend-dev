@@ -13,5 +13,6 @@ const ApplicationAPIs = {
     getCaseHistory : `${BASE_URL}/admin/applications/history`, 
     manageApplication: `${BASE_URL}/admin/applications/manage-application`, 
     getFormJson: `${BASE_URL}/admin/applications/application-form`, 
+    getAgent: `${BASE_URL}/admin/users`, 
 }
 export default ApplicationAPIs;

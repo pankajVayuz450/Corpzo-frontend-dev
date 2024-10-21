@@ -15,6 +15,9 @@ import ReactQuill, { Quill } from 'react-quill';
 import { addFaq, editFaq, getSingleFaq } from '@/redux/admin/actions/FAQ';
 import 'react-quill/dist/quill.snow.css';
 import { TailSpin } from 'react-loader-spinner';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
+import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 const initialValues = {
   question: "",
   answer: "",
@@ -53,13 +56,18 @@ const CreateFaq = () => {
       setTouched({}, false);
       if (id) {
         const data = {
-          question: values.question,
-          answer: values.answer,
+          question: handleExtraSpaces(values.question),
+          answer: handleExtraSpaces(values.answer),
           active: values.active
         }
         dispatch(editFaq(id, data, navigate, editPage))
         setFieldValue("answer", "")
       } else {
+        const data = {
+          question: handleExtraSpaces(values.question),
+          answer: handleExtraSpaces(values.answer),
+          active: values.active
+        }
         dispatch(addFaq(values, navigate))
       }
       setErrors({})
@@ -101,10 +109,25 @@ const CreateFaq = () => {
     },
     maxlength: { maxLength: MAX_EDITOR_LENGTH }, // Use the custom maxlength module
   };
-
+  const breadcrumbData = [
+    {
+      name: 'FAQ Management',
+      url: '/dashboard/admin/faq',
+      children: [
+        {
+          name: id ? 'Update FAQ' : 'Create FAQ',
+          url: id
+            ? ''
+            : '/dashboard/admin/faq',
+        },
+      ],
+    }
+  ];
   return (
     <div>
       <TitleComponent title={id ? "CORPZO | Edit FAQ" : "CORPZO | Create FAQ"} />
+      <HeaderTitle title={id ? "Update FAQ" : "Create FAQ"} />
+      <Breadcrumb items={breadcrumbData} />
       {
         id && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">
@@ -127,6 +150,8 @@ const CreateFaq = () => {
               value={values.question}
               onChange={handleChange}
               onBlur={handleBlur}
+              onFocus={() => touched.question = true}
+              maxLength={200}
             />
             {errors.question && touched.question && <p className='text-sm text-red-500'>{errors.question}</p>}
 

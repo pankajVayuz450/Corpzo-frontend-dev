@@ -31,12 +31,4 @@ export const validationSchema = Yup.object().shape({
     .required('About is required')
     .max(200, 'About section must be less than 200 characters'),
 
-  // delivrableVideoUrl: Yup.mixed()
-  //   .required('Deliverable Video is required'),
-
-  // stepsVideoUrl: Yup.mixed()
-  //   .required('Steps Video is required'),
-
-  // documentVideoUrl: Yup.mixed()
-  //   .required('Document Video is required')
 });

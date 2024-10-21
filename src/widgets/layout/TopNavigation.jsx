@@ -22,7 +22,7 @@ const BreadcrumbItem = ({ item, isLast }) => {
 // Define the Breadcrumb component
 const Breadcrumb = ({ items }) => {
   return (
-    <nav>
+    <nav className='ml-3 absolute top-4'>
       <ul className='flex'>
         {items.map((item, index) => (
           <>

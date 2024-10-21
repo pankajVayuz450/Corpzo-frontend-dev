@@ -67,8 +67,8 @@ export const updateVideo =(videoData)=>{
     }
 }
 
-export const uploadVideo = (formData, fieldName) => {
-    console.log(fieldName, "fieldName")
+export const uploadVideo = (formData, saveData) => {
+    console.log(saveData, "saveData")
     return async (dispatch) => {
         try {
             dispatch(updateUploadLoading(true))
@@ -83,13 +83,17 @@ export const uploadVideo = (formData, fieldName) => {
             if (response.status === 200) {
               console.log(response, "response from upload video")
               dispatch(updateVideoUrl(response.data.data.url));
-            dispatch(updateUploadLoading(false))
-            dispatch(updateNext(true));
+              const updatedSaveData = {
+                ...saveData,
+                url: response.data.data.url, 
+                
+            };
+              dispatch(saveVideoDetails(updatedSaveData))
+           
             }   
         } catch (error) {
             console.error('Error uploading video:', error);
             // toast.error(error.response.data.error)
-
             dispatch(updateUploadLoading(false))
         } finally {
 
@@ -101,7 +105,7 @@ export const uploadVideo = (formData, fieldName) => {
 export const saveVideoDetails =(videoDetails)=>{
     return async(dispatch)=>{
         try{
-            dispatch(updateAdding(true))
+            dispatch(updateUploadLoading(true))
             const response = await axios.put(VideoIntroApis.saveVideoDetails, videoDetails, {
                 headers : {
                     Authorization : `Bearer ${authToken}`
@@ -109,12 +113,12 @@ export const saveVideoDetails =(videoDetails)=>{
             })
             console.log(response, "add Video details response")
             if(response.status === 200){
-                dispatch(updateAdding(false))
+                dispatch(updateUploadLoading(false))
                 toast.success(response.data.message);
                 // navigate(`/dashboard/admin/faq`)
             }
         }catch(error){
-            dispatch(updateAdding(false))
+            dispatch(updateUploadLoading(false))
             console.log(error);
             toast.error(error.response.data.message)
         }

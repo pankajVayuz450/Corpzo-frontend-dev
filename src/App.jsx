@@ -14,7 +14,6 @@ function App() {
     <>
     <AppRoutes />
     <ToastContainer position="bottom-right" limit={4} autoClose={3000}/>
-    {<NoNetwork/>}
     </>
   );
 }

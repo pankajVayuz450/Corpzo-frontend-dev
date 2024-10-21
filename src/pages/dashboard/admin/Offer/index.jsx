@@ -20,6 +20,7 @@ import { updateEditPage } from '@/redux/admin/slices/Offer';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import Pagination from '@/components/common/Pagination';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
+import HeaderTitle from '@/components/common/HeaderTitle';
 
 const Offer = () => {
 
@@ -112,9 +113,10 @@ const Offer = () => {
     }
   ];
   return (
-    <div className='w-full'>
+    <div className='w-full  mt-4'>
       <TitleComponent title={"CORPZO | Department"}></TitleComponent>
       <Breadcrumb items={breadcrumbData}/>
+      <HeaderTitle title='Offer Management' totalCount={totalCount}/>
       <div className='flex gap-4 justify-between items-center w-full mb-4'>
         <NavLink to="/dashboard/admin/add-offer" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Create Offer

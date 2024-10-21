@@ -1,8 +1,11 @@
 // src/pages/CouponList.js
 import CouponTable from '@/components/admin/couponTable';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import LoadingPage from '@/components/common/LoadingPage';
 import Pagination from '@/components/common/Pagination';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import ReusableTable from '@/components/common/Tables';
+import TableShimmer from '@/components/common/TableShimmer';
 import couponAPIs from '@/constants/APIList/couponAPIs';
 import { formatReadableDate } from '@/Helpers/globalfunctions';
 import { deleteCoupon, getAllCoupons, updateCouponStatus } from '@/redux/admin/actions/coupon';
@@ -73,19 +76,17 @@ const CouponList = () => {
         },
   ];
 
+ 
+
   return (
     <div className="p-6">
         <Breadcrumb items={breadcrumbData}/>
+        <HeaderTitle title={"Coupon Management"} totalCount={totalCount}/>
       <div className='flex justify-between'>
         <button onClick={handleCreateCoupon} className="bg-blue-500 text-white px-2 py-2 rounded mb-4">Create Coupon</button>
         <SearchBoxNew placeholder={"Search"} queryParam={"search"} />
       </div>
-      {isCouponsFetching ? <TailSpin
-        color="#00BFFF"
-        height={80}
-        width={80}
-        timeout={3000} //3 secs
-      />
+      {isCouponsFetching ?   <TableShimmer />
         :
         (
           <>

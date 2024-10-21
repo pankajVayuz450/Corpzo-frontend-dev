@@ -2,12 +2,15 @@ import { max } from "date-fns";
 import * as Yup from "yup"
 
 const excludeNumberSpecialcahr = /^[a-zA-Z ]+$/;
+const noAllSpacesOrSpecialChars = /^[a-zA-Z0-9]+(?:[ ]+[a-zA-Z0-9.]+)*[ ]*$/
+;
 
 export const validationSchema = Yup.object({
     title: Yup.string()
         .trim()
         .min(2, "Subscription Title must be at least 2 characters long")
         .max(100, "Subscription Title must be at most 100 characters long")
+        .matches(noAllSpacesOrSpecialChars, "Title cannot contain only spaces or special characters")
         .matches(excludeNumberSpecialcahr, "Department cannot contain numbers or special characters")
         .required("Please enter Subscription Title."),
     description: Yup.string()

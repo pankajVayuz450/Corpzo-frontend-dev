@@ -3,8 +3,8 @@ import DocumentApis from '@/constants/APIList/document';
 import axios from 'axios';
 import { updateStatusState, updateStatusLoading, getOfferById} from "../../slices/Offer"
 import { toast } from 'react-toastify';
-import { getOffers,updateLoading,getServices } from '../../slices/Offer';
-import {updateAdding, getDocuments, addDocument} from "../../slices/Document"
+import {  getServices } from '../../slices/Offer';
+import {updateAdding,updateLoading, getDocuments, addDocument, updateDocumentReducer} from "../../slices/Document"
 const authToken  = localStorage.getItem('authToken');
 
 export const getAllDocuments =(limit = 10, page = 1, search="")=>{
@@ -13,7 +13,6 @@ export const getAllDocuments =(limit = 10, page = 1, search="")=>{
         try{
             dispatch(updateLoading(true));
             let api = `${DocumentApis.getDocument}?limit=${limit}&page=${page}`
-          
             
             if(search !== ""){
                 api += `&search=${search}`
@@ -42,6 +41,36 @@ export const getAllDocuments =(limit = 10, page = 1, search="")=>{
             if(error.response.data.statusCode === 400){
                 toast.warn(error.response.data.message)
             }
+        }
+    }
+}
+
+export const getFolderDocuments=(folderId)=>{  
+    return async(dispatch)=>{
+        try{
+            dispatch(updateLoading(true));
+            let api = `${DocumentApis.getFolderDocuments}?folderId=${folderId}`
+         
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            })
+            console.log(response)
+            if(response.status == 200){
+                dispatch(getDocuments({
+                    documentList : response.data.data,
+                }))
+                // dispatch(getOffers({
+                //     offerList : response.data.data.offers || [],
+                //     totalCount : response.data.data.totalCount || 0,
+                // }))
+                dispatch(updateLoading(false))
+                
+            }
+        }catch(error){
+            dispatch(updateLoading(false));
+            console.log(error)
         }
     }
 }
@@ -127,12 +156,12 @@ export const getSingleOffer=(offerId)=>{
     }
 }
 
-export const editOffer=(offerId, offer,editPage, navigate)=>{
-    console.log(offer, "from action")
+export const updateDocument=(folderId, folder)=>{
+    console.log(folder, "from action")
     return async(dispatch)=>{
         try{
             dispatch(updateAdding(true))
-            const response = await axios.put(`${OfferApis.editOffer}/${offerId}`,offer, {
+            const response = await axios.put(`${DocumentApis.updateDocument}`,{folderId : folderId, folderName : folder}, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
@@ -140,9 +169,8 @@ export const editOffer=(offerId, offer,editPage, navigate)=>{
             console.log(response, "edit response")
             if(response.status == 200){
                 toast.success(response.data.message);
-                
-                navigate(`/dashboard/admin/offer?page=${editPage}`)
                 dispatch(updateAdding(false))
+                dispatch(updateDocumentReducer({folderId, folderName : folder}))
             }
         }catch(error){
             dispatch(updateAdding(false))
@@ -152,6 +180,42 @@ export const editOffer=(offerId, offer,editPage, navigate)=>{
         }
     }
 }
+
+export const uploadDocument = (formData) => {
+    
+    return async (dispatch) => {
+        try {
+            // dispatch(updateUploadLoading(true))
+            dispatch(updateAdding(true))
+            // dispatch(updateContent("Uploading Video"))
+            
+            let api = `${DocumentApis.uploadDocument}`
+
+            const response = await axios.put(`${api}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            if (response.status === 200) {
+                console.log(response, "response from upload document")
+                dispatch(updateAdding(false))
+                // dispatch(updateVideoUrl({
+                //     fieldName: fieldName,
+                //     url: response.data.data.url
+                // }))
+                // dispatch(updateUploadLoading(false))
+                // dispatch(updateContent("Video Uploaded!"))
+                // dispatch(updateHeader("Video Uploaded"))
+
+            }
+        } catch (error) {
+            dispatch(updateAdding(false))
+            console.error('Error uploading video:', error);
+            // toast.error(error.response.data.error)
+        }
+    };
+};
 
 export const updateStatus =(offerId, data)=>{
     return async(dispatch)=>{

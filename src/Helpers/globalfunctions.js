@@ -1,3 +1,5 @@
+import { routesData } from "@/configs/header-config";
+
 export function formatReadableDate(dateInput) {
     const date = new Date(dateInput);
     const options = { year: 'numeric', month: 'short', day: 'numeric' }; 
@@ -99,4 +101,28 @@ export const setDateMin = () => {
   const today = new Date().toISOString().split("T")[0];
   return today;
 };
+
+export const formatDate = (isoString) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Ensure two digits
+  const day = String(date.getDate()).padStart(2, '0'); // Ensure two digits
+  return `${year}-${month}-${day}`;
+};
+
+export const getRouteDetails = (path) => {
+  // Loop through all routes in routesData
+  const route = Object.keys(routesData).find(routePath => {
+    // Replace dynamic segments (e.g., :id) with a regex to match dynamic values
+    const routeRegex = new RegExp(`^${routePath.replace(/:[^/]+/g, '[^/]+')}$`);
+    
+    // Test if the current path matches this dynamic route
+    return routeRegex.test(path);
+  });
+
+  // Return the route data if found, or default to { totalCount: 0, title: "Admin" }
+  return route ? routesData[route] : { totalCount: 0, title: "Admin" };
+};
+
 

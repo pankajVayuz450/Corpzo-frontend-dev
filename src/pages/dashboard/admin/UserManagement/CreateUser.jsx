@@ -1,62 +1,41 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { createUser, getUserById, updateUser } from '@/redux/admin/actions/UserManagement';
-import { TailSpin } from 'react-loader-spinner';
-import { Input, Switch } from '@material-tailwind/react';
 import TitleComponent from '@/components/common/TitleComponent';
-
+import { validateNumber, handleExtraSpaces } from '@/Helpers/globalfunctions';
+import { Spinner } from '@material-tailwind/react';
 const initialValues = {
   name: '',
   email: '',
   gender: '',
   phone: '',
   profilePictureUrl: "",
-  active : false,
+  active: false,
 };
 
-const validKeyForPayment = [
-  "0",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "Backspace",
-];
-
-
-export const validateNumber  =(e)=>{
-  if (!validKeyForPayment.includes(e.key)) {
-    e.preventDefault();
-  }
-}
 const validationSchema = Yup.object({
-  name: Yup.string().required('Name is required'),
-  email: Yup.string().email('Invalid email format').required('Email is required'),
+  name: Yup.string().trim().required('Name is required').min(2, "Name must be atleast 2 characters long").max(35, 'Name cannot exceed 35 characters').matches(/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces'),
+  email: Yup.string().email('Invalid email address').matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|io|info|biz)$', 'Invalid email format').required('Email is required'),
   gender: Yup.string().oneOf(['male', 'female'], 'Gender must be either male or female').required('Gender is required'),
-  phone:  Yup.string().matches(/^[0-9]{10}$/, 'Phone number must be exactly 10 digits long')
-  .required('Phone number is required'),
+  phone: Yup.string().trim().matches(/^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/, 'Phone number must be exactly 10 digits long')
+    .required('Phone number is required'),
   profilePictureUrl: Yup.string().nullable(),
 });
 
 const CreateUser = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { id } = useParams();
-  const { user,isUserCreating,isUserFetching, editPage } = useSelector((state) => state.userMgmt);
+  const { user, isUserCreating, isUserFetching, editPage } = useSelector((state) => state.userMgmt);
   const navigate = useNavigate();
 
-useEffect(() => {
+  useEffect(() => {
     if (id) {
-        dispatch(getUserById(id));
+      dispatch(getUserById(id));
     }
-}, [id]);
+  }, [id]);
 
 
   const formik = useFormik({
@@ -66,34 +45,34 @@ useEffect(() => {
     onSubmit: (values) => {
       if (id) {
         const userData = {
-          name : values.name, 
-          phone : values.phone, 
-          email : values.email, 
-          gender : values.gender, 
-          active : values.isActive, 
-          profilePictureUrl:values.profilePictureUrl,
+          name: handleExtraSpaces(values.name),
+          phone: values.phone,
+          email: values.email,
+          gender: values.gender,
+          active: values.isActive,
+          profilePictureUrl: values.profilePictureUrl,
         }
-        dispatch(updateUser({id :values.userId, userData, editPage, navigate}))
+        dispatch(updateUser({ id: values.userId, userData, editPage, navigate }))
       }
-        else {
-           dispatch(createUser(values))
-           .unwrap()
-           .then(()=>{
-                navigate('/dashboard/admin/usermanagement')
-           })
-           ;
-        }
+      else {
+        dispatch(createUser(values))
+          .unwrap()
+          .then(() => {
+            navigate('/dashboard/admin/usermanagement')
+          })
+          ;
+      }
     },
   });
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <TitleComponent title={id ? "CORPZO | Update User" : "CORPZO | Create User"}/>
-     {isUserFetching?<TailSpin 
-            color="#00BFFF"
-            height={80}
-            width={80}
-            timeout={3000}
-     />: <form
+      <TitleComponent title={id ? "CORPZO | Update User" : "CORPZO | Create User"} />
+      {isUserFetching ? <TailSpin
+        color="#00BFFF"
+        height={80}
+        width={80}
+        timeout={3000}
+      /> : <form
         onSubmit={formik.handleSubmit}
         className="bg-white p-4 rounded-lg shadow-lg w-full max-w-md"
       >
@@ -109,6 +88,9 @@ useEffect(() => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.name}
+            maxLength={35}
+            onFocus={() => formik.touched.name = true}
+
           />
           {formik.touched.name && formik.errors.name ? (
             <div className="text-red-500 text-sm mt-1">{formik.errors.name}</div>
@@ -125,6 +107,7 @@ useEffect(() => {
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.email}
+            onFocus={() => formik.touched.email = true}
           />
           {formik.touched.email && formik.errors.email ? (
             <div className="text-red-500 text-sm mt-1">{formik.errors.email}</div>
@@ -153,17 +136,19 @@ useEffect(() => {
         <div className="mb-4">
           <label className="block text-gray-700 mb-2" htmlFor="phone">Phone</label>
           <input
-                size="sm"
-                type='tel'
-                maxLength={10}
-                placeholder={id ? 'Edit Phone Number' : 'Add Phone Number'}
-                className="!border-t-blue-gray-200 focus:!border-t-gray-900 w-full"
-                name="phone"
-                value={formik.values.phone}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                onKeyDown={validateNumber}  
-              />
+            size="sm"
+            type='tel'
+            maxLength={10}
+            placeholder={id ? 'Edit Phone Number' : 'Add Phone Number'}
+            className={`w-full p-2 border ${formik.touched.phone && formik.errors.phone ? 'border-red-500' : 'border-gray-300'} rounded`}           
+             name="phone"
+            value={formik.values.phone}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            onKeyDown={validateNumber}
+            onFocus={() => formik.touched.phone = true}
+
+          />
           {formik.touched.phone && formik.errors.phone ? (
             <div className="text-red-500 text-sm mt-1">{formik.errors.phone}</div>
           ) : null}
@@ -185,17 +170,18 @@ useEffect(() => {
           ) : null}
         </div>
 
-        {isUserCreating?<TailSpin
-            color="#00BFFF"
-            height={80}
-            width={80}
-            timeout={3000}
-        />:<button
-          type="submit"
-          className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-3 rounded-lg shadow-md hover:from-blue-600 hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-        >
-          {id ? 'Update User' : 'Create User'}
-        </button>}
+        <button
+              disabled={isUserCreating || !(formik.dirty && formik.isValid)}
+              onClick={formik.handleSubmit}
+              className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isUserCreating || !(formik.dirty && formik.isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isUserCreating || !(formik.dirty && formik.isValid) ? 'gray-400' : 'blue-500'}`}
+            >
+              {isUserCreating ?
+                <div className='flex justify-center items-center gap-3'>
+                  <Spinner color='white' className="h-4 w-4" />
+                  {id ? "Updating User" : "Creating User"}
+                </div>
+                : id ? "Update User" : "Create User"}
+            </button>
       </form>}
     </div>
   );

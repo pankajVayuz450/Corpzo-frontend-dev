@@ -9,6 +9,9 @@ import { Select, Option } from "@material-tailwind/react";
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import Pagination from '@/components/common/Pagination';
 import DynamicStatusSelect from './DynamicStatusSelect';
+import { setApplicationId, setFormId, setUserId } from '@/redux/admin/slices/AppliationManagement/Index';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
 
 
 const ApplicationManagement = () => {
@@ -22,7 +25,6 @@ const ApplicationManagement = () => {
 
   // Handle edit application action
 
-  console.log("check application list", applicationsList)
 
 
   // Toggle application status
@@ -31,14 +33,16 @@ const ApplicationManagement = () => {
 
   const query = searchParams.get('search') || '';
   const page = searchParams.get('page') || 1;
+ 
 
   // Automatically fetch applications based on searchParams
   useEffect(() => {
-
+  
+  
     setSearchQuery(query);
 
     dispatch(getAllApplications(page, query));
-    dispatch(updateApplicationStatus(page, query));
+    
 
   }, [searchParams, dispatch, query]);
 
@@ -63,16 +67,34 @@ const ApplicationManagement = () => {
     setSelectedStatus(newStatus); // Update local status state
   };
 
+  const nevigateToform=(applicationId,formId,userId)=>{
+    dispatch(setApplicationId(applicationId))
+    dispatch(setFormId(formId))
+    dispatch(setUserId(userId))
+    
+    navigate("/dashboard/admin/add-application")
+  }
+
+  const breadcrumbData = [
+    {
+      
+        
+          name: 'Application',
+          url:"/dashboard/admin/application-management",
+         
+    }
+  ];
   // Clear filter
 
 
   return (
     <div className='w-full'>
+    <Breadcrumb items={breadcrumbData}/>
+    {/* <h1 className="text-xl md:text-3xl font-semibold mb-4">{"Application Management"}</h1> */}
+    <HeaderTitle title="Application Management" />
       <TitleComponent title={"CORPZO | Application Management"}></TitleComponent>
-      <div className='flex gap-4 justify-between items-center w-full mb-4'>
-        <NavLink to="/dashboard/admin/add-application" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-          Create Application
-        </NavLink>
+      <div className='flex justify-end items-center w-full mb-4'>
+        
         <SearchBoxNew />
       </div>
       {
@@ -86,10 +108,8 @@ const ApplicationManagement = () => {
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Id Number
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                       
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer ">
                           Case Id
                         </th>
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -112,11 +132,9 @@ const ApplicationManagement = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {applicationsList && applicationsList.map((form, index) => (
                         <tr key={index}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{form.caseId}</div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{form.caseId}</div>
+                          
+                          <td className="px-6 py-4 whitespace-nowrap  ">
+                            <div className="text-sm text-gray-500 cursor-pointer" onClick={()=>nevigateToform(form._id,form.formId,form.userId)}>{form.caseId}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">{form.user_data[0]?.name}</div>

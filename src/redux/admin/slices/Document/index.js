@@ -34,13 +34,16 @@ const documentSlice = createSlice({
         state.documentList.unshift(newDocument)
       }
     }, 
-    deleteStepBId :(state, action)=>{
-      const categoryId = action.payload; 
-      console.log(categoryId, "cid")
-      state.stepsList = state.stepsList.filter((category)=>{
-        return category._id !== categoryId
-      })
-    }, 
+    updateDocumentReducer: (state, action) => {
+      const { folderId, folderName } = action.payload; 
+      console.log(action.payload, "from the slice");
+    
+      state.documentList = state.documentList.map(doc => 
+        doc._id === folderId ? { ...doc, folderName: folderName } : doc
+      );
+    }
+    
+    ,
     getOfferById : (state, action)=>{
       const newObject = action.payload; 
       console.log(newObject, "new Object")
@@ -86,6 +89,6 @@ const documentSlice = createSlice({
   }
   },
 });
-export const { getDocuments,getServices,addDocument,updateEditPage, updateStatusLoading,updateLoading,updateStatusState,toggleSwitchSuccess,toggleSwitchFailure, deleteStepBId,updateAdding, getOfferById} = documentSlice.actions;
+export const { getDocuments,getServices,addDocument,updateEditPage, updateStatusLoading,updateLoading,updateStatusState,toggleSwitchSuccess,toggleSwitchFailure, updateDocumentReducer,updateAdding, getOfferById} = documentSlice.actions;
 
 export default documentSlice.reducer;

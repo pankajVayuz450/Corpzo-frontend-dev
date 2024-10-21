@@ -5,7 +5,7 @@ import { getSteps,updateLoading,updateStatusState,updateAdding, getStepById ,upd
 import { toast } from 'react-toastify';
 const authToken  = localStorage.getItem('authToken');
 
-export const getAllSteps =(id)=>{
+export const getAllSteps =( serviceId, id)=>{
    
     return async(dispatch)=>{
         try{
@@ -14,15 +14,17 @@ export const getAllSteps =(id)=>{
             if(id){
                 api+= `?id=${id}`;
             }
+            if(serviceId){
+                api+= `?serviceId=${serviceId}`;
+            }
             const response = await axios.get(`${api}`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
             })
-            
+           console.log(response, "checkl repsonse") 
             if(response.status == 200){
                 if(id){
-                    console.log(response.data.data[0], "get steps")
                     dispatch(getStepById(response.data.data[0]))
                 }else{
                     dispatch(getSteps({
