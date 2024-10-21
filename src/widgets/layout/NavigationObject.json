@@ -1,0 +1,24 @@
+[
+  {
+    "parent": "Master Setting",
+    "child": [
+      {
+        "item": "Category",
+        "link": "/master-setting/category",
+        "child": [
+          {
+            "item": "create-category"
+          },
+          {
+            "item": "update-category"
+          }
+        ]
+      },
+      {
+        "item": "Sub Category",
+        "link": "/master-setting/sub-category",
+        "child": []
+      }
+    ]
+  }
+]
