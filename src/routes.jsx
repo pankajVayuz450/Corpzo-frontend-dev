@@ -84,6 +84,16 @@ const AddNote = lazy(() => import("./pages/dashboard/admin/ApplicationManagement
 const CaseHistory = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/CaseHistory"));
 const AddFieldNote = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/AddFieldNote"));
 const FieldNote = lazy(() => import("./pages/dashboard/admin/ApplicationManagement/FieldNote"));
+// import SubInputs from "./pages/dashboard/admin/MastersSettings/SubInputs";
+// import AddSubInput from "./pages/dashboard/admin/MastersSettings/SubInputs/AddSubInput";
+// import EditSubInput from "./pages/dashboard/admin/MastersSettings/SubInputs/EditSubInput";
+// import AddEditSubInput from "./pages/dashboard/admin/MastersSettings/SubInputs/AddEditSubInput";
+import Roles from "./pages/dashboard/admin/Roles";
+import AddRole from "./pages/dashboard/admin/Roles/AddRoles";
+import EditRole from "./pages/dashboard/admin/Roles/EditRoles";
+import Teams from "./pages/dashboard/admin/Teams";
+import AddTeam from "./pages/dashboard/admin/Teams/AddTeams";
+import EditTeam from "./pages/dashboard/admin/Teams/EditTeams";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -172,6 +182,42 @@ const adminRoutes = [
   {
     path: "admin/masterSettings/formElement/create",
     element: <AddFormElement/>
+  },
+  // {
+  //   path: "admin/masterSettings/sub-inputs",
+  //   element: <SubInputs />
+  // },
+  // {
+  //   path: "admin/masterSettings/sub-input/create",
+  //   element: <AddSubInput />
+  // },
+  // {
+  //   path: "admin/masterSettings/sub-input/edit/:id",
+  //   element: <EditSubInput />
+  // },
+  {
+    path: "admin/roles",
+    element: <Roles />
+  },
+  {
+    path: "admin/role/create",
+    element: <AddRole />
+  },
+  {
+    path: "admin/roles/edit/:roleId",
+    element: <EditRole />
+  },
+  {
+    path: "admin/teams",
+    element: <Teams />
+  },
+  {
+    path: "admin/team/create",
+    element: <AddTeam />
+  },
+  {
+    path: "admin/teams/edit/:teamId",
+    element: <EditTeam />
   },
   {
     path:"admin/masterSettings/attributes",

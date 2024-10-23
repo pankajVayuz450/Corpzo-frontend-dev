@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { addDocuments, updateDocument, uploadDocument } from '@/redux/admin/actions/Document';
 import { useParams } from 'react-router-dom';
+import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 
 const folderInitalValues = {
     folderName: ""
@@ -20,7 +21,7 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
             .required('Folder Name is required.')
             .max(30, 'Folder Name can be at most 30 characters long')
             .min(3, "Folder Name must be at least 3 characters long")
-            .matches(/^[a-zA-Z0-9\-]+$/, 'Folder Name can only contain alphabets, numbers, and hyphens'),
+            .matches(/^[a-zA-Z0-9\- ]+$/, 'Folder Name can only contain alphabets, numbers, hyphens, and spaces'),
     });
 
     const fileValidationSchema = Yup.object().shape({
@@ -51,15 +52,21 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
         validateOnBlur: true,
         onSubmit: async (values, action) => {
             setTouched({}, false);
-            if (modalType === 'folder' && id) {
+            console.log(values, "folder valuies")
+            if (modalType === 'folder') {
                 if (id) {
+                    console.log(values, "folder valuies")
                     const data = documentList.find((document) => document.folderId === id);
                     dispatch(updateDocument(data._id, values.folderName));
                 } else {
-                    dispatch(addDocuments(values));
+                    console.log(values, "folder valuiesasdasd")
+                    const folderData ={
+                        folderName : handleExtraSpaces(values.folderName)
+                    }
+                    dispatch(addDocuments(folderData));
                 }
             } else {
-                // File upload handling
+                // File upload handling 
                 const formData = new FormData();
                 formData.append('files', file)
                 formData.append('folderId', folderId)

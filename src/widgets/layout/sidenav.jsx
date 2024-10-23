@@ -18,6 +18,7 @@ import {
   RectangleStackIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ChartBarIcon
 } from "@heroicons/react/24/solid";
 import { FaUserGroup } from "react-icons/fa6";
 import { BiSolidOffer } from "react-icons/bi";
@@ -93,12 +94,64 @@ export function Sidenav({ brandImg, brandName, routes }) {
                   className="flex items-center gap-4 px-4 capitalize"
                   fullWidth
                 >
+                  <ChartBarIcon {...icon} />
+                  <Typography
+                    color="inherit"
+                    className="font-medium text-sm capitalize "
+                  >
+                    Analytics
+                  </Typography>
+                </Button>
+              )}
+            </NavLink>
+          </li>
+          <li key={name}>
+            <NavLink to={`/dashboard/admin/roles`}>
+              {({ isActive }) => (
+                <Button
+                  variant={isActive ? "gradient" : "text"}
+                  color={
+                    isActive
+                      ? sidenavColor
+                      : sidenavType === "dark"
+                        ? "white"
+                        : "blue-gray"
+                  }
+                  className="flex items-center gap-4 px-4 capitalize"
+                  fullWidth
+                >
                   <HomeIcon {...icon} />
                   <Typography
                     color="inherit"
                     className="font-medium text-sm capitalize "
                   >
-                    Home
+                    Roles
+                  </Typography>
+                </Button>
+              )}
+            </NavLink>
+          </li>
+          <li key={name}>
+            <NavLink to={`/dashboard/admin/teams`}>
+              {({ isActive }) => (
+                <Button
+                  variant={isActive ? "gradient" : "text"}
+                  color={
+                    isActive
+                      ? sidenavColor
+                      : sidenavType === "dark"
+                        ? "white"
+                        : "blue-gray"
+                  }
+                  className="flex items-center gap-4 px-4 capitalize"
+                  fullWidth
+                >
+                  <HomeIcon {...icon} />
+                  <Typography
+                    color="inherit"
+                    className="font-medium text-sm capitalize "
+                  >
+                    Teams
                   </Typography>
                 </Button>
               )}
@@ -448,6 +501,16 @@ export function Sidenav({ brandImg, brandName, routes }) {
                       Form Elements
                     </ListItem>
                   </NavLink>
+                  
+
+                  {/* <NavLink to={'/dashboard/admin/masterSettings/sub-inputs'}>
+                    <ListItem selected={isActive('/dashboard/admin/masterSettings/sub-inputs')}>
+                      <ListItemPrefix>
+                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                      </ListItemPrefix>
+                      Sub Inputs
+                    </ListItem>
+                  </NavLink> */}
 
 
                   <NavLink to={'/dashboard/admin/masterSettings/attributes'}>

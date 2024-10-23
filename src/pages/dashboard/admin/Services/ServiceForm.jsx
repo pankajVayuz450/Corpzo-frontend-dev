@@ -3,28 +3,21 @@ import {
   Input,
   Spinner,
   Typography,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
   Button,
   Textarea,
 } from '@material-tailwind/react'
 import Select from 'react-select';
 import { Checkbox } from "@material-tailwind/react";
-import { Radio } from "@material-tailwind/react"
 import TitleComponent from '@/components/common/TitleComponent';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
-import { setDateMin } from '@/Helpers/globalfunctions';
 import { validationSchema } from './ValidationSchema';
 import { addsService, editService, getAllActiveCategories, getAllActiveSubCategories, getAllForms, getAllServices, uploadVideo } from '@/redux/admin/actions/Services';
 import { TailSpin } from 'react-loader-spinner';
 import { validateNumber, handleExtraSpaces } from '@/Helpers/globalfunctions';
 import { updateVideoUrl } from '@/redux/admin/slices/Service';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
-import { VideoModal } from '@/components/common/VideoModal';
 import StepperWithContent from './StepForm';
 import HeaderTitle from '@/components/common/HeaderTitle';
 
@@ -86,9 +79,6 @@ const ServiceForm = () => {
     validateOnBlur: true,
     onSubmit: async (values, action) => {
       setTouched({}, false);
-      // if (isOneTime) {
-      //   setFieldValue('cost', 0);
-      // }
       const data = {
         name: handleExtraSpaces(values.name),
         details: handleExtraSpaces(values.details),
@@ -206,7 +196,17 @@ const ServiceForm = () => {
     setErrors({}); // Clear errors when updating form fields
   }, [id, service, setFieldValue, dispatch]);
 
+  useEffect(() => {
+    const unloadCallback = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    };
 
+    window.addEventListener("beforeunload", unloadCallback);
+    return () => window.removeEventListener("beforeunload", unloadCallback);
+  }, []);
+  
   useEffect(() => {
     if (id) {
       dispatch(getAllServices(1, 1, "", id))
@@ -225,20 +225,6 @@ const ServiceForm = () => {
     dispatch(getAllActiveSubCategories(selectedCategory.categoryId))
   };
 
-  useEffect(() => {
-    if (!uploadVideoLoading) {
-      if (modalType === 'delivrable' && delivrableVideoUrl) {
-        console.log(modalType, "Deliverable video URL after upload");
-        setFieldValue('delivrableVideoUrl', delivrableVideoUrl, true);
-      } else if (modalType === 'steps' && stepsVideoUrl) {
-        console.log(stepsVideoUrl, "Steps video URL after upload");
-        setFieldValue('stepsVideoUrl', stepsVideoUrl, true);
-      } else if (modalType === 'document' && documentVideoUrl) {
-        console.log(documentVideoUrl, "Document video URL after upload");
-        setFieldValue('documentVideoUrl', documentVideoUrl, true);
-      }
-    }
-  }, [uploadVideoLoading, delivrableVideoUrl, stepsVideoUrl, documentVideoUrl]);
   const handleCheckboxChange = (event) => {
     const isChecked = event.target.checked;
     setIsOneTime(isChecked);
@@ -254,12 +240,7 @@ const ServiceForm = () => {
     dispatch(uploadVideo(formData, type));
     
   };
-  // useEffect(() => {
-  //   if (!uploadVideoLoading) {
-  //     setModalType(modalType);
-  //     setOpen(false); // Close modal when loading is false
-  //   }
-  // }, [uploadVideoLoading]);
+  
   const handleSelectChange = (selectedOption) => {
     setFieldValue('formId', selectedOption ? selectedOption.value : '');
   };
@@ -464,51 +445,7 @@ const ServiceForm = () => {
                   </select>
                   {errors.duration && touched.duration && <p className='text-sm text-red-500'>{errors.duration}</p>}
                 </div>
-                {/* <div className='flex flex-row items-baseline'>
-                      <div className=''>
-
-                        <Typography variant="small" color="blue-gray" className=" font-medium">
-                          Is One Time
-                        </Typography>
-                        <Checkbox
-                          checked={isOneTime}
-                          onChange={handleCheckboxChange}
-                          className=""
-                        />
-                        {errors.documentVideoUrl && touched.documentVideoUrl && (
-                          <p className='text-sm text-red-500 ml-2'>
-                            {errors.documentVideoUrl}
-                          </p>
-                        )}
-                      </div>
-                      {isOneTime && (
-                        <div className='flex items flex-grow'>
-                          <Typography variant="small" color="blue-gray" className="mb-1 font-medium">
-                            Cost
-                          </Typography>
-                          <Input
-                            size="sm"
-                            placeholder="Enter Cost"
-                            className="!border-t-blue-gray-200 focus:!border-t-gray-900 w-full ml-2"
-                            labelProps={{
-                              className: "before:content-none after:content-none",
-                            }}
-                            onKeyDown={(e) => validateNumber(e)}
-                            maxLength={5}
-                            name='cost'
-                            value={values.cost}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                          />
-                          {errors.cost && touched.cost && (
-                            <p className='text-sm text-red-500 ml-2'>
-                              {errors.cost}
-                            </p>
-                          )}
-                        </div>
-                      )}
-
-                    </div> */}
+      
                 <div className='flex flex-row items-baseline'>
                   <div>
                     <Typography variant="small" color="blue-gray" className="font-medium">

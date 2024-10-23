@@ -4,7 +4,11 @@ import {
   Option,
   Select,
   Button,
-  Switch
+  Switch,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList
 } from "@material-tailwind/react";
 import { useDispatch, useSelector } from 'react-redux';
 import TableShimmer from '@/components/common/TableShimmer';
@@ -15,6 +19,7 @@ import { formatReadableDate, throttle } from '@/Helpers/globalfunctions';
 import { NavLink, useSearchParams } from 'react-router-dom';
 import { getAllDocuments } from '@/redux/admin/actions/Document';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import { BsThreeDotsVertical } from 'react-icons/bs'; 
 
 const DocumentManagement = () => {
   const [openFile, setOpenFile] = useState(false);   // For file modal
@@ -136,28 +141,28 @@ const DocumentManagement = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                         </td>
-                        {/* <td className="h-full">
-                          <div className="flex justify-start items-center h-full">
-                            <span className="inline-flex text-xs leading-5 font-semibold">
-                              <Switch checked={form.active} onChange={() => handleStatus(form)} />
-                            </span>
-                          </div>
-                        </td> */}
                         <td className="px-6 py-4">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={form.folderId ? () => handleFolderModal(form.folderId) : () => handleFileModal(form.fileId)}
-                              className="text-blue-500 hover:text-blue-700"
-                            >
+                         
+                           <Menu>
+                          <MenuHandler>
+                            <Button className="p-0 shadow-none bg-white text-black hover:text-gray-700">
+                              <BsThreeDotsVertical size={20} />
+                            </Button>
+                          </MenuHandler>
+                          <MenuList>
+                            <MenuItem onClick={form.folderId ? () => handleFolderModal(form.folderId) : () => handleFileModal(form.fileId)}>
                               Edit
-                            </button>
-                            {form._id && 
-                              <button className="text-blue-500 hover:text-blue-700" onClick={() => handleFileUploadFOrDoc(form._id)}>add document</button>
-                            }
-                            <NavLink className="text-blue-500 hover:text-blue-700" to={`/dashboard/admin/document-management/documents/${form._id}`}>
-                              view documents
-                            </NavLink>
-                          </div>
+                            </MenuItem>
+                            <MenuItem onClick={() => handleFileUploadFOrDoc(form._id)}>
+                              Add Document
+                            </MenuItem>
+                            <MenuItem>
+                              <NavLink to={`/dashboard/admin/document-management/documents/${form._id}`}>
+                                View Documents
+                              </NavLink>
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
                         </td>
                       </tr>
                     ))}

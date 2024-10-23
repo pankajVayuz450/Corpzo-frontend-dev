@@ -3,23 +3,29 @@ import {
     Checkbox,
     Spinner,
 } from "@material-tailwind/react";
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import TitleComponent from '@/components/common/TitleComponent';
 import TableShimmer from '@/components/common/TableShimmer';
 import {  addServiceFaq, getServiceFaqs } from "@/redux/admin/actions/FAQ";
+import HeaderTitle from "@/components/common/HeaderTitle";
+import Breadcrumb from "@/widgets/layout/TopNavigation";
 const ServiceFaqs = () => {
 
+
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [selectedIds, setSelectedIds] = useState([]);
     const { serviceId } = useParams()
     const [selectAll, setSelectAll] = useState(false); // Add state for "Select All"
     const { serviceFaqs, isFetching, isAdding } = useSelector((state) => state.faq)
 
+
     // Fetch service faqs based on service Id
     useEffect(() => {
         dispatch(getServiceFaqs(serviceId));
     }, [dispatch]);
+
 
     useEffect(() => {
         if (serviceFaqs && serviceFaqs.length > 0) {
@@ -29,6 +35,7 @@ const ServiceFaqs = () => {
             setSelectedIds(selected);
         }
     }, [serviceFaqs]);
+
 
     const handleCheckboxChange = (faqId) => {
         if (selectedIds.includes(faqId)) {
@@ -40,42 +47,63 @@ const ServiceFaqs = () => {
         }
     };
 
-    // const handleSelectAll = () => {
-    //     if (selectAll) {
-    //         setSelectedIds([]); // Deselect all
-    //     } else {
-    //         const allIds = serviceFaqs.map(faq => faq._id); // Select all
-    //         setSelectedIds(allIds);
-    //     }
-    //     setSelectAll(!selectAll); // Toggle "Select All" state
-    // };
 
     const handleSelectAll = () => {
         if (selectAll) {
-            const previouslySelected = serviceFaqs
-                .filter(faq => faq.is_faq_added)
-                .map(faq => faq._id);
-            setSelectedIds(previouslySelected); 
+            setSelectedIds([]); // Deselect all
         } else {
-            const allIds = serviceFaqs.map(faq => faq._id);
-            setSelectedIds([...new Set([...selectedIds, ...allIds])]); 
+            const allIds = serviceFaqs.map(faq => faq._id); // Select all
+            setSelectedIds(allIds);
         }
-        setSelectAll(!selectAll); 
+        setSelectAll(!selectAll); // Toggle "Select All" state
     };
 
+
+    // const handleSelectAll = () => {
+    //     if (selectAll) {
+    //         const previouslySelected = serviceFaqs
+    //             .filter(faq => faq.is_faq_added)
+    //             .map(faq => faq._id);
+    //         setSelectedIds(previouslySelected);
+    //     } else {
+    //         const allIds = serviceFaqs.map(faq => faq._id);
+    //         setSelectedIds([...new Set([...selectedIds, ...allIds])]);
+    //     }
+    //     setSelectAll(!selectAll);
+    // };
+
+
+    useEffect(() => {
+        if (serviceFaqs.length > 0 && selectedIds.length === serviceFaqs.length) {
+            setSelectAll(true);
+        } else {
+            setSelectAll(false);
+        }
+    }, [selectedIds, serviceFaqs]);
+   
     const onSubmitChecked = () => {
         const faqData = {
             serviceId: serviceId,
             faqIdArray: selectedIds
         }
-        dispatch(addServiceFaq(faqData));
+        dispatch(addServiceFaq(faqData, navigate));
         console.log(faqData, "selected faqs ka data")
     }
+    const breadcrumbData = [
+        {
+   
+          name: 'Service FAQs',
+        }
+      ];
     return (
-        <div className='w-full h-full'>
+        <>
             <TitleComponent title={"CORPZO | Service FAQs"}></TitleComponent>
+            <HeaderTitle title="Service FAQs"/>
+            <Breadcrumb items={breadcrumbData}/>
+            <div className='w-full h-full mt-4'>
             <div className='flex gap-4 justify-between items-center w-full'>
             </div>
+
 
             {isFetching ? (
                 <TableShimmer />
@@ -100,14 +128,15 @@ const ServiceFaqs = () => {
                                         />
                                     </div>
 
+
                                 ))}
                             </div>
                             <div className="w-full flex justify-end mb-4">
                                 <button
                                     onClick={onSubmitChecked}
                                     disabled={isAdding}
-                                    className={`bg-blue-500 text-white font-bold mt-2 py-2 px-4 rounded-md 
-    hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                                    className={`bg-blue-500 text-white font-bold mt-2 py-2 px-4 rounded-md
+    hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
     focus:ring-opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed`}>
                                     {isAdding ? (
                                         <div className='flex justify-center items-center gap-3'>
@@ -119,6 +148,7 @@ const ServiceFaqs = () => {
                                     )}
                                 </button>
 
+
                             </div>
                         </div>
                     ) : (
@@ -129,8 +159,14 @@ const ServiceFaqs = () => {
                 </div>
             )}
         </div>
+        </>
     );
+
 
 };
 
+
 export default ServiceFaqs;
+
+
+

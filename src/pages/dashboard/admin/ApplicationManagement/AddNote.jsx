@@ -2,19 +2,21 @@ import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'; // Import Yup for validation
 import ReusableForm from '@/components/admin/ReusableForm';
-import { addNoteAndField } from '@/redux/admin/actions/ApplicationManagement';
+import { addCaseHistory, addNoteAndField } from '@/redux/admin/actions/ApplicationManagement';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDataByApplicationId } from './helper';
 import { formatReadableDate } from '@/Helpers/globalfunctions';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import TitleComponent from '@/components/common/TitleComponent';
+import { useNavigate } from 'react-router-dom';
 
 
 const AddNote = () => {
-  const { applicationsList, totalCount, isFetching, applicationId } = useSelector((state) => state.applications)
+  const { applicationsList,userId, totalCount, isFetching, applicationId } = useSelector((state) => state.applications)
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
 
   const userData = getUserDataByApplicationId(applicationsList, applicationId);
@@ -32,12 +34,23 @@ const AddNote = () => {
     }),
     onSubmit: (values) => {
       // alert(`Add button clicked! Note: ${values.note}`);
-
-      dispatch(addNoteAndField({
+      const noteData={
         "applicationId": applicationId,
         // "cloneFormFieldId":"66ea796bb807a921aa3b8c84",
         "noteContent": values.note
-      }));
+      }
+
+      dispatch(addNoteAndField(noteData,navigate));
+
+
+      dispatch(addCaseHistory({
+        "applicationId": applicationId,
+        "action": ` Team note added. `,
+        "performedBy": userId,
+        //   "reason": "document ",
+        // "statusBefore": status,
+        // "statusAfter": value
+    }));
 
 
       // Here you can handle the submission logic
@@ -76,8 +89,8 @@ const AddNote = () => {
 
     <>
       <Breadcrumb items={breadcrumbData}/>
-      <TitleComponent title={"CORPZO |Field Name Note"} />
-      <HeaderTitle title="Field Name Note" />
+      <TitleComponent title={"CORPZO |Team Note"} />
+      <HeaderTitle title="Add Team Note" />
       <ReusableForm
       headingText="Team Note"
       nameText={`Name: ${userData?.name}`}

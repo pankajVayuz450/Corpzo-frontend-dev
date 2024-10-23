@@ -9,6 +9,7 @@ import { getActiveAgent, getApplicationForm } from '@/redux/admin/actions/Applic
 import LoadingPage from '@/components/common/LoadingPage';
 import { formatDate, formatReadableDate } from '@/Helpers/globalfunctions';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
 
 
 const CreateApplication = () => {
@@ -61,9 +62,14 @@ const CreateApplication = () => {
 
 
           {isFetching?<LoadingPage/>:applicationFormData?.length > 0 ?(<FormRenderer formData={applicationFormData} caseId={userApplicationData2[0]?.caseId|| 'No Case ID'} amount={userApplicationData2[0]?.amount} startDate={formatDate(userApplicationData2[0]?.startDate)} agentData={agentList || []} />):(
-              <div className="flex justify-center items-center h-screen">
-                <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
-              </div>
+             <>
+             <HeaderTitle title="Application Form" />
+             <div className="flex justify-center items-center h-screen">
+              
+              <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
+            </div>
+
+             </>
             )}
 
         </div>

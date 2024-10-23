@@ -91,7 +91,10 @@ export const adminSlice = createSlice({
       handleSignOut:(state, action)=>{
         localStorage.removeItem("authToken");
         localStorage.removeItem("role")
-      }
+      }, 
+      resenOtp : (state, action)=>{
+        state.isOtp = null;
+      },
   },
   extraReducers: (builder) => {
     builder
@@ -144,6 +147,6 @@ export const adminSlice = createSlice({
   },
 });
 
-export const { setUser, clearUser, handleError, handleOtp, handleLoading, handleSignOut } = adminSlice.actions;
+export const { setUser, clearUser,resenOtp,  handleError, handleOtp, handleLoading, handleSignOut } = adminSlice.actions;
 
 export default adminSlice.reducer;

@@ -122,12 +122,27 @@ const AddSubscriptions = () => {
     maxlength: { maxLength: MAX_EDITOR_LENGTH }, // Custom maxlength module
   }), []);
 
+  const breadcrumbData = [
+    {
+
+      name: 'Subscription Management',
+      url: `/dashboard/admin/subscriptions/${serviceId}`,
+      children: [
+        {
+          name: id ? 'Update Subscription' : 'Create Subscription',
+          url: id
+            ? ''
+            : '',
+        },
+      ],
+    }
+  ];
   return (
     <>
-    <div className='relative'>
-      <TitleComponent title={id ? "CORPZO | Edit Subscription" : "CORPZO | Create Subscription"} />
-     
-      <h1 className="text-xl md:text-3xl font-semibold mb-4">{id !== undefined ? "Edit Subscription" : "Create Subscription"}</h1>
+      <TitleComponent title={id ? "CORPZO | Update Subscription" : "CORPZO | Create Subscription"} />
+      <HeaderTitle title={id ? 'Update Subscription' : 'Create Subscription'}/>
+      <Breadcrumb items={breadcrumbData} />
+    <div className='relative mt-4'>
       {
         id !== undefined && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">

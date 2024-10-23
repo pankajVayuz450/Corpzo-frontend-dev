@@ -2,7 +2,7 @@ import OfferApis from '@/constants/APIList/offerAPIs';
 import serviceAPIs from '@/constants/APIList/ServiceAPIs';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getServices, updateLoading, getActiveCategoryList, getServiceById, updateUploadLoading, getActiveSubCategoryList, getForms, updateAdding, updateVideoUrl, updateStatusLoading, updateStatusState, getActiveSubCategoryListAll, getActiveBusinessEmail1, updateContent, updateHeader } from "../../slices/Service"
+import { getServices, updateLoading, getActiveCategoryList, getServiceById, updateUploadLoading, getActiveSubCategoryList, getForms, updateAdding, updateVideoUrl, updateStatusLoading, updateStatusState, getActiveSubCategoryListAll, getActiveBusinessEmail1, updateContent, updateHeader, getActiveSelectedSubCategoryListAll } from "../../slices/Service"
 const authToken = localStorage.getItem('authToken');
 
 export const getAllServices = (limit = 10, page = 1, search = "", id) => {
@@ -167,6 +167,36 @@ export const getAllActiveSubCategoriesAll = (categoryId) => {
                 dispatch(getActiveSubCategoryListAll({
                     activeSubCategoriesList: response.data.data || [],
                 }));
+            }
+        } catch (error) {
+            console.error('Error fetching subcategories:', error);
+            // toast.error(error.response.data.error)
+
+        } finally {
+
+            dispatch(updateLoading(false));
+
+        }
+    };
+};
+
+export const getAllActiveSelectedSubCategories = () => {
+    
+    return async (dispatch) => {
+
+        try {
+
+            let api = `${serviceAPIs.getActiveSelectedSubCategoriesAll}`
+
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            if (response.status === 200) {
+                dispatch(getActiveSubCategoryListAll(
+                    {activeSubCategoriesList:response.data.data || []} 
+                ));
             }
         } catch (error) {
             console.error('Error fetching subcategories:', error);

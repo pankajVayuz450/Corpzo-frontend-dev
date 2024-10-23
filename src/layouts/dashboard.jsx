@@ -5,10 +5,11 @@ import { Sidenav, DashboardNavbar, Configurator, Footer } from "@/widgets/layout
 import dashboardRoutes from "@/routes";
 import { useMaterialTailwindController, setOpenConfigurator } from "@/context";
 import { toast } from "react-toastify";
-import { handleSignOut } from "@/redux/admin/slices/adminSlice";
+import { handleOtp, handleSignOut, resenOtp } from "@/redux/admin/slices/adminSlice";
 import { useDispatch } from "react-redux";
 import { Spinner } from "@material-tailwind/react";
 import { Suspense } from "react";
+import TopBarProgress from "react-topbar-progress-indicator"
 export function Dashboard() {
   
   const navigate = useNavigate();
@@ -18,11 +19,21 @@ export function Dashboard() {
   const dashboardsRoutes = dashboardRoutes.find(route => route.path === "/dashboard").children;
   const filteredRoutes = dashboardsRoutes.filter(route => route.showInSidebar);
 
-  const SignOut = () => {
-    dispatchRedux(handleSignOut())
+  const SignOut = () => { 
+    dispatchRedux(handleOtp(false))
+    dispatchRedux(resenOtp())
+
     navigate("/auth/sign-in");
      toast.success('You have been logged out.');
   };
+
+  TopBarProgress.config({
+    barColors: {
+      "0": "#2294B1",
+      "1.0": "#2294B1"
+    },
+    shadowBlur: 5
+  });
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">
@@ -34,7 +45,7 @@ export function Dashboard() {
       />
       <div className="p-6 xl:ml-80">
         <DashboardNavbar onSignOut={SignOut} />
-        <Suspense fallback={<Spinner/>}>
+        <Suspense fallback={<TopBarProgress/>}>
         <Outlet /> 
         </Suspense>
         <div className="text-blue-gray-600">

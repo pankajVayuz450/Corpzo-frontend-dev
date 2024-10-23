@@ -3,19 +3,21 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCoupon, getAllCoupons, updateCoupon } from '@/redux/admin/actions/coupon';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { TailSpin } from 'react-loader-spinner';
 import { Switch, Typography } from '@material-tailwind/react';
-import { getActiveBusinessEmail, getAllActiveCategories, getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
+import { getActiveBusinessEmail, getAllActiveCategories, getAllActiveSelectedSubCategories, getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
 import Select from 'react-select';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import LoadingPage from '@/components/common/LoadingPage';
 
 const CouponForm = () => {
   const { id } = useParams();
-  const { couponsList, isCouponCreating, isCouponUpdating } = useSelector((state) => state.coupons);
+  const { couponsList, isCouponCreating, isCouponUpdating,isCouponsFetching } = useSelector((state) => state.coupons);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [searchParams] = useSearchParams();
 
 
   const { activeCategories, activeSubCategoriesList, getActiveBusinessEmailList } = useSelector((state) => state.service)
@@ -31,7 +33,7 @@ const CouponForm = () => {
   }));
 
   const formattedActiveSubCategoryList = activeSubCategoriesList.map(subCategory => ({
-    value: subCategory._id,
+    value: subCategory.subCategoryId,
     label: subCategory.subSectionTitle
   }));
   const formattedActiveBusinessEmail = getActiveBusinessEmailList.map(user => ({
@@ -41,19 +43,27 @@ const CouponForm = () => {
 
   // let selectedCoupon = couponsList.find(coupon => coupon.couponId === id)
 
+  const page = searchParams.get('page') || 1;
+  const limit = searchParams.get('limit') || 10
+  const search = searchParams.get('search') || "";
 
   useEffect(() => {
     dispatch(getAllActiveCategories(true))
+    dispatch(getAllActiveSelectedSubCategories())
+
     dispatch(getActiveBusinessEmail());
+    
     if (id) {
+      dispatch(getAllCoupons({couponId:id,page: page, limit: limit, search: search  }));
       const foundCoupon = couponsList.find(coupon => coupon.couponId === id);
       if (foundCoupon) {
         setSelectedCoupon(foundCoupon);
+        console.log("values from update coupon",foundCoupon)
       } else {
         dispatch(getAllCoupons({ page: 1, limit: 10, couponId: id, search: "" }));
       }
     }
-  }, [id]);
+  }, [id,couponsList.length==0]);
 
 
   const validationSchema = Yup.object({
@@ -83,7 +93,7 @@ const CouponForm = () => {
   const handleSubmit = (values, { setSubmitting, resetForm }) => {
     console.log("handle submit called ")
     if (id) {
-      console.log(values, "values from update")
+   
       const newCoupon = {
         couponTitle: values.couponTitle,
         discount: values.discount,
@@ -150,7 +160,8 @@ const CouponForm = () => {
 
   return (
     <>
-      <Breadcrumb items={breadcrumbData} />
+    {isCouponsFetching?(<LoadingPage/>):( <div>
+    <Breadcrumb items={breadcrumbData} />
       <HeaderTitle title={id ? "Update Coupon" : "Create Coupon"} />
       <div className="p-6 bg-white shadow-md rounded-lg">
 
@@ -193,7 +204,7 @@ const CouponForm = () => {
                   type="number"
                   name="discount"
                   id="discount"
-                  max="999"
+                  max="999" 
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                 />
                 <ErrorMessage name="discount" component="div" className="text-red-500 text-sm mt-1" />
@@ -248,8 +259,9 @@ const CouponForm = () => {
                   value={formattedActiveSubCategoryList?.filter(option => values?.subCategoryId?.includes(option?.value))}
                   onChange={(selectedOptions) => {
                     const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                    console.log("check the sub cetegory value ..........", selectedValues)
+                   
                     setFieldValue("subCategoryId", selectedValues);
+                   
                   }}
                   onBlur={() => setFieldTouched('subCategoryId', true)}
                 />
@@ -326,6 +338,9 @@ const CouponForm = () => {
           )}
         </Formik>
       </div>
+    </div>)}
+   
+     
     </>
   );
 };

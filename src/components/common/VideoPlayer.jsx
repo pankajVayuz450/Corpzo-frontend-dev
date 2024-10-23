@@ -1,4 +1,4 @@
-import { Button } from '@material-tailwind/react';
+import { Button, Spinner } from '@material-tailwind/react';
 import React, { useState, useEffect } from 'react'
 
 const VideoPlayer = ({ open, handleOpen, title, handleConfirm, url, loading, buttonContent, onFileChange }) => {

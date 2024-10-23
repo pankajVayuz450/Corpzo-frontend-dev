@@ -2,7 +2,7 @@ import userAPIs from "@/constants/APIList/userAPIs";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { updateStatusState, updateStatusLoading } from "../../slices/UserManagement";
+import { updateStatusState,updateBusinessFetching,updateServiceFetching, updateStatusLoading,getUserServicesReducer, getBusinessDetails } from "../../slices/UserManagement";
 
 const BASE_URL = process.env.VITE_BASE_URL;
 
@@ -121,3 +121,57 @@ export const updateStatus = (subCategoryId, data, navigate) => {
     }
 }
 
+export const getAllBusiness = (limit = 10, page = 1, search = "", userId) => {
+    console.log(userId, "useriddddd")
+    return async (dispatch) => {
+        try {
+            dispatch(updateBusinessFetching(true));
+            let api = `${userAPIs.getBusinessDetails}?limit=${limit}&page=${page}&userId=${userId}`
+
+            if (search !== "") {
+                api += `&query=${search}`
+            }
+
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+            console.log(response, "Business details")
+            if (response.status == 200) {
+                dispatch(getBusinessDetails({
+                    businessDetails : response.data.data,
+                }))
+              dispatch(updateBusinessFetching(false));
+            }
+        } catch (error) {
+            dispatch(updateBusinessFetching(false));
+
+        }
+    }
+}
+export const getUserServices = () => {
+    // console.log(userId, "useriddddd")
+    return async (dispatch) => {
+        try {
+            dispatch(updateServiceFetching(true));
+            let api = `${userAPIs.getAllUserServices}?serviceId=6712048dac6accac564de739`
+
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+            console.log(response, "service details details")
+            if (response.status == 200) {
+                dispatch(getUserServicesReducer({
+                    userSteps : response.data.data,
+                }))
+                dispatch(updateServiceFetching(false));
+            }
+        } catch (error) {
+            dispatch(updateServiceFetching(false));
+
+        }
+    }
+}

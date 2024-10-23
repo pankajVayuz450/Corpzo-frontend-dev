@@ -14,6 +14,7 @@ const initialState = {
   activeCategories: [],
   activeSubCategories: [],
   activeSubCategoriesList: [],
+  activeSelectedSubCategoriesList:[],
   getActiveBusinessEmailList: [],
   forms: [],
   delivrableVideoUrl: "",
@@ -47,6 +48,9 @@ const serivceSlice = createSlice({
     },
     getActiveSubCategoryListAll: (state, action) => {
       state.activeSubCategoriesList = action.payload.activeSubCategoriesList;
+    },
+    getActiveSelectedSubCategoryListAll: (state, action) => {
+      state.activeSelectedSubCategoriesList = action.payload;
     },
     getActiveBusinessEmail1: (state, action) => {
       state.getActiveBusinessEmailList = action.payload.getActiveBusinessEmailList;
@@ -121,6 +125,6 @@ const serivceSlice = createSlice({
     }
   },
 });
-export const { getServices, updateUploadLoading,updateHeader,handleStepValue, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1 } = serivceSlice.actions;
+export const { getServices, updateUploadLoading,updateHeader,handleStepValue, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1,getActiveSelectedSubCategoryListAll } = serivceSlice.actions;
 
 export default serivceSlice.reducer;

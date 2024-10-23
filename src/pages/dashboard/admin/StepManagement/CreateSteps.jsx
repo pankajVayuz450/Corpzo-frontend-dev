@@ -14,6 +14,8 @@ import TitleComponent from '@/components/common/TitleComponent';
 import { validationSchema } from './validationSchema';
 import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 import { addSteps, editStep, getAllSteps, getSingleStep, } from '@/redux/admin/actions/Steps';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 const initialValues = {
   serviceId: "66e17336b029b506bdd35f34",
   details: ""
@@ -53,16 +55,16 @@ const CreateSteps = () => {
       }
       if (id !== undefined) {
 
-        dispatch(editStep(id, data, navigate));
+        dispatch(editStep(id, data, serviceId,navigate));
       } else {
-        dispatch(addSteps(data, navigate));
+        dispatch(addSteps(data,serviceId, navigate));
       }
       setErrors({});
     },
   });
   useEffect(() => {
     if (id !== undefined) {
-      dispatch(getAllSteps(id))
+      dispatch(getAllSteps(undefined, id))
     }
   }, [])
   useEffect(() => {
@@ -76,11 +78,30 @@ const CreateSteps = () => {
 
 
   }, [data, setFieldValue])
+  const breadcrumbData = [
+    {
 
+      name: 'Step Management',
+      url: `dashboard/admin/steps/${serviceId}`,
+      children: [
+        {
+          name: id ? 'Update Step' : 'Create Step',
+          url: id
+            ? ''
+            : '/dashboard/admin/services/create-service',
+        },
+      ],
+    }
+  ];
+  
   return (
-    <div className='relative'>
+    <>
+    
       <TitleComponent title={id ?"CORPZO | Update Step" :  "CORPZO | Create Step"} />
-      <h1 className="text-xl md:text-3xl font-semibold mb-4">{id !== undefined ? "Update Step" : "Create Step"}</h1>
+      <HeaderTitle title={id ?" Update Step" :  "Create Step"}/>
+      <Breadcrumb items={breadcrumbData}/>
+    <div className='relative'>
+
       {
         id !== undefined && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">
@@ -123,6 +144,7 @@ const CreateSteps = () => {
         )
       }
     </div>
+    </>
   )
 }
 

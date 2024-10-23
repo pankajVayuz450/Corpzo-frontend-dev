@@ -9,6 +9,7 @@ import subAdminReducer from './admin/slices/subAdmin';
 import couponSliceReducer from './admin/slices/coupon'
 import attributesSliceReducer from './admin/slices/MasterSettings/Attributes/index'
 import elementSliceReducer from './admin/slices/MasterSettings/Elements/index'
+import subInputSliceReducer from './admin/slices/MasterSettings/SubInputs/index'
 import regexSliceReducer from './admin/slices/MasterSettings/Regex/index'
 import validFormElementsSliceReducer from './admin/slices/MasterSettings/Valid Form Elements/index'
 import validFormAttributesSliceReducer from './admin/slices/MasterSettings/Valid Form Attributes/index'
@@ -27,6 +28,8 @@ import serivceReducer from "./admin/slices/Service"
 import videoReducer from "./admin/slices/VIdeoIntroSlice"
 import logger from 'redux-logger'; // Import redux-logger
 import documentReducer from './admin/slices/Document'
+import roleReducer from "./admin/slices/rolesSlice"
+import teamReducer from "./admin/slices/teamsSlice"
 
 
 const customMiddleware = store => next => action => {
@@ -46,6 +49,7 @@ export const store = configureStore({
     data: dataSliceReducer,
     attributes:attributesSliceReducer,
     elements:elementSliceReducer,
+    subInput: subInputSliceReducer,
     validFormElements:validFormElementsSliceReducer,
     validFormElementAttributes:validFormAttributesSliceReducer,
     validations:regexSliceReducer,
@@ -63,6 +67,8 @@ export const store = configureStore({
     service : serivceReducer,
     video : videoReducer, 
     document : documentReducer, 
+    role: roleReducer,
+    team: teamReducer
   },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware().concat(customMiddleware, logger)

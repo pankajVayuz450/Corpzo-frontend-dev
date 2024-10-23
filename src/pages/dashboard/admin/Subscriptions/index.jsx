@@ -15,6 +15,8 @@ import { MdClear } from "react-icons/md";
 import { throttle } from '@/Helpers/globalfunctions';
 import { updateEditPage } from '@/redux/admin/slices/MasterSettings/DepartmentSlice/departmentSlice';
 import { getAllSubscriptions, updateStatus } from '@/redux/admin/actions/Subscriptions';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 const Subscriptions = () => {
 
   const dispatch = useDispatch();
@@ -106,9 +108,18 @@ const Subscriptions = () => {
     throttledSearch();
   };
 
+  const breadcrumbData = [
+    {
+          name: 'Subscription Management',
+    }
+  ];
   return (
-    <div className='w-full h-full'>
-      <TitleComponent title={"CORPZO | Subscriptions"}></TitleComponent>
+    <>
+    <TitleComponent title={"CORPZO | Subscriptions"}></TitleComponent>
+    <HeaderTitle title="Subscription Management" totalCount={totalCount}/>
+    <Breadcrumb items={breadcrumbData}/>
+    <div className='w-full h-full mt-4'>
+      
       <div className='flex gap-4 justify-between items-center w-full mb-4'>
         <NavLink to={`/dashboard/admin/subscriptions/create-subscription/${serviceId}`} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Create Subscription
@@ -186,6 +197,7 @@ const Subscriptions = () => {
      
 
     </div>
+    </>
   );
 };
 

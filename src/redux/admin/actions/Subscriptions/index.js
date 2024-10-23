@@ -25,9 +25,10 @@ export const getAllSubscriptions = (limit = 10, page = 1, search = "", id) => {
                 if (id) {
                     dispatch(getSUbscriptionsById(response.data.data[0]))
                 }
+                console.log(response, "subscription data")
                 dispatch(getSubscriptions({
                     subscriptionList: response.data.data || [],
-                    totalCount: response.data.data.totalCount || 0,
+                    totalCount: response.data.totalCount || 0,
                 }))
                 dispatch(updateLoading(false))
 

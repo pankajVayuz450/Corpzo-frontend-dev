@@ -30,7 +30,7 @@ export function SignIn() {
   const isLoading = useSelector((state) => state?.admin?.isLoading);
   const store = useSelector((state) => state?.admin?.user);
   const isOtp = useSelector((state) => state.admin.isOtp)
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(null);
   const [recaptcha, setRecaptchaToken]= useState('');

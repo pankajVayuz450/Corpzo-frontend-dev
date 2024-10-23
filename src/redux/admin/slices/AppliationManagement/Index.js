@@ -10,14 +10,16 @@ const initialState = {
   formId: "",
   userId: "",
   noteList: [],
-  commentLoading:false,
+  commentLoading: false,
   caseHistoryList: [],
   applicationFormData: [],
   isAdding: false,
   totalPages: 0,
   investor: {},
   totalCount: 0,
-  currentStatus:""
+  currentStatus: "",
+  submitLoading: false,
+  activeIndex: 0
 };
 
 
@@ -101,10 +103,10 @@ const applicationSlice = createSlice({
     },
     manageUpdateCommentState: (state, action) => {
       const { noteId, commenterId, commentContent, type } = action.payload; // Destructure the comment details from payload
-    
+
       // Find the index of the note in noteList that matches the given noteId
       const noteIndex = state.noteList.findIndex((note) => note.noteId === noteId);
-    
+
       if (noteIndex !== -1) {
         // If the note is found, push the new comment into the comments array of the found note
         state.noteList[noteIndex].comments.push({
@@ -115,16 +117,39 @@ const applicationSlice = createSlice({
           type: type
         });
       }
-    
+
       console.log(current(state), "Comment added successfully");
     },
-    
+
+    setSubmitLoading: (state, action) => {
+      state.submitLoading = action.payload
+    },
+    setActiveIndex: (state, action) => {
+      state.activeIndex = action.payload
+    }
+
+
+
 
 
   },
 });
 
 
-export const { getApplications, updateLoading, updateStatusState, getSingleApplicationById, getNoteList, getCaseHistoryList, getApplicationsFormData, setApplicationId, setAttributeId, setFormId, setUserId, updateApplicationStatusLoading, manageUpdateStatusState, getAgentList,commentLoading,manageUpdateCommentState,setCurrentStatus } = applicationSlice.actions;
+export const { getApplications,
+  updateLoading,
+  updateStatusState,
+  getSingleApplicationById,
+  getNoteList, getCaseHistoryList
+  , getApplicationsFormData,
+  setApplicationId,
+  setAttributeId,
+  setFormId,
+  setUserId,
+  updateApplicationStatusLoading,
+  manageUpdateStatusState, getAgentList
+  , commentLoading, manageUpdateCommentState
+  , setCurrentStatus, setSubmitLoading,
+  setActiveIndex } = applicationSlice.actions;
 
 export default applicationSlice.reducer;

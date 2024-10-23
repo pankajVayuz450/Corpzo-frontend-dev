@@ -6,7 +6,7 @@ import 'react-vertical-timeline-component/style.min.css';
 import TitleComponent from '@/components/common/TitleComponent';
 import { LuSend } from "react-icons/lu";
 import { useDispatch, useSelector } from 'react-redux';
-import { addNoteComment, getNoteAndComment } from '@/redux/admin/actions/ApplicationManagement';
+import { addCaseHistory, addNoteComment, getNoteAndComment } from '@/redux/admin/actions/ApplicationManagement';
 import { formatDate } from '@/Helpers/globalfunctions';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -42,6 +42,15 @@ const TeamNote = () => {
       "commentContent": values.comment,
       "type": "Team"
     }));
+
+    dispatch(addCaseHistory({
+      "applicationId": applicationId,
+      "action": `Team Note Comment added`,
+      "performedBy": userId,
+      //   "reason": "document ",
+      // "statusBefore": status,
+      // "statusAfter": value
+  }));
     resetForm();
     setSubmitting(false);
   };

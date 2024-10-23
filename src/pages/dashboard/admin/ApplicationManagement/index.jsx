@@ -9,7 +9,7 @@ import { Select, Option } from "@material-tailwind/react";
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import Pagination from '@/components/common/Pagination';
 import DynamicStatusSelect from './DynamicStatusSelect';
-import { setApplicationId, setFormId, setUserId } from '@/redux/admin/slices/AppliationManagement/Index';
+import { setActiveIndex, setApplicationId, setFormId, setUserId } from '@/redux/admin/slices/AppliationManagement/Index';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import HeaderTitle from '@/components/common/HeaderTitle';
 
@@ -19,7 +19,7 @@ const ApplicationManagement = () => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
-  const { applicationsList, totalCount, isFetching } = useSelector((state) => state.applications)
+  const { applicationsList, totalCount, isFetching,submitLoading } = useSelector((state) => state.applications)
   const [selectedStatus, setSelectedStatus] = useState('pending');
   const navigate = useNavigate();
 
@@ -41,7 +41,11 @@ const ApplicationManagement = () => {
   
     setSearchQuery(query);
 
-    dispatch(getAllApplications(page, query));
+    if(applicationsList?.length ===0){
+
+      dispatch(getAllApplications(page, query));
+    }
+
     
 
   }, [searchParams, dispatch, query]);
@@ -57,8 +61,8 @@ const ApplicationManagement = () => {
   ];
 
 
-  const handleStatusChange = (newStatus, applicationId) => {
-
+  const handleStatusChange = (newStatus, applicationId,index) => {
+  dispatch(setActiveIndex(index))
     console.log('Selected Status:calll.....', newStatus, applicationId);
     dispatch(updateApplicationStatus({
       applicationId: applicationId,
@@ -130,23 +134,23 @@ const ApplicationManagement = () => {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {applicationsList && applicationsList.map((form, index) => (
+                      {applicationsList && applicationsList?.map((form, index) => (
                         <tr key={index}>
                           
                           <td className="px-6 py-4 whitespace-nowrap  ">
-                            <div className="text-sm text-gray-500 cursor-pointer" onClick={()=>nevigateToform(form._id,form.formId,form.userId)}>{form.caseId}</div>
+                            <div className="text-sm text-blue-500 cursor-pointer underline " onClick={()=>nevigateToform(form._id,form.formId,form.userId)}>{form.caseId}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{form.user_data[0]?.name}</div>
+                            <div className="text-sm text-gray-500">{form.user_data[0]?.name || "..."}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{(form.agent_data[0]?.email)}</div>
+                            <div className="text-sm text-gray-500">{(form.agent_data[0]?.email) ||"..."}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{(form.service_data[0]?.name)}</div>
+                            <div className="text-sm text-gray-500">{(form.service_data[0]?.name)||"..."}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{(form.agent_data[0]?.name)}</div>
+                            <div className="text-sm text-gray-500">{(form.agent_data[0]?.name)||"..."}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {/* {renderActionColumn(form)} */}
@@ -154,8 +158,9 @@ const ApplicationManagement = () => {
                               <DynamicStatusSelect
                                 index={index}
                                 statusList={statusOptions}
-                                currentStatus={form.status} // Pass the current status from the API
-                                onStatusChange={(newStatus) => handleStatusChange(newStatus, form._id)}
+                                currentStatus={form?.status} // Pass the current status from the API
+                                onStatusChange={(newStatus) => handleStatusChange(newStatus, form._id,index)}
+                                loading={submitLoading}
                               />
                             </div>
                           </td>
@@ -165,9 +170,15 @@ const ApplicationManagement = () => {
                   </table>
                 </div>
               ) : (
+                
+                
+                <>
+                <HeaderTitle title="Application Management" />
                 <div className="flex justify-center items-center h-screen">
                   <img src="/img/Nodata.svg" className="w-[50%]" alt="No data found" />
-                </div>)
+                </div>
+                </>
+              )
             }
 
           </>

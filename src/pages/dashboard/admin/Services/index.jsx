@@ -215,11 +215,12 @@ const Service = () => {
                                     FAQ
                                   </li>
                                 </NavLink>
+                                <NavLink to={`/dashboard/admin/services/update-service/${form._id}`}>
                                 <li className="cursor-pointer text-slate-800 flex w-full text-sm items-center rounded-md p-1 transition-all hover:bg-slate-100">
-                                  <NavLink to={`/dashboard/admin/services/update-service/${form._id}`}>
+                                 
                                     Edit
-                                  </NavLink>
                                 </li>
+                                  </NavLink>
                               </ul>
                             )}
                           </td>

@@ -6,6 +6,7 @@ const serviceAPIs= {
     getActiveCategories : `${BASE_URL}/user/all-service-category`,
     getActiveSubCategories : `${BASE_URL}/user/service-subcategory`,
     getActiveSubCategoriesAll : `${BASE_URL}/admin/service-subcategorys`,
+    getActiveSelectedSubCategoriesAll : `${BASE_URL}/admin/selected-service-subcategories`,
     getActiveBusinessEmail : `${BASE_URL}/admin/businesses`,
     uploadVideo : `${BASE_URL}/user/auth/upload-file`,
     getForms : `${BASE_URL}/admin/form`,

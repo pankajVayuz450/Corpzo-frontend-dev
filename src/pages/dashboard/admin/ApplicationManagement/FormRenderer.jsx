@@ -8,15 +8,19 @@ import { setAttributeId, setCurrentStatus } from '@/redux/admin/slices/Appliatio
 import { addCaseHistory, manageApplicationFormStatus, updateApplicationStatus } from '@/redux/admin/actions/ApplicationManagement';
 import { FaSpinner } from 'react-icons/fa';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import { getCurrentDateTime } from '@/Helpers/globalfunctions';
+import FileDownloader from './FileDownloader';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 
 const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
-    const { attributeId, isStatusLoading, userId, applicationId, isFetching } = useSelector((state) => state.applications);
+    const { attributeId, isStatusLoading, userId, applicationId, isFetching,submitLoading } = useSelector((state) => state.applications);
     const [formValues, setFormValues] = useState({});
     const [activeButton, setActiveButton] = useState({});
     const [isRejectModalOpen, setRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [selectedAttributeId, setSelectedAttributeId] = useState(null);
     const [todayDate, setTodayDate] = useState('');
+    const [todayDateValidation, setTodayDateValidation] = useState('');
     const [rejectStatus, setRejectStatus] = useState('');
     const [agentState, setAgentState] = useState()
     const { id } = useParams();
@@ -33,21 +37,16 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
 
     // Handle form submission
     const handleSubmit = (e) => {
+
+       
         const dateTimeString = formValues.completionDate;
         const dateTime = new Date(dateTimeString);  // Convert string to Date object
         const timestamp = dateTime.getTime();
         e.preventDefault();
-        console.log('Form Submitted:', {
-
-            "applicationId": applicationId,
-            "expectedCompletionDate": timestamp,
-            "agentId": agentState
-        });
-
         dispatch(updateApplicationStatus({
 
             "applicationId": applicationId,
-            "expectedCompletionDate": formValues.completionDate,
+            "expectedCompletionDate": timestamp,
             "agentId": agentState
         }));
 
@@ -55,9 +54,9 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
 
 
     useEffect(() => {
-        const date = new Date();
-        const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD format
-        setTodayDate(formattedDate);
+        const todayDate = getCurrentDateTime();
+        setTodayDateValidation(todayDate)
+        
     }, []);
 
     // Handle rejection reason submission
@@ -69,11 +68,11 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
         };
         dispatch(addCaseHistory({
             "applicationId": applicationId,
-            "action": `Application Status changed  ${rejectStatus} To rejected`,
+            "action": `Application Status changed  ${rejectStatus} To reject`,
             "performedBy": userId,
             "reason": rejectReason,
             "statusBefore": rejectStatus,
-            "statusAfter": "rejected"
+            "statusAfter": "reject"
         }));
         dispatch(setAttributeId(selectedAttributeId));
         dispatch(manageApplicationFormStatus(data));
@@ -94,12 +93,15 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
             "applicationId": applicationId,
             "action": `${inputValue} field Status changed ${status} to ${value}`,
             "performedBy": userId,
-            //   "reason": "document ",
+              "reason": rejectReason,
             "statusBefore": status,
             "statusAfter": value
         }));
 
     };
+
+                                            
+    console.log("check active button",activeButton)
 
 
     const formattedAgentList = agentData?.map(agent => ({
@@ -107,9 +109,28 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
         label: agent.name
     }));
 
+    const breadcrumbData = [
+        {
+          
+            
+              name: 'Application',
+              url:"/dashboard/admin/application-management",
+              children: [
+                {
+                  name: 'Application Form',
+                  url: '/dashboard/admin/add-application'
+                 
+                  
+                },
+              ],
+        }
+      ];
+
     return (
         <>
+            <Breadcrumb items={breadcrumbData}/>
             <form onSubmit={handleSubmit} className="w-100">
+            
                 <div>
                     <TitleComponent title={"CORPZO |Application Form"} />
                     {/* <h1 className="text-xl md:text-3xl font-semibold mb-4">{"Application Form"} </h1> */}
@@ -218,7 +239,7 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                 labelProps={{
                                     className: "before:content-none after:content-none",
                                 }}
-                                min={todayDate}
+                                min={todayDateValidation}
                                 onChange={handleChange}
                             />
                         </div>
@@ -229,16 +250,17 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                 {formData?.map((item) => {
 
                     const { element, attributesData, value, options, form_subinputs, status } = item;
-                    console.log("check item data ", item)
+                   
+                    
 
                     switch (element) {
                         case 'input':
                             return (
                                 <div key={item._id} className="flex flex-row gap-4 items-center ">
                                     <div className="flex-1">
-                                        <label htmlFor={attributesData.id} className="block text-gray-700 font-semibold mb-2">
-                                            {attributesData.placeholder}
-                                        </label>
+
+                                    {attributesData?.name =="myfile"? (<FileDownloader fileUrl={value}/>):(<>
+                                   
                                         <input
                                             type={form_subinputs[0]?.subtypeName || "text"}
                                             name={attributesData.name}
@@ -249,6 +271,9 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                             disabled={true}
                                             className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-500"
                                         />
+                                    </>)}
+                                        
+                                       
                                     </div>
 
                                     <div className="flex gap-2">
@@ -256,6 +281,7 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                         <button
                                             className={`py-2 px-4 rounded ${status === "accept" ? "bg-green-600" : "bg-black"} hover:bg-green-600 text-white`}
                                             onClick={() => getAttributeId(item._id, "accept", status, item.value)}
+                                            disabled={status === "accept"?true:false || isStatusLoading}
                                         >
                                             {isStatusLoading && activeButton === "accept" && item._id === attributeId ? (
                                                 <FaSpinner className="animate-spin text-white text-xl inline " />
@@ -266,6 +292,7 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                         <button
                                             className={`py-2 px-4 rounded ${status === "hold" ? "bg-yellow-600" : "bg-black"} hover:bg-yellow-600 text-white`}
                                             onClick={() => getAttributeId(item._id, "hold", status, item.value)}
+                                            disabled={status === "hold"?true:false || isStatusLoading}
                                         >
                                             {isStatusLoading && activeButton === "hold" && item._id === attributeId ? (
                                                 <FaSpinner className="animate-spin text-white text-xl inline" />
@@ -279,9 +306,14 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                                 setRejectModalOpen(true);
                                                 setSelectedAttributeId(item._id);
                                                 setRejectStatus(status)
+                                                setActiveButton("reject")
                                             }}
+                                            disabled={status === "reject"?true:false || isStatusLoading}
                                         >
-                                            Reject with Reason
+                                            
+                                            {isStatusLoading && activeButton === "reject" && item._id === attributeId ? (
+                                                <FaSpinner className="animate-spin text-white text-xl inline" />
+                                            ) : "Reject "}
                                         </button>
 
                                         {/* Note Button */}
@@ -294,9 +326,14 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
 
                         case 'label':
                             return (
+                                <>
+                                
                                 <div key={item._id} className="flex flex-col gap-2 w-1/4">
-                                    <label className="block text-gray-700 font-semibold">{value}</label>
+                                 {attributesData?.for!= ""?<label htmlFor={attributesData?.id }>{attributesData.for }</label>:<label className="block text-gray-700 font-semibold">{value}</label>}   
+                                    
                                 </div>
+                                </>
+                              
                             );
 
                         case 'select':
@@ -330,8 +367,10 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                     }
                 })}
 
-                <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                    Submit
+                <button disabled={submitLoading} type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+                {submitLoading && submitLoading ==true ? (
+                                                <FaSpinner className="animate-spin text-white text-xl inline" />
+                                            ) : "Submit "}
                 </button>
             </form>
 
@@ -349,7 +388,10 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                 </DialogBody>
                 <DialogFooter>
                     <button className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600" onClick={handleRejectSubmit}>
-                        Reject
+                       
+                        { isStatusLoading==true &&  activeButton === "reject"  ? (
+                                                <FaSpinner className="animate-spin text-white text-xl inline" />
+                                            ) : "Reject "}
                     </button>
                     <button className="bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400" onClick={() => setRejectModalOpen(false)}>
                         Cancel

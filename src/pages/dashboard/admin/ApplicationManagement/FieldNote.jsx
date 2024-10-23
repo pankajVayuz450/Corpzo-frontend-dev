@@ -6,12 +6,13 @@ import 'react-vertical-timeline-component/style.min.css';
 import TitleComponent from '@/components/common/TitleComponent';
 import { LuSend } from "react-icons/lu";
 import { useDispatch, useSelector } from 'react-redux';
-import { addNoteComment, getNoteAndComment } from '@/redux/admin/actions/ApplicationManagement';
+import { addCaseHistory, addNoteComment, getNoteAndComment } from '@/redux/admin/actions/ApplicationManagement';
 import { formatDate } from '@/Helpers/globalfunctions';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import LoadingPage from '@/components/common/LoadingPage';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
 
 const FieldNote = () => {
   const { noteList, applicationId, userId, commentLoading, isFetching, attributeId } = useSelector((state) => state.applications);
@@ -20,7 +21,6 @@ const FieldNote = () => {
   const [commentsNoteId, setCommentsNoteId] = useState({});
 
   useEffect(() => {
-    console.log("check note list ", noteList);
     dispatch(getNoteAndComment(applicationId));
   }, [dispatch, applicationId]);
 
@@ -45,6 +45,15 @@ const FieldNote = () => {
     }));
     resetForm();
     setSubmitting(false);
+
+    dispatch(addCaseHistory({
+      "applicationId": applicationId,
+      "action": `${noteId} field comment added `,
+      "performedBy": userId,
+      //   "reason": "document ",
+      // "statusBefore": status,
+      // "statusAfter": value
+  }));
   };
 
   if (isFetching) {
@@ -53,6 +62,8 @@ const FieldNote = () => {
 
   // Check if there are any notes that match the attributeId
   const filteredNotes = noteList?.filter(item => attributeId === item.cloneFormFieldId);
+  console.log("check note list ", filteredNotes);
+
   const breadcrumbData = [
     {
       
@@ -78,7 +89,8 @@ const FieldNote = () => {
     <div>
     <Breadcrumb items={breadcrumbData}/>
       <TitleComponent title={"CORPZO |Field Name Note"} />
-      <h1 className="text-xl md:text-3xl font-semibold mb-4">{"Field Name Note"}</h1>
+      <HeaderTitle title="Field Name Note" />
+      {/* <h1 className="text-xl md:text-3xl font-semibold mb-4">{"Field Name Note"}</h1> */}
       <div className="flex justify-end items-center space-x-2 mb-4">
         <NavLink to="/dashboard/admin/case-history" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Case History

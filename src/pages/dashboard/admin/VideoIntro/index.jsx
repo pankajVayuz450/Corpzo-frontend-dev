@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Card,
@@ -26,6 +26,8 @@ const VideoIntro = () => {
   const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
   const [error, setError] = useState(null);
   const { videoList, isFetching, uploadVideoLoading, url } = useSelector((state) => state.video);
+
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     dispatch(getAllVideos());
@@ -114,6 +116,11 @@ const VideoIntro = () => {
     }
     dispatch(uploadVideo(formData, saveData));
   };
+
+  const handleSvgClick = () => {
+    fileInputRef.current.click();
+  };
+
   const breadcrumbData = [
     {
       
@@ -178,9 +185,10 @@ const VideoIntro = () => {
                 accept="video/mp4"
                 onChange={handleVideoChange}
                 className="mb-2"
+                ref={fileInputRef}
               />
               {error && <p className="text-red-500">{error}</p>}
-              <div className="flex flex-col items-center mt-4">
+              <div className="flex flex-col items-center mt-4 cursor-pointer" onClick={handleSvgClick} >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-24 w-24 text-gray-400"

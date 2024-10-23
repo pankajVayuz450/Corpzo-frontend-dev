@@ -4,9 +4,11 @@ import axios from 'axios';
 // import { getCategoryList, updateLoading, addCategory, deleteCategoryById, getSingleCategoryById, updateStatusState } from '@/redux/admin/slices/MasterSettings/CategorySlice/categorySlice';
 // import { toast } from 'react-toastify/dist/components';
 import { toast } from 'react-toastify';
-import { commentLoading, getAgentList, getApplications, getApplicationsFormData, getCaseHistoryList, getNoteList, manageUpdateCommentState, manageUpdateStatusState, updateApplicationStatusLoading, updateLoading, updateStatusState } from '../../slices/AppliationManagement/Index';
+import { commentLoading, getAgentList, getApplications, getApplicationsFormData, getCaseHistoryList, getNoteList, manageUpdateCommentState, manageUpdateStatusState, setSubmitLoading, updateApplicationStatusLoading, updateLoading, updateStatusState } from '../../slices/AppliationManagement/Index';
 import { FaTruckPlane } from 'react-icons/fa6';
 const token  = localStorage.getItem('authToken');
+
+console.log("check token ",token)
 export const getAllApplications =(page = 1, search="")=>{
    
     return async(dispatch)=>{
@@ -65,12 +67,13 @@ export const getApplicationForm =(applicationId, userId,formId)=>{
     }
 }
 
-export const addNoteAndField=(data)=>{
+export const addNoteAndField=(noteData,navigate)=>{
+
     return async(dispatch)=>{
 
         dispatch(updateLoading(true))
         try{
-            const response = await axios.post(ApplicationAPIs.addNote, data, {
+            const response = await axios.post(ApplicationAPIs.addNote, noteData, {
                 headers : {
                     Authorization : `Bearer ${token}`
                 }
@@ -78,8 +81,17 @@ export const addNoteAndField=(data)=>{
             if(response.status === 201){
                 // dispatch(addCategory(response.data.data))
                 dispatch(updateLoading(false))
-                toast.success(`Note added successfully`)
-                // navigate(`/dashboard/admin/masterSettings/Category`)
+                if(noteData?.cloneFormFieldId!=""){
+                navigate(`/dashboard/admin/field-history`)
+                toast.success(` Field Note added successfully`)
+
+
+                }else{
+
+                    navigate(`/dashboard/admin/team-history`)
+                toast.success(` Team Note added successfully`)
+
+                }
             }
         }catch(error){
             dispatch(updateLoading(false))
@@ -100,7 +112,7 @@ export const addNoteComment=(data)=>{
             if(response.status === 201){
                 dispatch(commentLoading(false))
                 dispatch(manageUpdateCommentState(data))
-                // dispatch(addCategory(response.data.data))
+               
                 toast.success(`Comment  added successfully`)
                 // navigate(`/dashboard/admin/masterSettings/Category`)
             }
@@ -197,7 +209,8 @@ export const getCaseHistory=(applicationId)=>{
 }
 export const updateApplicationStatus =( data)=>{
     return async(dispatch)=>{
-        // dispatch(updateLoading(true))
+        dispatch(setSubmitLoading(true))
+
         try{
             const response = await axios.put(`${ApplicationAPIs.editApplication}`, data, {
                 headers: {
@@ -205,13 +218,13 @@ export const updateApplicationStatus =( data)=>{
                 }
             });
             if(response.status == 200){
-                // dispatch(updateLoading(false))
+                dispatch(setSubmitLoading(false))
                
-                // dispatch(updateStatusState(response.data.data))
+                dispatch(updateStatusState(response.data.data))
                 toast.success(`Status updated successfully`)
             }
         }catch(error){
-            // dispatch(updateLoading(false))
+            dispatch(setSubmitLoading(false))
             toast.error(error.response.data.error)
         }
     }

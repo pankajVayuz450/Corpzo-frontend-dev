@@ -16,6 +16,10 @@ const userManageSlice = createSlice({
     totalPages : 0, 
     isStatusLoading : false,
     editPage : 1,
+    businessDetails : [],
+    userSteps : [],
+    isBusinessFetching : false, 
+    isServiceFetching : false,
     },
     reducers: {
         updateStatusState: (state, action) => {
@@ -37,6 +41,18 @@ const userManageSlice = createSlice({
           },
           updateEditPage : (state, action)=>{
             state.editPage = action.payload;
+          }, 
+          getBusinessDetails : (state, action)=>{
+            state.businessDetails = action.payload.businessDetails;
+          },
+          getUserServicesReducer : (state, action)=>{
+            state.userSteps = action.payload.userSteps
+          }, 
+          updateBusinessFetching : (state, action)=>{
+            state.isBusinessFetching = action.payload;
+          }, 
+          updateServiceFetching : (state, action)=>{
+            state.isServiceFetching = action.payload
           }
     },
     
@@ -152,5 +168,5 @@ const userManageSlice = createSlice({
 
     }
 });
-export const {updateStatusState, updateStatusLoading, updateEditPage} = userManageSlice.actions
+export const {updateStatusState,updateBusinessFetching,updateServiceFetching,getBusinessDetails,getUserServicesReducer, updateStatusLoading, updateEditPage} = userManageSlice.actions
 export default userManageSlice.reducer;

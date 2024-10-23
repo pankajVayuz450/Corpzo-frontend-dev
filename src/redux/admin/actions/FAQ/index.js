@@ -73,7 +73,7 @@ export const getServiceFaqs =(serviceId)=>{
     }
 }
 
-export const addServiceFaq =(serviceFaqs)=>{
+export const addServiceFaq =(serviceFaqs, navigate)=>{
     return async(dispatch)=>{
         try{
             dispatch(updateAdding(true))
@@ -86,7 +86,7 @@ export const addServiceFaq =(serviceFaqs)=>{
             if(response.status === 200){
                 dispatch(updateAdding(false))
                 toast.success(response.data.message);
-                // navigate(`/dashboard/admin/faq`)
+                navigate(`/dashboard/admin/service`)
             }
         }catch(error){
             console.log(error, "add faq error");

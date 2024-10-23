@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 const authToken  = localStorage.getItem('authToken');
 
 export const getAllSteps =( serviceId, id)=>{
-   
+   console.log(serviceId, "bhai id for get singlleeeeeeee")
     return async(dispatch)=>{
         try{
             dispatch(updateLoading(true));
@@ -33,10 +33,17 @@ export const getAllSteps =( serviceId, id)=>{
                 }
                 dispatch(updateLoading(false))
                 
+            }else if(response.status = 400){
+                dispatch(getSteps({
+                    stepsList : [],
+                }))
             }
         }catch(error){
             dispatch(updateLoading(false));
-            console.log(error)
+            console.log(error, "error yaha hai ")
+            dispatch(getSteps({
+                stepsList : [],
+            }))
             // if(error.response.data.statusCode === 400){
             //     toast.warn(error.response.data.message)
             // }
@@ -44,7 +51,7 @@ export const getAllSteps =( serviceId, id)=>{
     }
 }
 
-export const addSteps=(steps, navigate)=>{
+export const addSteps=(steps,serviceId, navigate)=>{
     console.log(steps, "from add actions")
     return async(dispatch)=>{
         try{
@@ -58,7 +65,7 @@ export const addSteps=(steps, navigate)=>{
             if(response.status === 200){
                 dispatch(updateAdding(false))
                 toast.success(response.data.message);
-                navigate(`/dashboard/admin/steps/64f5b3a9d82e9b0012c8b9e3`)
+                navigate(`/dashboard/admin/steps/${serviceId}`)
             }
         }catch(error){
             console.log(error, "add faq error");
@@ -92,7 +99,7 @@ export const getSingleStep=(stepId)=>{
     }
 }
 
-export const editStep=(stepId, step, navigate)=>{
+export const editStep=(stepId, step,serviceId, navigate)=>{
     return async(dispatch)=>{
         try{
             dispatch(updateAdding(true))
@@ -105,12 +112,12 @@ export const editStep=(stepId, step, navigate)=>{
             if(response.status == 200){
                 toast.success(response.data.message);
                 // dispatch(getSingleCategoryById(response.data.data))
-                navigate(`/dashboard/admin/steps/64f5b3a9d82e9b0012c8b9e3`)
+                navigate(`/dashboard/admin/steps/${serviceId}`)
                 dispatch(updateAdding(false))
             }
         }catch(error){
             dispatch(updateAdding(false))
-            console.log(error)
+            console.log(error)  
             toast.error(error.response.data.message)
 
         }

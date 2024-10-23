@@ -2,21 +2,23 @@ import React, { useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup'; // Import Yup for validation
 import ReusableForm from '@/components/admin/ReusableForm';
-import { addNoteAndField } from '@/redux/admin/actions/ApplicationManagement';
+import { addCaseHistory, addNoteAndField } from '@/redux/admin/actions/ApplicationManagement';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDataByApplicationId } from './helper';
 import { formatReadableDate } from '@/Helpers/globalfunctions';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import TitleComponent from '@/components/common/TitleComponent';
+import { useNavigate } from 'react-router-dom';
 
 
 const AddFieldNote = () => {
-    const { applicationsList, totalCount, isFetching, applicationId,attributeId } = useSelector((state) => state.applications)
+    const { applicationsList,userId, totalCount, isFetching, applicationId,attributeId } = useSelector((state) => state.applications)
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    console.log("check attribute id ",attributeId)
+   
 
 
 
@@ -39,11 +41,22 @@ const AddFieldNote = () => {
         onSubmit: (values) => {
             // alert(`Add button clicked! Note: ${values.note}`);
 
-            dispatch(addNoteAndField({
-                "applicationId": applicationId,
-                "cloneFormFieldId":attributeId,
-                "noteContent": values.note
-            }));
+            const noteData = {
+              "applicationId": applicationId,
+              "cloneFormFieldId":attributeId,
+              "noteContent": values.note
+          }
+
+            dispatch(addNoteAndField(noteData,navigate));
+
+            dispatch(addCaseHistory({
+              "applicationId": applicationId,
+              "action": ` Field note added. `,
+              "performedBy": userId,
+              //   "reason": "document ",
+              // "statusBefore": status,
+              // "statusAfter": value
+          }));
 
 
             // Here you can handle the submission logic

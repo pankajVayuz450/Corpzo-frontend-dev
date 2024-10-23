@@ -4,6 +4,8 @@ import { ToastContainer } from 'react-toastify';
 import { SignIn } from "./pages/auth";
 import routes from "./routes";
 import NoNetwork from "./pages/NoNetwork/NoNetwork";
+import "./index.css"
+
 function App() {
   const AppRoutes = () => {
     const element = useRoutes(routes);

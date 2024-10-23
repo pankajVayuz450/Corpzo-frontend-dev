@@ -14,6 +14,8 @@ import {
   DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
+import HeaderTitle from '@/components/common/HeaderTitle';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 const ServiceSteps = () => {
     const dispatch  = useDispatch();
     const navigate = useNavigate()
@@ -21,10 +23,11 @@ const ServiceSteps = () => {
     const [stepToDelete, setStepToDelete] = useState(false)
     const handleOpen = () => setOpen(!open);
     const {serviceId} = useParams();
+    console.log(serviceId, "service Id")
     const {stepsList, isFetching,isStatusLoading } = useSelector((state)=> state.steps)
     const handleEdit =(id)=>{
       console.log(id, "from edit")
-      navigate(`/dashboard/admin/steps/edit-step/64f5b3a9d82e9b0012c8b9e3/${id}`)
+      navigate(`/dashboard/admin/steps/edit-step/${serviceId}/${id}`)
 
     }
     const handleStatus=(form)=>{
@@ -38,7 +41,7 @@ const ServiceSteps = () => {
     }
     console.log(stepsList, "steps list")
     useEffect(()=>{
-        dispatch(getAllSteps(serviceId));
+        dispatch(getAllSteps(serviceId, undefined));
     }, [])
 
     const handleDelete=(id)=>{
@@ -51,11 +54,17 @@ const ServiceSteps = () => {
       setOpen(false); 
       setStepToDelete(null);
     }
-
+    const breadcrumbData = [
+      {
+        name: 'Step Management',
+      }
+    ];
   return (
    <div>
      <TitleComponent title={"CORPZO | Steps"}></TitleComponent>
-      <div className='flex gap-4 justify-between items-center w-full mb-4'>
+     <HeaderTitle title="Step Management"/>
+     <Breadcrumb items={breadcrumbData}/>
+      <div className='flex gap-4 justify-between items-center w-full mt-4'>
         <NavLink to={`/dashboard/admin/steps/create-steps/${serviceId}`} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Create Steps
         </NavLink>
