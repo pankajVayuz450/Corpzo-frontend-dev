@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { TailSpin } from 'react-loader-spinner';
-import { Switch, Typography } from '@material-tailwind/react';
+import { Typography } from '@material-tailwind/react';
 import { getActiveBusinessEmail, getAllActiveCategories, getAllActiveSelectedSubCategories, getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
 import Select from 'react-select';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
@@ -157,7 +157,19 @@ const CouponForm = () => {
       ],
     }
   ];
-
+  const handleDiscountChange = (e, setFieldValue) => {
+    const { value } = e.target;
+  
+    // Remove any non-digit characters except decimal point
+    const formattedValue = value.replace(/[^0-9.]/g, '');
+  
+    // Allow only two decimal places and a maximum value of 100
+    const isValid = /^(\d{1,2}(\.\d{0,2})?|100(\.0{1,2})?)?$/.test(formattedValue);
+  
+    if (isValid) {
+      setFieldValue('discount', formattedValue);
+    }
+  };
   return (
     <>
     {isCouponsFetching?(<LoadingPage/>):( <div>
@@ -193,7 +205,11 @@ const CouponForm = () => {
                   name="couponTitle"
                   id="couponTitle"
                   maxLength="35"
-
+                  onKeyPress={(e) => {
+                    if (e.key === ' ') {
+                      e.preventDefault(); // Prevent space from being typed
+                    }
+                  }}
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                 />
                 <ErrorMessage name="couponTitle" component="div" className="text-red-500 text-sm mt-1" />
@@ -201,10 +217,11 @@ const CouponForm = () => {
               <div>
                 <label htmlFor="discount" className="block text-sm font-medium text-gray-700">Discount (%)</label>
                 <Field
-                  type="number"
+                  type="text"
                   name="discount"
                   id="discount"
                   max="999" 
+                  onChange={(e) => handleDiscountChange(e, setFieldValue)} 
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
                 />
                 <ErrorMessage name="discount" component="div" className="text-red-500 text-sm mt-1" />

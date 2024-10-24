@@ -49,7 +49,9 @@ const AttributesPage = () => {
   }, [selectedElementId, dispatch]);
 
   const handleElementChange = (e) => {
-    setselectedElementId(e.target.value); // Update selected element on dropdown change
+    if(e.target.value=="null") console.log("e.target.value",e.target.value);
+    
+    else setselectedElementId(e.target.value); // Update selected element on dropdown change
   };
 
   // Define table columns dynamically based on fetched attributes
@@ -91,7 +93,7 @@ const AttributesPage = () => {
             onChange={handleElementChange}
             className="p-2 border rounded"
           >
-            <option value="">Select Element</option>
+            <option value="null">Select Element</option>
             {inputFields.map((field) => (
               <option key={field._id} value={field._id}>
                 {field.typeName}

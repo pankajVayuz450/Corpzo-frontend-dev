@@ -3,10 +3,19 @@ import axios from 'axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import listAll from '@/constants/APIList/listAll';
+import { useDispatch, useSelector } from 'react-redux';
+import { createFormElement } from '@/redux/admin/actions/MasterSettings/Elements';
+import { useNavigate } from 'react-router-dom';
 
 function AddFormElement() {
   const [parentElements, setParentElements] = useState([]);
   const [hasParentElement, setHasParentElement] = useState(false);
+  const {isCreatingElement } = useSelector((state) => state.elements);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+
 
   // Simulate API call to fetch parentElementId options
   useEffect(() => {
@@ -42,13 +51,17 @@ function AddFormElement() {
     }),
     onSubmit: (values) => {
       const formData = {
-        elementName: values.elementName,
+        fieldType: values.elementName,
         hasChildElements: values.hasChildElements,
         isSelfClosed: values.isSelfClosed,
-        parentElementId: hasParentElement ? values.parentElementId : '',
+        parentElementId: hasParentElement ? values.parentElementId : "",
       };
       console.log('Form Data:', formData);
-      // Submit formData to API or handle as needed
+      dispatch(createFormElement(formData))
+      .unwrap() // This makes the thunk return a Promise you can handle directly
+      .then(() => {
+          navigate(-1); // Go back to the previous page if successful
+      })
     },
   });
 
@@ -141,9 +154,10 @@ function AddFormElement() {
 
       <button
         type="submit"
+        disabled={isCreatingElement}
         className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
       >
-        Submit
+        {isCreatingElement?"Creating...":"Create"}
       </button>
     </form>
   );

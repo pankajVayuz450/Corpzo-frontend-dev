@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const fetchAllRoles = createAsyncThunk(
     'fetchAllRoles',
-    async ({ page, limit }, { rejectWithValue }) => {
+    async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
       try {
         const response = await axios.get(`${roleAPIs.getAllRoles}?page=${page}&limit=${limit}`, {
           headers: {
@@ -71,6 +71,22 @@ export const fetchRoleById = createAsyncThunk(
     async (roleId, { rejectWithValue }) => {
       try {
         const response = await axios.delete(`${roleAPIs.deleteRoleById}/${roleId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        });
+        return response.data;
+      } catch (error) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  );
+  
+  export const fetchAllAssignedToData = createAsyncThunk(
+    'fetchAllAssignedToData',
+    async (role, { rejectWithValue }) => {
+      try {
+        const response = await axios.get(`${roleAPIs.fetchAssignedToData}?role=${role}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },

@@ -183,8 +183,17 @@ export const updateStatus =(subCategoryId, data, navigate)=>{
             }
         }catch(error){
             console.log(error)
-            toast.error(error.response.data.message)
             dispatch(updateStatusLoading(false))
+            // toast.error(error.response.data.message)
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
            
         }
     }

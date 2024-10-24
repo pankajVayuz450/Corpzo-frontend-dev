@@ -11,9 +11,9 @@ const initialState = {
  childLoading : {},
  isStatusLoading : false,
  editPage : 1,
- serviceList : []
+ serviceList : [], 
+ folderDocuments : [], 
 };
-
 
 
 const documentSlice = createSlice({
@@ -86,9 +86,14 @@ const documentSlice = createSlice({
   }, 
   updateEditPage : (state, action)=>{
     state.editPage = action.payload;
-  }
+  }, 
+  
+  getFolderDocumentsReducer : (state, action)=>{
+    state.folderDocuments = action.payload.folderDocuments;
   },
+  
+  }
 });
-export const { getDocuments,getServices,addDocument,updateEditPage, updateStatusLoading,updateLoading,updateStatusState,toggleSwitchSuccess,toggleSwitchFailure, updateDocumentReducer,updateAdding, getOfferById} = documentSlice.actions;
+export const { getDocuments,getFolderDocumentsReducer, getServices,addDocument,updateEditPage, updateStatusLoading,updateLoading,updateStatusState,toggleSwitchSuccess,toggleSwitchFailure, updateDocumentReducer,updateAdding, getOfferById} = documentSlice.actions;
 
 export default documentSlice.reducer;

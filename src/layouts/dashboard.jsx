@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { handleOtp, handleSignOut, resenOtp } from "@/redux/admin/slices/adminSlice";
 import { useDispatch } from "react-redux";
 import { Spinner } from "@material-tailwind/react";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import TopBarProgress from "react-topbar-progress-indicator"
 export function Dashboard() {
   
@@ -18,7 +18,7 @@ export function Dashboard() {
   const dispatchRedux = useDispatch()
   const dashboardsRoutes = dashboardRoutes.find(route => route.path === "/dashboard").children;
   const filteredRoutes = dashboardsRoutes.filter(route => route.showInSidebar);
-
+const token = localStorage.getItem("authToken")
   const SignOut = () => { 
     dispatchRedux(handleOtp(false))
     dispatchRedux(resenOtp())
@@ -34,6 +34,14 @@ export function Dashboard() {
     },
     shadowBlur: 5
   });
+
+//   useEffect(()=>{
+// if(token!=""){
+//   navigate("/auth/sign-in")
+// }
+
+
+//   },[token])
 
   return (
     <div className="min-h-screen bg-blue-gray-50/50">

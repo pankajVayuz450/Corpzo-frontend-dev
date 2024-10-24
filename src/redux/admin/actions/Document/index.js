@@ -4,7 +4,7 @@ import axios from 'axios';
 import { updateStatusState, updateStatusLoading, getOfferById} from "../../slices/Offer"
 import { toast } from 'react-toastify';
 import {  getServices } from '../../slices/Offer';
-import {updateAdding,updateLoading, getDocuments, addDocument, updateDocumentReducer} from "../../slices/Document"
+import {updateAdding,updateLoading,getFolderDocumentsReducer, getDocuments, addDocument, updateDocumentReducer} from "../../slices/Document"
 const authToken  = localStorage.getItem('authToken');
 
 export const getAllDocuments =(limit = 10, page = 1, search="")=>{
@@ -56,15 +56,11 @@ export const getFolderDocuments=(folderId)=>{
                     Authorization: `Bearer ${authToken}`
                 }
             })
-            console.log(response)
+            console.log(response, "docuekndknsoidnfcoindf")
             if(response.status == 200){
-                dispatch(getDocuments({
-                    documentList : response.data.data,
+                dispatch(getFolderDocumentsReducer({
+                    folderDocuments : response.data.data,
                 }))
-                // dispatch(getOffers({
-                //     offerList : response.data.data.offers || [],
-                //     totalCount : response.data.data.totalCount || 0,
-                // }))
                 dispatch(updateLoading(false))
                 
             }
@@ -132,19 +128,21 @@ export const addDocuments=(documentData, navigate)=>{
     }
 }
 
-export const getSingleOffer=(offerId)=>{
+export const getFolderDocumentsList=(folderId)=>{
     return async(dispatch)=>{
         try{
             dispatch(updateLoading(true));
         
-            const response = await axios.get(`${OfferApis.getOfferById}/${offerId}`, {
+            const response = await axios.get(`${DocumentApis.getFolderDocuments}?folderId=${folderId}`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
             });
+            console.log(response, "........Documents")
             if(response.status == 200){
-                console.log(response, "........single offer")
-                dispatch(getOfferById(response.data.data[0]))
+                // dispatch(getFolderDocuments({
+                //     folderDocuments : response.data
+                // }))
                 dispatch(updateLoading(false))
             }
         }catch(error){
@@ -239,26 +237,6 @@ export const updateStatus =(offerId, data)=>{
             // toast.error(error.response.data.message)
             dispatch(updateStatusLoading(false))
            
-        }
-    }
-}
-
-export const deleteStep = (stepId) => {
-    return async (dispatch) => {
-        try {
-            const response = await axios.delete(`${StepsAPIs.deleteSteps}/${stepId}`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`
-                }
-            });
-            if (response.status == 200) {
-                dispatch(deleteStepBId(stepId));
-                toast.success(response.data.message)
-            }
-            console.log(response, "delete response");
-        } catch (error) {
-            console.log(error)
-            toast.error(error.response.data.message)
         }
     }
 }

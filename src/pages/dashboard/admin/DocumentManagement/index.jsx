@@ -154,7 +154,7 @@ const DocumentManagement = () => {
                               Edit
                             </MenuItem>
                             <MenuItem onClick={() => handleFileUploadFOrDoc(form._id)}>
-                              Add Document
+                              Add Document  
                             </MenuItem>
                             <MenuItem>
                               <NavLink to={`/dashboard/admin/document-management/documents/${form._id}`}>

@@ -5,7 +5,7 @@ import { NavLink, useParams } from 'react-router-dom';
 import { Input, Typography, Dialog, DialogHeader, DialogBody, DialogFooter } from '@material-tailwind/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAttributeId, setCurrentStatus } from '@/redux/admin/slices/AppliationManagement/Index';
-import { addCaseHistory, manageApplicationFormStatus, updateApplicationStatus } from '@/redux/admin/actions/ApplicationManagement';
+import { addCaseHistory, manageApplicationEscalateStatus, manageApplicationFormStatus, updateApplicationStatus } from '@/redux/admin/actions/ApplicationManagement';
 import { FaSpinner } from 'react-icons/fa';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import { getCurrentDateTime } from '@/Helpers/globalfunctions';
@@ -98,10 +98,34 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
             "statusAfter": value
         }));
 
+        if (value==="escalate"){
+
+            const payload = {
+                "applicationId":applicationId ,
+                "attributeId":attributeId,
+                "status":"escalate"
+
+              }
+            
+            dispatch(manageApplicationEscalateStatus(payload))
+
+        }
+
     };
 
-                                            
-    console.log("check active button",activeButton)
+    const handleEscalateButton = (attributeId,rejectReason)=>{
+                setActiveButton("escalate")
+                dispatch(setAttributeId(attributeId))
+        const payload = {
+            "applicationId":applicationId ,
+            // "attributeId":attributeId
+          }
+        console.log("check handle escalate button data",attributeId,rejectReason)
+        dispatch(manageApplicationEscalateStatus(payload))
+
+    }
+
+                                        
 
 
     const formattedAgentList = agentData?.map(agent => ({
@@ -150,7 +174,7 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                 value={formattedAgentList?.find(option => option.value === agentState)}
                                 onChange={(selectedOption) => {
                                     const selectedValue = selectedOption ? selectedOption.value : null;
-                                    console.log("Selected agent value:", selectedValue);
+                                   
                                     setAgentState(selectedValue);
                                 }}
                                 isSearchable // This keeps the search functionality enabled
@@ -248,10 +272,11 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
 
                 {/* Map over form data */}
                 {formData?.map((item) => {
-
-                    const { element, attributesData, value, options, form_subinputs, status } = item;
-                   
                     
+
+                    const { element, attributesData, value, options, form_subinputs, status ,rejectReason} = item;
+                   
+                    console.log("check the rejectReason value",rejectReason)
 
                     switch (element) {
                         case 'input':
@@ -315,6 +340,17 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                                 <FaSpinner className="animate-spin text-white text-xl inline" />
                                             ) : "Reject "}
                                         </button>
+
+                                        {rejectReason &&  <button
+                                            className={`py-2 px-4 rounded ${status === "escalate" ? "bg-orange-600" : "bg-black"} hover:bg-orange-600 text-white`}
+                                            onClick={() => getAttributeId(item._id, "escalate", status, item.value)}
+                                            disabled={status === "escalate"?true:false || isStatusLoading}
+                                        >
+                                            {isStatusLoading && activeButton == "escalate" && item._id === attributeId ? (
+                                                <FaSpinner className="animate-spin text-white text-xl inline" />
+                                            ) : "Escalate"}
+                                           
+                                        </button>}
 
                                         {/* Note Button */}
                                         <NavLink to={"/dashboard/admin/field-history"} onClick={() => dispatch(setAttributeId(item._id))} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">

@@ -4,7 +4,7 @@ const BASE_URL = process.env.BACKEND_BASE_URL;
 const subInputFields = {
     getFormSubInputs:`${BASE_URL}/admin/master/sub-inputs`,
     createFormSubInput:`${BASE_URL}/admin/master/sub-input`,
-    updateFormSubInput:`${BASE_URL}/admin/master/form/sub-input`,
+    updateFormSubInput:`${BASE_URL}/admin/master/sub-input`,
     deleteFormSubInput:`${BASE_URL}/admin/master/sub-input`,
 }
 export default subInputFields;

@@ -14,5 +14,6 @@ const ApplicationAPIs = {
     manageApplication: `${BASE_URL}/admin/applications/manage-application`, 
     getFormJson: `${BASE_URL}/admin/applications/application-form`, 
     getAgent: `${BASE_URL}/admin/users`, 
+    escalate: `${BASE_URL}/admin/applications/escalate`, 
 }
 export default ApplicationAPIs;

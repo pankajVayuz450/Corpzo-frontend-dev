@@ -7,6 +7,6 @@ const roleAPIs = {
     getRoleById:`${BASE_URL}/admin/role`,
     updateRoleById:`${BASE_URL}/admin/role`,
     deleteRoleById:`${BASE_URL}/admin/role`,
-
+    fetchAssignedToData:`${BASE_URL}/admin/users`,
 }
 export default roleAPIs;

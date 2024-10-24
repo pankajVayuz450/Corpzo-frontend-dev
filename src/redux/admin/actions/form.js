@@ -10,11 +10,15 @@ export const fetchAllForms = createAsyncThunk(
     'forms/fetchAll',
     async (_, { rejectWithValue }) => {
       try {
+        console.log("forms/fetchAll");
+        
         const response = await axios.get(formAPIs.getAllForms, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         });
+        console.log("response",response?.data);
+        
         return response.data;
       } catch (error) {
         return rejectWithValue(error.response.data);

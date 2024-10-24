@@ -20,8 +20,8 @@ const CouponList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  
-  const { couponsList, coupons, isCouponsFetching, totalCount, currentPage,isCouponUpdating } = useSelector((state) => state.coupons);
+
+  const { couponsList, coupons, isCouponsFetching, totalCount, currentPage, isCouponUpdating } = useSelector((state) => state.coupons);
   console.log("coupons isCouponUpdating", isCouponUpdating);
 
   const handleCreateCoupon = () => {
@@ -33,14 +33,14 @@ const CouponList = () => {
   const search = searchParams.get('search') || "";
 
   useEffect(() => {
-   
+
 
 
     dispatch(getAllCoupons({ page: page, limit: limit, search: search }));
 
-   
+
   }, [page, limit, search]);
-  
+
   const handleStatus = (form) => {
     const newStatus = !form.active; // Toggle the status
     const data = {
@@ -70,29 +70,32 @@ const CouponList = () => {
   const breadcrumbData = [
 
 
-        {
-          name: 'Coupon Management',
-          url: '/dashboard/admin/coupounmanagement',
-        },
+    {
+      name: 'Coupon Management',
+      url: '/dashboard/admin/coupounmanagement',
+    },
   ];
 
- 
+
 
   return (
     <div className="p-6">
-        <Breadcrumb items={breadcrumbData}/>
-        <HeaderTitle title={"Coupon Management"} totalCount={totalCount}/>
+      <Breadcrumb items={breadcrumbData} />
+      <HeaderTitle title={"Coupon Management"} totalCount={totalCount} />
       <div className='flex justify-between'>
         <button onClick={handleCreateCoupon} className="bg-blue-500 text-white px-2 py-2 rounded mb-4">Create Coupon</button>
         <SearchBoxNew placeholder={"Search"} queryParam={"search"} />
       </div>
-      {isCouponsFetching ?   <TableShimmer />
+      {isCouponsFetching ? <TableShimmer />
         :
         (
           <>
             {couponsList && couponsList.length > 0 ? (<table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Sr. No
+                  </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Coupon Title
                   </th>
@@ -111,8 +114,13 @@ const CouponList = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {couponsList && couponsList?.map((form, index) => (
-                  <tr key={index}>
+                {couponsList && couponsList?.map((form, index) => {
+                  const idx = ((parseInt(searchParams.get("page") || 1) - 1) * parseInt(searchParams.get("limit") || 10)) + (index + 1);
+                  return (
+                    <tr key={index}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">{idx}</div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-500">{form?.couponTitle}</div>
                     </td>
@@ -140,7 +148,8 @@ const CouponList = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>) : (
               <div className="flex justify-center items-center h-screen">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 const isLoggedIn = () => {
@@ -10,16 +10,28 @@ const getUserRole = () => {
 };
 
 const ProtectedRoute = ({ children, requiredRole }) => {
-  console.log("ProtectedRoute");
-  
-  const loggedIn = isLoggedIn();
-  const userRole = getUserRole();
+  const [loggedIn, setLoggedIn] = useState(isLoggedIn());
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      if (!isLoggedIn()) {
+        setLoggedIn(false);
+      }
+    };
+
+    // Listen for storage changes (i.e., token removal in another tab)
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   if (!loggedIn) {
-    console.log("Already logged in");
-    
     return <Navigate to="/auth/sign-in" />;
   }
+
+  const userRole = getUserRole();
 
   if (requiredRole && userRole !== requiredRole) {
     return <Navigate to="/not-authorized" />;

@@ -34,17 +34,23 @@ const elementsSlice = createSlice({
 
     builder
       .addCase(createFormElement.pending, (state) => {
+        console.log("createFormElement.pending");
+        
         state.isCreatingElement = true;
       })
       .addCase(createFormElement.fulfilled, (state, action) => {
+        console.log("createFormElement.fulfilled payload:",action.payload);
+        
         state.isCreatingElement = false;
         state.elements.push(action.payload.data);
         toast.success("Element created successfully");
       })
       .addCase(createFormElement.rejected, (state, action) => {
+        console.log("createFormElement.rejected");
+        
         state.isCreatingElement = false;
         state.error = action.error.message;
-        toast.error("Failed to create element");
+        // toast.error("Failed to create element");
       });
 
     builder

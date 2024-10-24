@@ -46,6 +46,11 @@ const ValidFormElementPage = () => {
 
   }
 
+  const handleEdit = id => {
+    navigate(`test/path/${id}`);
+  };
+
+
   const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMM dd, yyyy');
   };
@@ -66,6 +71,25 @@ const ValidFormElementPage = () => {
       Header: 'Updated At',
       accessor: 'updatedAt',
       Cell: ({ value }) => formatDate(value),
+    },
+    {
+      Header: 'Actions',
+      Cell: ({ row }) => (
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleEdit(row.original._id)}
+            className="text-blue-500 hover:text-blue-700"
+          >
+            Edit
+          </button>
+          {/* <button
+            onClick={() => handleDelete(row.original._id)}
+            className="text-red-500 hover:text-red-700"
+          >
+            Delete
+          </button> */}
+        </div>
+      ),
     },
   ];
 
@@ -90,12 +114,14 @@ const ValidFormElementPage = () => {
           <ReusableTable
             data={validFormElements?.data||[]}
             totalData={validFormElements?.total}
-            editPath={"test/path"}
+            // editPath={"test/path"}
             columns={columns}   //Must define table columns according to your data
             onDelete={handleDelete}
             onStatusChange={handleStatusChange}
           />
-          <Pagination totalItems={validFormElements?.total} />
+          {(validFormElements?.total>limit)?
+          <Pagination totalItems={validFormElements?.total} /> :""
+          }
         </div>
       )}
     </div>

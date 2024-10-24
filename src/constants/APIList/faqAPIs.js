@@ -10,4 +10,5 @@ const FaqApis = {
     getAllServiceFaqs : `${BASE_URL}/admin/all-faqs`, 
     addsServiceFaqs : `${BASE_URL}/admin/serviceFaq`
 }
+
 export default FaqApis;

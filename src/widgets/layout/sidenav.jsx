@@ -1,5 +1,8 @@
-import PropTypes from "prop-types";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { useMaterialTailwindController } from "@/context";
+import {
+  ChevronDownIcon,
+  ChevronRightIcon
+} from "@heroicons/react/24/solid";
 import {
   Accordion,
   AccordionBody,
@@ -10,27 +13,9 @@ import {
   ListItemPrefix,
   Typography,
 } from "@material-tailwind/react";
-import { useMaterialTailwindController, setOpenSidenav } from "@/context";
-import {
-  HomeIcon,
-  TableCellsIcon,
-  ServerStackIcon,
-  RectangleStackIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  ChartBarIcon
-} from "@heroicons/react/24/solid";
-import { FaUserGroup } from "react-icons/fa6";
-import { BiSolidOffer } from "react-icons/bi";
-import { FaImages, FaQuestion, FaUsersCog } from "react-icons/fa";
-import { IoDocuments, } from "react-icons/io5";
-import { IoMdSettings } from "react-icons/io";
-import { MdRoomService } from "react-icons/md";
-import { FaVideo } from "react-icons/fa6";
-
-
-
-
+import PropTypes from "prop-types";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { menuConfig } from "./sideNavConfig";
 
 import { useState } from "react";
 
@@ -78,508 +63,60 @@ export function Sidenav({ brandImg, brandName, routes }) {
       </div>
 
       <div className="m-4 ">
-        <ul className="mb-4 flex flex-col gap-1">
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/home`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
+        <ul>
+          {menuConfig.map(({ key, path, label, icon: Icon, subMenu }) => (
+            <li key={key}>
+              {subMenu ? (
+                <Accordion
+                  open={open === key}
+                  icon={<ChevronDownIcon strokeWidth={2.5} className={`mx-auto h-4 w-4 transition-transform ${open === key ? "rotate-180" : ""}`} />}
                 >
-                  <ChartBarIcon {...icon} />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Analytics
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/roles`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <HomeIcon {...icon} />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Roles
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/teams`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <HomeIcon {...icon} />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Teams
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <li key={name}>
-              <NavLink to={`/dashboard/admin/application-management`}>
-                {({ isActive }) => (
-                  <Button
-                    variant={isActive ? "gradient" : "text"}
-                    color={
-                      isActive
-                        ? sidenavColor
-                        : sidenavType === "dark"
-                          ? "white"
-                          : "blue-gray"
-                    }
-                    className="flex items-center gap-4 px-4 capitalize"
-                    fullWidth
-                  >
-                    <TableCellsIcon {...icon} />
-                    <Typography
-                      color="inherit"
-                      className="font-medium text-sm capitalize "
+                  <ListItem className="p-0" selected={open === key}>
+                    <AccordionHeader onClick={() => handleOpen(key)} className="border-b-0 px-4">
+                      <ListItemPrefix>
+                        <Icon className="w-5 h-5 text-inherit" />
+                      </ListItemPrefix>
+                      <Typography color="inherit" className="mr-auto font-medium text-sm capitalize">
+                        {label}
+                      </Typography>
+                    </AccordionHeader>
+                  </ListItem>
+                  <AccordionBody className="py-1">
+                    <List className="p-0">
+                      {subMenu.map((sub) => (
+                        <NavLink key={sub.key} to={sub.path}>
+                          <ListItem selected={isActive(sub.path)}>
+                            <ListItemPrefix>
+                              <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
+                            </ListItemPrefix>
+                            {sub.label}
+                          </ListItem>
+                        </NavLink>
+                      ))}
+                    </List>
+                  </AccordionBody>
+                </Accordion>
+              ) : (
+                <NavLink to={path}>
+                  {({ isActive }) => (
+                    <Button
+                      variant={isActive ? "gradient" : "text"}
+                      color={isActive ? sidenavColor : sidenavType === "dark" ? "white" : "blue-gray"}
+                      className="flex items-center gap-4 px-4 capitalize"
+                      fullWidth
                     >
-                      Application Management
-                    </Typography>
-                  </Button>
-                )}
-              </NavLink>
+                      <Icon className="w-5 h-5 text-inherit" />
+                      <Typography color="inherit" className="font-medium text-sm capitalize">
+                        {label}
+                      </Typography>
+                    </Button>
+                  )}
+                </NavLink>
+              )}
             </li>
-            <NavLink to={`/dashboard/admin/submadminmanagemnt`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <ServerStackIcon {...icon} />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize"
-                  >
-                    Sub Admin Management
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/coupounmanagement`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <RectangleStackIcon {...icon} />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize"
-                  >
-                    Coupoun Management
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/usermanagement`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <FaUsersCog className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    User Management
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/investor-management`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <FaUserGroup className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Investor Management
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-{/* 
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/profile`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <UserCircleIcon {...icon} />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Profile
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li> */}
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/offer`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <BiSolidOffer className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Offer
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          {/* <li key={name}>
-            <NavLink to={`/dashboard/admin/banner-management`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <FaImages className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Banner Management
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li> */}
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/faq`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <FaQuestion className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    FAQ
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/document-management`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <IoDocuments className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Document Management
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/service`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <MdRoomService className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Service Management
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <NavLink to={`/dashboard/admin/video-intro`}>
-              {({ isActive }) => (
-                <Button
-                  variant={isActive ? "gradient" : "text"}
-                  color={
-                    isActive
-                      ? sidenavColor
-                      : sidenavType === "dark"
-                        ? "white"
-                        : "blue-gray"
-                  }
-                  className="flex items-center gap-4 px-4 capitalize"
-                  fullWidth
-                >
-                  <FaVideo className="w-5 h-5 text-inherit" />
-                  <Typography
-                    color="inherit"
-                    className="font-medium text-sm capitalize "
-                  >
-                    Intro Video
-                  </Typography>
-                </Button>
-              )}
-            </NavLink>
-          </li>
-          <li key={name}>
-            <Accordion
-              open={open === 1}
-              icon={
-                <ChevronDownIcon
-                  strokeWidth={2.5}
-                  className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""}`}
-                />
-              }
-            >
-              <ListItem className="p-0" selected={open === 1}>
-                <AccordionHeader onClick={() => handleOpen(1)} className="border-b-0 px-4">
-                  <ListItemPrefix>
-                    <IoMdSettings className="w-5 h-5 text-inherit" />
-                  </ListItemPrefix>
-                  <Typography color="inherit" className="mr-auto font-medium text-sm capitalize ">
-                    Master Settings
-                  </Typography>
-                </AccordionHeader>
-              </ListItem>
-              <AccordionBody className="py-1">
-                <List className="p-0">
-
-                  <NavLink to={'/dashboard/admin/masterSettings/elements'}>
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/elements')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Form Elements
-                    </ListItem>
-                  </NavLink>
-                  
-
-                  {/* <NavLink to={'/dashboard/admin/masterSettings/sub-inputs'}>
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/sub-inputs')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Sub Inputs
-                    </ListItem>
-                  </NavLink> */}
-
-
-                  <NavLink to={'/dashboard/admin/masterSettings/attributes'}>
-                    <ListItem selected={isActive("dashboard/admin/masterSettings/attributes")}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Form  Attributes
-                    </ListItem>
-                  </NavLink>
-
-                  <NavLink to={'/dashboard/admin/masterSettings/validFormElement'}>
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/validFormElement')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Valid Form Element
-                    </ListItem>
-                  </NavLink>
-
-
-
-                  <NavLink to={'/dashboard/admin/masterSettings/validAttributes'}>
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/validAttributes')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Valid Attributes
-                    </ListItem>
-                  </NavLink>
-
-                  <NavLink to={'/dashboard/admin/masterSettings/regex'}>
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/regex')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Regex
-                    </ListItem>
-                  </NavLink>
-
-                  <NavLink to='/dashboard/admin/masterSettings/Category'>
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/Category')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Category
-                    </ListItem>
-                  </NavLink>
-                  <NavLink to='/dashboard/admin/masterSettings/Sub-Category'>
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/Sub-Category')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Sub Category
-                    </ListItem>
-                  </NavLink>
-                  <NavLink to="/dashboard/admin/masterSettings/Department">
-                    <ListItem selected={isActive('/dashboard/admin/masterSettings/Department')}>
-                      <ListItemPrefix>
-                        <ChevronRightIcon strokeWidth={3} className="h-3 w-5" />
-                      </ListItemPrefix>
-                      Department
-                    </ListItem>
-                  </NavLink>
-                </List>
-              </AccordionBody>
-            </Accordion>
-          </li>
+          ))}
         </ul>
+
       </div>
     </aside>
   );

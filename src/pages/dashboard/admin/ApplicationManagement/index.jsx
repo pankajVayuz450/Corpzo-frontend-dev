@@ -12,6 +12,7 @@ import DynamicStatusSelect from './DynamicStatusSelect';
 import { setActiveIndex, setApplicationId, setFormId, setUserId } from '@/redux/admin/slices/AppliationManagement/Index';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import { FaSpinner } from 'react-icons/fa';
 
 
 const ApplicationManagement = () => {
@@ -19,9 +20,10 @@ const ApplicationManagement = () => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
-  const { applicationsList, totalCount, isFetching,submitLoading } = useSelector((state) => state.applications)
+  const { applicationsList, totalCount, isFetching,submitLoading,activeIndex } = useSelector((state) => state.applications)
   const [selectedStatus, setSelectedStatus] = useState('pending');
   const navigate = useNavigate();
+  const userRole = localStorage.getItem("role")
 
   // Handle edit application action
 
@@ -30,40 +32,47 @@ const ApplicationManagement = () => {
   // Toggle application status
 
 
+  console.log("check acctive status",activeIndex)
 
   const query = searchParams.get('search') || '';
   const page = searchParams.get('page') || 1;
+  const escalate = searchParams.get("isEscalated"|| false)
  
 
   // Automatically fetch applications based on searchParams
   useEffect(() => {
   
-  
     setSearchQuery(query);
 
-    if(applicationsList?.length ===0){
+   
+if(!escalate){
 
-      dispatch(getAllApplications(page, query));
-    }
+  dispatch(getAllApplications(page, query));
+}
+    
 
     
 
-  }, [searchParams, dispatch, query]);
+  }, [searchParams, dispatch, query,escalate]);
 
   //status intigratin
   const statusOptions = [
     { value: 'approved', label: 'Approved' },
     { value: 'pending', label: 'Pending' },
     { value: 'rejected', label: 'Rejected' },
-    { value: 'Hold', label: 'Hold' },
-    { value: 'In Progress', label: 'In Progress' },
+    { value: 'hold', label: 'Hold' },
+    { value: 'inProgress', label: 'In Progress' },
     { value: 'open', label: 'Open' },
+    { value: 'escalate', label: 'Escalate' },
+    
   ];
 
 
-  const handleStatusChange = (newStatus, applicationId,index) => {
+  const handleStatusChange = (newStatus, applicationId,index,escalatedTo) => {
+
+    console.log("check isEscalated value",escalatedTo)
   dispatch(setActiveIndex(index))
-    console.log('Selected Status:calll.....', newStatus, applicationId);
+
     dispatch(updateApplicationStatus({
       applicationId: applicationId,
       status: newStatus
@@ -90,16 +99,26 @@ const ApplicationManagement = () => {
   ];
   // Clear filter
 
+  // handle escalations button 
+  const handleEscalationsButton = ()=>{
+    navigate(`/dashboard/admin/application-management?isEscalated=true`)
+    dispatch(getAllApplications(page, query,true));
+  }
+
 
   return (
     <div className='w-full'>
     <Breadcrumb items={breadcrumbData}/>
     {/* <h1 className="text-xl md:text-3xl font-semibold mb-4">{"Application Management"}</h1> */}
-    <HeaderTitle title="Application Management" />
+    {!escalate?<HeaderTitle title="Application Management" />:<HeaderTitle title="Escalation" />}
       <TitleComponent title={"CORPZO | Application Management"}></TitleComponent>
       <div className='flex justify-end items-center w-full mb-4'>
-        
+        <div className='flex justify-between gap-5 '>
+      {!escalate &&   <button className='bg-blue-500 text-white px-2 py-1 rounded-md' onClick={handleEscalationsButton}>   {isFetching && escalate  ? (
+                                                <FaSpinner className="animate-spin text-white text-xl inline" />
+                                            ) : "Escalations"}</button> }
         <SearchBoxNew />
+        </div>
       </div>
       {
         isFetching ? (
@@ -125,9 +144,14 @@ const ApplicationManagement = () => {
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Service
                         </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Agent
-                        </th>
+                        </th> */}
+                        {escalate? (<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Admin Manager
+                        </th>): (<th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Agent
+                        </th>)}
                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Status
                         </th>
@@ -149,9 +173,12 @@ const ApplicationManagement = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">{(form.service_data[0]?.name)||"..."}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          {escalate?<td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-500">{(form.manager_data[0]?.name)||"..."}</div>
+                          </td>:<td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-500">{(form.agent_data[0]?.name)||"..."}</div>
-                          </td>
+                          </td>}
+                          
                           <td className="px-6 py-4 whitespace-nowrap">
                             {/* {renderActionColumn(form)} */}
                             <div className="min-w-[7rem]">
@@ -159,8 +186,11 @@ const ApplicationManagement = () => {
                                 index={index}
                                 statusList={statusOptions}
                                 currentStatus={form?.status} // Pass the current status from the API
-                                onStatusChange={(newStatus) => handleStatusChange(newStatus, form._id,index)}
+                                onStatusChange={(newStatus) => handleStatusChange(newStatus, form._id,index,form?.escalatedTo)}
                                 loading={submitLoading}
+                                // disabled={form.status==="escalate"&& index=== activeIndex && userRole===form?.escalatedTo?true:false}
+                                escalatedTo={form?.escalatedTo}
+                              
                               />
                             </div>
                           </td>
@@ -173,7 +203,8 @@ const ApplicationManagement = () => {
                 
                 
                 <>
-                <HeaderTitle title="Application Management" />
+                
+                {!escalate?<HeaderTitle title="Application Management" />:<HeaderTitle title="Escalation" />}
                 <div className="flex justify-center items-center h-screen">
                   <img src="/img/Nodata.svg" className="w-[50%]" alt="No data found" />
                 </div>

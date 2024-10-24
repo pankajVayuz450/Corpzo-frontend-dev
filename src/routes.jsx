@@ -25,11 +25,11 @@ import PreviewFormPage from "./pages/dashboard/admin/previewFormPage";
 import { Dashboard } from "@/layouts/dashboard";
 import { Navigate } from "react-router-dom";
 import SignUp from "./pages/auth/sign-up";
-import ProtectedRoute from "./wrappers/ProtectedRoute";
 import SubAdminManagement from "./pages/dashboard/admin/SubAdminManagement/subadminmanagement";
 import SubadminPage from "./pages/dashboard/admin/SubAdminManagement/createSubAdmin";
-import { element } from "prop-types";
 import FolderDocuments from "./pages/dashboard/admin/DocumentManagement/DocumentFolders";
+import ViewService from "./pages/dashboard/admin/Services/ViewService";
+import ProtectedRoute from "./wrappers/ProtectedRoute";
 const CouponForm = lazy(() => import('./pages/dashboard/admin/CouponManagement/CreateCoupon'));
 const CouponList = lazy(() => import('./pages/dashboard/admin/CouponManagement/coupounManagement'));
 const UserManagement = lazy(() => import('./pages/dashboard/admin/UserManagement/index'));
@@ -88,12 +88,16 @@ const FieldNote = lazy(() => import("./pages/dashboard/admin/ApplicationManageme
 // import AddSubInput from "./pages/dashboard/admin/MastersSettings/SubInputs/AddSubInput";
 // import EditSubInput from "./pages/dashboard/admin/MastersSettings/SubInputs/EditSubInput";
 // import AddEditSubInput from "./pages/dashboard/admin/MastersSettings/SubInputs/AddEditSubInput";
-import Roles from "./pages/dashboard/admin/Roles";
-import AddRole from "./pages/dashboard/admin/Roles/AddRoles";
-import EditRole from "./pages/dashboard/admin/Roles/EditRoles";
-import Teams from "./pages/dashboard/admin/Teams";
-import AddTeam from "./pages/dashboard/admin/Teams/AddTeams";
-import EditTeam from "./pages/dashboard/admin/Teams/EditTeams";
+
+const Roles = lazy(() => import("./pages/dashboard/admin/Roles"));
+const AddRole = lazy(() => import("./pages/dashboard/admin/Roles/AddRoles"));
+const EditRole = lazy(() => import("./pages/dashboard/admin/Roles/EditRoles"));
+const Teams = lazy(() => import("./pages/dashboard/admin/Teams"));
+const AddTeam = lazy(() => import("./pages/dashboard/admin/Teams/AddTeams"));
+const EditTeam = lazy(() => import("./pages/dashboard/admin/Teams/EditTeams"));
+const FormBhuilder2 = lazy(() => import("./pages/dashboard/admin/FormManagement/FormBhuilder2"));
+const ViewFom = lazy(() => import("./pages/dashboard/admin/FormManagement/ViewFom"));
+
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -112,20 +116,30 @@ const adminRoutes = [
     icon: <HomeIcon {...icon} />,
   },
   {
-    path: "admin/formManagement",
+    path: "admin/form",
     element: <Form />,
     name: "Forms",
     showInSidebar: true,
     icon: <TableCellsIcon {...icon} />,
   },
   {
-    path: "admin/formManagement/create-form",
+    path: "admin/form/create-form",
     element: <FormCreationPage />,
     showInSidebar: false,
   },
   {
-    path: "admin/formManagement/edit-form",
+    path: "admin/form/edit-form/:id",
     element: <FormCreationPage />,
+    showInSidebar: false,
+  },
+  {
+    path: "admin/formbuilder/create-form/:id",
+    element: <FormBhuilder2 />,
+    showInSidebar: false,
+  },
+  {
+    path: "admin/formbuilder/view-form/:id",
+    element: <ViewFom />,
     showInSidebar: false,
   },
   {
@@ -418,6 +432,10 @@ const adminRoutes = [
     element : <AddSubscriptions/>
   },
   {
+    path:"admin/services/view-service/:serviceId",
+    element : <ViewService/>
+  },
+  {
     path:"admin/video-intro",
     element:<VideoIntro/>
   },
@@ -544,7 +562,7 @@ const adminRoutes = [
     element : <FolderDocuments />
   },
   {
-    path : "admin/document-management/view-document", 
+    path : "admin/document-management/view-document/:docId", 
     element : <ViewDocument/>
   },
   {
@@ -603,7 +621,7 @@ const routes = [
   ,
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element:<ProtectedRoute><Dashboard /></ProtectedRoute> ,
     // element: <Dashboard/>,
     children: adminRoutes,
   },

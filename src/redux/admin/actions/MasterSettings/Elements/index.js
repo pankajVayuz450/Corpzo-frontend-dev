@@ -24,19 +24,21 @@ export const fetchAllElements = createAsyncThunk(
 
   export const createFormElement = createAsyncThunk(
     'data/createData',
-    async ({ data }, { rejectWithValue }) => {
+    async ( data , { rejectWithValue }) => {
       try {
         const response = await axios.post(formInputFields.createFormInput, data, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
         });
-        toast.success(`New element created`)
-        return { data: response.data.data };
+        console.log("form/createElement",response.data);
+        
+        // toast.success(`New element created`)
+        return { data: response.data?.data };
       } catch (error) {
         console.log("error",error);
         
-        toast.success(error?.response?.data?.message)
+        toast.error(error?.response?.data?.message)
         return rejectWithValue(error.response.data);
       }
     }

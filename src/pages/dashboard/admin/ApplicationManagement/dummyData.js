@@ -736,3 +736,51 @@ export const  formData = {
     "message": "Application From Return",
     "code": 200
 }
+export const escalateData= [
+    {
+        "_id": "6710a83f8251f00eaa31c4a9",
+        "userId": "66da879e8ea314c944ea2db4",
+        "serviceId": "6710a30929775b0e109fa2ca",
+        "formId": "6703c28b803ef514e97a19ee",
+        "businessId": "66e80aa775dff3a469e5a751",
+        "caseId": "CASE-5-(17-9-(24-25))-YL8S",
+        "status": "pending",
+        "active": true,
+        "createdAt": "2024-10-17T06:01:35.115Z",
+        "user_data": [
+            {
+                "name": "Maroof Khan",
+                "email": "makr2@mailinator.com"
+            }
+        ],
+        "agent_data": [],
+        "service_data": [
+            {
+                "name": "Mix Form Test"
+            }
+        ]
+    },
+    {
+        "_id": "6710a8018251f00eaa31c4a4",
+        "userId": "66da879e8ea314c944ea2db4",
+        "serviceId": "6710a30929775b0e109fa2ca",
+        "formId": "6703c2d8803ef514e97a1a1e",
+        "businessId": "66e80aa775dff3a469e5a751",
+        "caseId": "CASE-4-(17-9-(24-25))-XDY7",
+        "status": "pending",
+        "active": true,
+        "createdAt": "2024-10-17T06:00:33.903Z",
+        "user_data": [
+            {
+                "name": "Maroof Khan",
+                "email": "makr2@mailinator.com"
+            }
+        ],
+        "agent_data": [],
+        "service_data": [
+            {
+                "name": "Mix Form Test"
+            }
+        ]
+    }
+]

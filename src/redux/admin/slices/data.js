@@ -100,21 +100,21 @@ const dataSlice = createSlice({
 
       });
 
-    builder
-        .addCase(createInputTypes.pending, (state) => {
-            state.isCreating = true;
-        })
-        .addCase(createInputTypes.fulfilled, (state, action) => {
-            state.isCreating = false;
-            state.data.push(action.payload.data);
-            toast.success("Data created successfully");
+    // builder
+    //     .addCase(createInputTypes.pending, (state) => {
+    //         state.isCreating = true;
+    //     })
+    //     .addCase(createInputTypes.fulfilled, (state, action) => {
+    //         state.isCreating = false;
+    //         state.data.push(action.payload.data);
+    //         toast.success("Data created successfully");
 
-        })
-        .addCase(createInputTypes.rejected, (state, action) => {
-            state.isCreating = false;
-            toast.error(action.payload.message);
-            state.error = action.payload;
-        });
+    //     })
+    //     .addCase(createInputTypes.rejected, (state, action) => {
+    //         state.isCreating = false;
+    //         toast.error(action.payload.message);
+    //         state.error = action.payload;
+    //     });
 
         builder
         .addCase(updateInputTypes.pending, (state) => {

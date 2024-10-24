@@ -1,17 +1,17 @@
 import { Button, Spinner } from '@material-tailwind/react';
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 const VideoPlayer = ({ open, handleOpen, title, handleConfirm, url, loading, buttonContent, onFileChange }) => {
     const [videoFile, setVideoFile] = useState(null);
     const [videoUrl, setVideoUrl] = useState(url || "");
     const [error, setError] = useState("");
     const [cancelFileChange, setCancelFileChnage] = useState(false);
-
+    const fileInputRef = useRef(null);
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         const maxFileSize = 1 * 1024 * 1024;
         if (file) {
-            const fileName = file.name;
+            const fileName = file.name; 
             const idxDot = fileName.lastIndexOf(".") + 1;
             const extFile = fileName.substr(idxDot, fileName.length).toLowerCase();
 
@@ -32,7 +32,9 @@ const VideoPlayer = ({ open, handleOpen, title, handleConfirm, url, loading, but
             onFileChange(file);
         }
     };
-
+    const handleSvgClick = () => {
+        fileInputRef.current.click();
+      };
     const handleChooseAnotherFile = () => {
         if (videoUrl && !url) {  // Only revoke the object URL if it's not the initial provided URL
             URL.revokeObjectURL(videoUrl);
@@ -81,6 +83,7 @@ const VideoPlayer = ({ open, handleOpen, title, handleConfirm, url, loading, but
                 <>
                     <input
                         type="file"
+                        ref={fileInputRef}
                         accept="video/*"
                         onChange={handleFileChange}
                         className="w-full"
@@ -88,7 +91,7 @@ const VideoPlayer = ({ open, handleOpen, title, handleConfirm, url, loading, but
                     {error && (
                         <p className="text-red-500 text-sm mt-2">{error}</p>
                     )}
-                    <div className="flex flex-col items-center mt-4">
+                    <div  onClick={handleSvgClick} className="flex flex-col items-center mt-4">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-24 w-24 text-gray-400"

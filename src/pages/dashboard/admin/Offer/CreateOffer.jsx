@@ -17,7 +17,7 @@ import HeaderTitle from '@/components/common/HeaderTitle';
 const initialValues = {
   offerTitle: "",
   offerDetail: "",
-  discountPercent: 0,
+  discountPercent: "",
   validity: "",
   applicableUserType: "",
   serviceId: [],
@@ -44,6 +44,7 @@ const CreateOffer = () => {
     setTouched,
     isValid,
     setErrors,
+    resetForm,
     dirty,
     setFieldTouched
   } = useFormik({
@@ -99,7 +100,10 @@ const CreateOffer = () => {
       setFieldValue("discountPercent", "")
       setFieldValue("validity", "")
       setFieldValue("applicableUserType", "")
+      resetForm();  
+      setTouched({});  
     }
+    setTouched({});  
     setErrors({})
 
 
@@ -109,6 +113,19 @@ const CreateOffer = () => {
       dispatch(getSingleOffer(id))
     }
   }, [])
+  const handleDiscountChange = (e, setFieldValue) => {
+    const { value } = e.target;
+  
+    // Remove any non-digit characters except decimal point
+    const formattedValue = value.replace(/[^0-9.]/g, '');
+  
+    // Allow only two decimal places and a maximum value of 100
+    const isValid = /^(\d{1,2}(\.\d{0,2})?|100(\.0{1,2})?)?$/.test(formattedValue);
+  
+    if (isValid) {
+      setFieldValue('discountPercent', formattedValue);
+    }
+  };
   const breadcrumbData = [
     {
 
@@ -188,16 +205,11 @@ const CreateOffer = () => {
                   labelProps={{
                     className: "before:content-none after:content-none",
                   }}
-                  type='number'
+                  type='text'
                   name='discountPercent'
                   value={values.discountPercent}
                   onFocus={() => touched.discountPercent = true}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (/^\d{0,3}$/.test(value)) {
-                      setFieldValue('discountPercent', value);
-                    }
-                  }}
+                  onChange={(e) => handleDiscountChange(e, setFieldValue)} 
                   onBlur={handleBlur}
                 />
                 {errors.discountPercent && touched.discountPercent && <p className='text-sm text-red-500'>{errors.discountPercent}</p>}

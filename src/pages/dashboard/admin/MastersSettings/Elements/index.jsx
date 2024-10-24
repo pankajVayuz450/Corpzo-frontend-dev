@@ -19,6 +19,9 @@ const ElementsPage = () => {
     return format(new Date(dateString), 'MMM dd, yyyy');
   };
 
+  const handleEdit = id => {
+    navigate(`${window.location.pathname}/edit/${id}`);
+  };
 
 
    //This Column is requred for the Table 
@@ -31,17 +34,17 @@ const ElementsPage = () => {
     {
       Header: 'Self Closed',
       accessor: 'isSelfClosed',
-      Cell: ({ row }) => (row?.original?.isSelfClosed?.toString()),
+      Cell: ({ row }) => (row?.original?.isSelfClosed?"Yes":"No"),
     },
     {
       Header: 'Parent',
-      accessor: 'parentElementId',
-      Cell: ({ row }) => (row?.original?.parentElementId?.toString()||"null"),
+      accessor: 'parentElement',
+      Cell: ({ row }) => (row?.original?.parentElement||"null"),
     },
     {
       Header: 'Child elements',
       accessor: 'hasChildElements',
-      Cell: ({ row }) => (row?.original?.hasChildElements?.toString()),
+      Cell: ({ row }) => (row?.original?.hasChildElements?"Yes":"No"),
     },
     {
       Header: 'Created At',
@@ -53,6 +56,19 @@ const ElementsPage = () => {
       accessor: 'updatedAt',
       Cell: ({ value }) => formatDate(value),
     },
+    // {
+    //   Header: 'Actions',
+    //   Cell: ({ row }) => (
+    //     <div className="flex space-x-2">
+    //       <button
+    //         onClick={() => handleEdit(row.original._id)}
+    //         className="text-blue-500 hover:text-blue-700"
+    //       >
+    //         Edit
+    //       </button>
+    //     </div>
+    //   ),
+    // },
   ];
   
 
@@ -82,7 +98,7 @@ const ElementsPage = () => {
           <ReusableTable
             data={elements||[]}
             // totalData={10}
-            editPath={`${window.location.pathname}/edit`}
+            // editPath={`${window.location.pathname}/edit`}
             columns={columns}   //Must define table columns according to your data
             // onStatusChange={handleStatusChange}
         />

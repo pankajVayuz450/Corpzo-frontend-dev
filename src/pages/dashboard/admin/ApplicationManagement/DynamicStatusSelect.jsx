@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaSpinner } from 'react-icons/fa';  // Using a spinner icon from react-icons, you can use any other spinner if you prefer
 import { useSelector } from 'react-redux';
 
-const DynamicStatusSelect = ({ statusList = [], currentStatus, onStatusChange, index, loading = false }) => {
+const DynamicStatusSelect = ({ statusList = [], currentStatus, onStatusChange, index, loading = false,disabled,escalatedTo=false }) => {
   const [selectedStatus, setSelectedStatus] = useState(currentStatus);
   const [selectedIndex, setSelectedIndex] = useState(currentStatus);
   const { activeIndex } = useSelector((state) => state.applications)
@@ -33,6 +33,7 @@ const DynamicStatusSelect = ({ statusList = [], currentStatus, onStatusChange, i
           key={index}
           value={selectedStatus}
           onChange={handleStatusChange}
+          disabled={disabled}
           className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
           {statusList.map((status, index) => (

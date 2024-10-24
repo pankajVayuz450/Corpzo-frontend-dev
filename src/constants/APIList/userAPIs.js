@@ -9,5 +9,6 @@ const userAPIs = {
     deleteUserById:`${BASE_URL}/admin/user`,
     getBusinessDetails :`${BASE_URL}/business/user-business`,
     getAllUserServices :`${BASE_URL}/admin/service-details`,
+    getAllTransactions :`${BASE_URL}/admin/applications/transaction`,
 }
 export default userAPIs;

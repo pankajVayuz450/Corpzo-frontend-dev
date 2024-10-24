@@ -20,6 +20,8 @@ const userManageSlice = createSlice({
     userSteps : [],
     isBusinessFetching : false, 
     isServiceFetching : false,
+    transactionDetails : [],
+    transactionFetching : false,
     },
     reducers: {
         updateStatusState: (state, action) => {
@@ -53,6 +55,12 @@ const userManageSlice = createSlice({
           }, 
           updateServiceFetching : (state, action)=>{
             state.isServiceFetching = action.payload
+          }, 
+          updateTransactionFetching : (state, action)=>{
+            state.transactionFetching = action.payload
+          }, 
+          getTransactions : (state, action)=>{
+            state.transactionDetails = action.payload.transactionDetails;
           }
     },
     
@@ -165,8 +173,7 @@ const userManageSlice = createSlice({
                     toast.error('Failed to fetch user');
                 }
             });
-
     }
 });
-export const {updateStatusState,updateBusinessFetching,updateServiceFetching,getBusinessDetails,getUserServicesReducer, updateStatusLoading, updateEditPage} = userManageSlice.actions
+export const {updateStatusState,getTransactions,updateTransactionFetching, updateBusinessFetching,updateServiceFetching,getBusinessDetails,getUserServicesReducer, updateStatusLoading, updateEditPage} = userManageSlice.actions
 export default userManageSlice.reducer;

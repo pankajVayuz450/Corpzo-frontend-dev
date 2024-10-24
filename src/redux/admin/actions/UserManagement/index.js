@@ -2,7 +2,7 @@ import userAPIs from "@/constants/APIList/userAPIs";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { updateStatusState,updateBusinessFetching,updateServiceFetching, updateStatusLoading,getUserServicesReducer, getBusinessDetails } from "../../slices/UserManagement";
+import { updateStatusState,updateBusinessFetching,updateServiceFetching, updateStatusLoading,getUserServicesReducer, getBusinessDetails, getTransactions, updateTransactionFetching } from "../../slices/UserManagement";
 
 const BASE_URL = process.env.VITE_BASE_URL;
 
@@ -172,6 +172,29 @@ export const getUserServices = () => {
         } catch (error) {
             dispatch(updateServiceFetching(false));
 
+        }
+    }
+}
+export const getAllTransactions = () => {
+    return async (dispatch) => {
+        try {
+            dispatch(updateTransactionFetching(true));
+            let api = `${userAPIs.getAllTransactions}`
+
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+            console.log(response, "service details details")
+            if (response.status == 200) {
+                dispatch(getTransactions({
+                    transactionDetails : response.data.data,
+                }))
+                dispatch(updateTransactionFetching(false));
+            }
+        } catch (error) {
+            dispatch(updateTransactionFetching(false));
         }
     }
 }

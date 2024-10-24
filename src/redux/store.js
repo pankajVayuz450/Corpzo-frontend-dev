@@ -1,7 +1,8 @@
 // store.js is the entry point of the Redux store. It is responsible for creating the Redux store and combining the reducers.
 import { configureStore } from '@reduxjs/toolkit';
 import userSliceReducer from './admin/slices/user';
-import formSliceReducer from './admin/slices/form';
+// import formSliceReducer from './admin/slices/form';
+import formSliceReducer from './admin/slices/FormManagement/formSlice'
 import fieldSliceReducer from './admin/slices/fields';
 import fieldsSlice2Reducer from './admin/slices/FormManagement/fieldsSlice'
 import dataSliceReducer from './admin/slices/data';
@@ -44,7 +45,8 @@ export const store = configureStore({
     admin:adminSlice,
     fields:fieldSliceReducer,
     formFields:fieldsSlice2Reducer,
-    forms: formSliceReducer,
+    // forms: formSliceReducer,
+    forms:formSliceReducer,
     subAdmins: subAdminReducer,
     data: dataSliceReducer,
     attributes:attributesSliceReducer,

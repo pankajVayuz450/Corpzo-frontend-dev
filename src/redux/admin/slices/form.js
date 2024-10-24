@@ -49,6 +49,8 @@ state.isFormCreated=action.payload;
         state.isFormLoading = true;
       })
       .addCase(fetchAllForms.fulfilled, (state, action) => {
+        console.log("payload.data",payload.data);
+        
         state.isFormLoading = false; 
         state.forms = action.payload.data;
        

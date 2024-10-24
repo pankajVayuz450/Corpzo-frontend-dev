@@ -127,6 +127,8 @@ export function SignIn() {
 
  
   const handleResendOtp = () => {
+    console.log("Current Formik values:", values);
+    console.log("Email value on resend:", values.email); 
     setOtp(new Array(6).fill(""))
     dispatch(resendOtp({ email: values.email }));
     setIsResendDisabled(true);

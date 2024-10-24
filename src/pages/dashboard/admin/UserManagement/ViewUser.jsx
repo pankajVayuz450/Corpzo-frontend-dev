@@ -1,4 +1,4 @@
-import { getAllBusiness, getUserById, getUserServices } from '@/redux/admin/actions/UserManagement';
+import { getAllBusiness, getAllTransactions, getUserById, getUserServices } from '@/redux/admin/actions/UserManagement';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useParams, useSearchParams } from 'react-router-dom';
@@ -20,6 +20,7 @@ import BusinessDetails from './BusinessDetails';
 import ServiceDetails from './ServiceDetails';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import TransactionDetails from './TransactionDetails';
 const ViewUser = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,16 +47,16 @@ const ViewUser = () => {
       desc: `Because it's about motivating the doers. Because I'm here
           to follow my dreams and inspire other people to follow their dreams, too.`,
     },
-    // {
-    //   label: "Transaction Detail",
-    //   value: "transactrion_details",
-    //   icon: UserCircleIcon,
-    //   desc: `Because it's about motivating the doers. Because I'm here
-    //       to follow my dreams and inspire other people to follow their dreams, too.`,
-    // },
+    {
+      label: "Transaction Detail",
+      value: "transaction_details",
+      icon: UserCircleIcon,
+      desc: `Because it's about motivating the doers. Because I'm here
+          to follow my dreams and inspire other people to follow their dreams, too.`,
+    },
   ];
   const { id } = useParams();
-  const { user, isUserFetching, isBusinessFetching, isServiceFetching } = useSelector((state) => state.userMgmt);
+  const { user, isUserFetching,transactionFetching,  isBusinessFetching, isServiceFetching } = useSelector((state) => state.userMgmt);
   console.log(user, "user")
   const dispatch = useDispatch()
 
@@ -65,6 +66,8 @@ const ViewUser = () => {
     }
     // dispatch(getAllBusiness(10, 1, '','66da879e8ea314c944ea2db4'))
     dispatch(getUserServices())
+   
+   dispatch(getAllTransactions())
   }, [id])
   useEffect(() => {
     const query = searchParams.get('search') || '';
@@ -90,7 +93,7 @@ const ViewUser = () => {
           ))}
         </TabsHeader>
         <TabsBody>
-          {isUserFetching ||isBusinessFetching || isServiceFetching ? (
+          {isUserFetching ||isBusinessFetching || isServiceFetching || transactionFetching ? (
             <div className="flex justify-center items-center min-h-screen">
               <TailSpin height={50} width={50} color="blue" />
             </div>
@@ -128,6 +131,9 @@ const ViewUser = () => {
           </TabPanel>
           <TabPanel value={'service_details'}>
             <ServiceDetails />
+          </TabPanel>
+          <TabPanel value={'transaction_details'}>
+            <TransactionDetails />
           </TabPanel>
         </TabsBody>
       </Tabs>
