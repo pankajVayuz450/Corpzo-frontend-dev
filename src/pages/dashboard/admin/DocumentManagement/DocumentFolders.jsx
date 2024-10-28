@@ -28,10 +28,10 @@ const FolderDocuments = () => {
   const handleFileModal = (id = null, folderId) => {
     setSelectedId(id); // Set the selected id for file editing
     setOpenFile(!openFile);
-   
+
   };
 
-  const {folderId} = useParams()
+  const { folderId } = useParams()
   // Function to toggle folder modal with id
 
   const handleFileUploadFOrDoc = (folderId) => {
@@ -61,9 +61,9 @@ const FolderDocuments = () => {
 
   // Automatically fetch documents based on searchParams
   useEffect(() => {
-   
+
     dispatch(getFolderDocuments(folderId));
-  }, [ dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!isAdding) {
@@ -76,17 +76,17 @@ const FolderDocuments = () => {
     {
       name: 'Document Management',
       url: '/dashboard/admin/document-management',
-        children : [{
-            name: 'Folder Documents',
-            url: '',
-        }]
+      children: [{
+        name: 'Folder Documents',
+        url: '',
+      }]
     }
   ];
 
   return (
     <div className='w-full mt-4'>
       <TitleComponent title={"CORPZO | Document Management"} />
-      <HeaderTitle title="Document Files" totalCount={folderDocuments.length}/>
+      <HeaderTitle title="Document Files" totalCount={folderDocuments.length} />
       <Breadcrumb items={breadcrumbData} />
       {/* <div className='flex gap-4 justify-between items-center w-full mb-4 mt-4'>
         <div className='w-[20%]'>
@@ -114,7 +114,7 @@ const FolderDocuments = () => {
                         Created Date
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        View 
+                        View
                       </th>
                       {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
@@ -131,9 +131,10 @@ const FolderDocuments = () => {
                           <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <NavLink to={`/dashboard/admin/document-management/view-document/${form._id}`}>
-                          <span className="text-sm text-gray-500">View</span>
+                          <NavLink to={`/dashboard/admin/document-management/view-document/${form?.folderId}/${form?._id}`}>
+                            <span className="text-sm text-gray-500">View</span>
                           </NavLink>
+
                         </td>
                       </tr>
                     ))}

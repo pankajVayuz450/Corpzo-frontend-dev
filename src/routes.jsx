@@ -30,6 +30,7 @@ import SubadminPage from "./pages/dashboard/admin/SubAdminManagement/createSubAd
 import FolderDocuments from "./pages/dashboard/admin/DocumentManagement/DocumentFolders";
 import ViewService from "./pages/dashboard/admin/Services/ViewService";
 import ProtectedRoute from "./wrappers/ProtectedRoute";
+const Logo = lazy(()=> import("./pages/dashboard/admin/LogoModule"))
 const CouponForm = lazy(() => import('./pages/dashboard/admin/CouponManagement/CreateCoupon'));
 const CouponList = lazy(() => import('./pages/dashboard/admin/CouponManagement/coupounManagement'));
 const UserManagement = lazy(() => import('./pages/dashboard/admin/UserManagement/index'));
@@ -440,6 +441,10 @@ const adminRoutes = [
     element:<VideoIntro/>
   },
   {
+    path:"admin/logo-management",
+    element:<Logo/>
+  },
+  {
     path:"admin/VideoIntro/update-video/:id",
     element:<UpdateVideo/>
   },
@@ -562,7 +567,7 @@ const adminRoutes = [
     element : <FolderDocuments />
   },
   {
-    path : "admin/document-management/view-document/:docId", 
+    path : "admin/document-management/view-document/:folderId/:docId", 
     element : <ViewDocument/>
   },
   {

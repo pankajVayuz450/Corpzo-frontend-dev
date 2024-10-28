@@ -180,13 +180,14 @@ export const getAllActiveSubCategoriesAll = (categoryId) => {
     };
 };
 
-export const getAllActiveSelectedSubCategories = () => {
+export const getAllActiveSelectedSubCategories = (subCategoryIds) => {
     
+    console.log("check section id in action ",subCategoryIds)
     return async (dispatch) => {
 
         try {
 
-            let api = `${serviceAPIs.getActiveSelectedSubCategoriesAll}`
+            let api = `${serviceAPIs.getActiveSelectedSubCategoriesAll}/?subCategoryIds=${subCategoryIds}`
 
             const response = await axios.get(`${api}`, {
                 headers: {

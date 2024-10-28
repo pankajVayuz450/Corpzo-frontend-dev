@@ -140,9 +140,9 @@ export const getFolderDocumentsList=(folderId)=>{
             });
             console.log(response, "........Documents")
             if(response.status == 200){
-                // dispatch(getFolderDocuments({
-                //     folderDocuments : response.data
-                // }))
+                dispatch(getFolderDocumentsReducer({
+                    folderDocuments : response.data.data,
+                }))
                 dispatch(updateLoading(false))
             }
         }catch(error){

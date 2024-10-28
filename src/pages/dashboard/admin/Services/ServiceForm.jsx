@@ -114,7 +114,10 @@ const ServiceForm = () => {
     handleOpen(type); // Using your existing handleOpen function
   };
 
-  const formattedFormsList = forms?.map(form => ({
+
+  console.log(forms, "from state");
+
+  const formattedFormsList = forms?.data?.map(form => ({
     value: form._id,
     label: form.title
   }));

@@ -22,6 +22,8 @@ const userManageSlice = createSlice({
     isServiceFetching : false,
     transactionDetails : [],
     transactionFetching : false,
+    downloadUsers : [], 
+    userDownloadFeching : false
     },
     reducers: {
         updateStatusState: (state, action) => {
@@ -56,11 +58,17 @@ const userManageSlice = createSlice({
           updateServiceFetching : (state, action)=>{
             state.isServiceFetching = action.payload
           }, 
+          updateDownlaodUserFetching : (state, action)=>{
+            state.userDownloadFeching = action.payload
+          }, 
           updateTransactionFetching : (state, action)=>{
             state.transactionFetching = action.payload
           }, 
           getTransactions : (state, action)=>{
             state.transactionDetails = action.payload.transactionDetails;
+          }, 
+          downloadUsers :(state, action)=>{
+            state.downloadUsers = action.payload.downloadUsers;
           }
     },
     
@@ -175,5 +183,5 @@ const userManageSlice = createSlice({
             });
     }
 });
-export const {updateStatusState,getTransactions,updateTransactionFetching, updateBusinessFetching,updateServiceFetching,getBusinessDetails,getUserServicesReducer, updateStatusLoading, updateEditPage} = userManageSlice.actions
+export const {updateStatusState,getTransactions,updateDownlaodUserFetching,downloadUsers,updateTransactionFetching, updateBusinessFetching,updateServiceFetching,getBusinessDetails,getUserServicesReducer, updateStatusLoading, updateEditPage} = userManageSlice.actions
 export default userManageSlice.reducer;

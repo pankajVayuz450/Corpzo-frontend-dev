@@ -34,17 +34,17 @@ function FormBhuilder2() {
 
   return (
     <div>
-      {fields.map((field, idx) => (
+      {/* {fields.map((field, idx) => ( */}
         <FormField2
-          key={idx}
-          index={idx}
-          fieldData={field}
+          // key={idx}
+          // index={idx}
+          // fieldData={field}
           onFieldChange={handleFieldChange}
           onRemoveField={handleRemoveField}
           availableElements={staticDropdown}
         />
-      ))}
-      <Button onClick={handleAddField} className="mt-4">Add Field</Button>
+      {/* ))} */}
+      {/* <Button onClick={handleAddField} className="mt-4">Add Field</Button> */}
     </div>
   );
 }

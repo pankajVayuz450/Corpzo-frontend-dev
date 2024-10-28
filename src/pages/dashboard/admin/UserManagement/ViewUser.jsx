@@ -1,4 +1,4 @@
-import { getAllBusiness, getAllTransactions, getUserById, getUserServices } from '@/redux/admin/actions/UserManagement';
+import { getAllBusiness, getAllProgress, getAllTransactions, getUserById, getUserServices } from '@/redux/admin/actions/UserManagement';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useParams, useSearchParams } from 'react-router-dom';
@@ -15,6 +15,10 @@ import {
   Cog6ToothIcon,
   ChevronDownIcon,
 } from "@heroicons/react/24/solid";
+import { MdBusinessCenter } from "react-icons/md";
+import { FaWrench } from "react-icons/fa";
+import { TbTransactionRupee } from "react-icons/tb";
+
 import { TailSpin } from 'react-loader-spinner';
 import BusinessDetails from './BusinessDetails';
 import ServiceDetails from './ServiceDetails';
@@ -36,21 +40,21 @@ const ViewUser = () => {
     {
       label: "Business Detail",
       value: "business_detail",
-      icon: UserCircleIcon,
+      icon: MdBusinessCenter,
       desc: `Because it's about motivating the doers. Because I'm here
           to follow my dreams and inspire other people to follow their dreams, too.`,
     },
     {
       label: "Service Detail",
       value: "service_details",
-      icon: UserCircleIcon,
+      icon: FaWrench,
       desc: `Because it's about motivating the doers. Because I'm here
           to follow my dreams and inspire other people to follow their dreams, too.`,
     },
     {
       label: "Transaction Detail",
       value: "transaction_details",
-      icon: UserCircleIcon,
+      icon: TbTransactionRupee,
       desc: `Because it's about motivating the doers. Because I'm here
           to follow my dreams and inspire other people to follow their dreams, too.`,
     },
@@ -66,8 +70,10 @@ const ViewUser = () => {
     }
     // dispatch(getAllBusiness(10, 1, '','66da879e8ea314c944ea2db4'))
     dispatch(getUserServices())
+    dispatch(getAllProgress())
    
    dispatch(getAllTransactions())
+   
   }, [id])
   useEffect(() => {
     const query = searchParams.get('search') || '';

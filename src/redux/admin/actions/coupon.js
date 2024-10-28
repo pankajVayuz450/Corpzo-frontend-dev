@@ -37,7 +37,7 @@ export const getAllCoupons = (urlData) => {
             }
         } catch (error) {
             dispatch(couponLoadingFatch(false))
-            console.log(error)
+            console.log(error, "Error fetching")
             if(error.response.data.statusCode === 400){
                 toast.warn(error.response.data.message)
             }
@@ -66,7 +66,8 @@ export const createCoupon = (coupon, navigate) => {
                 dispatch(createCoupon(response.data.data))
             }
         } catch (error) {
-            toast.error(error.response.data.error)
+            console.log(error, "adding error");
+            toast.error(error.response.data.message)
             dispatch(couponLoadingCreate(false))
         }
     }

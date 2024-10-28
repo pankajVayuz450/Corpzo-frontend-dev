@@ -1,10 +1,10 @@
 import { useSelector, useDispatch } from "react-redux"
 import ReusableTable from '@/components/common/Tables'
 import { useCallback, useEffect, useState } from 'react'
-import { getAllUsers, deleteUser, updateStatus } from '@/redux/admin/actions/UserManagement'
+import { getAllUsers, deleteUser, updateStatus, downloadUser } from '@/redux/admin/actions/UserManagement'
 import { Oval } from 'react-loader-spinner';
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
-import { Input, Switch } from "@material-tailwind/react";
+import { Input, Spinner, Switch } from "@material-tailwind/react";
 import TitleComponent from "@/components/common/TitleComponent";
 import ReactPaginate from "react-paginate";
 import TableShimmer from "@/components/common/TableShimmer";
@@ -15,12 +15,15 @@ import { throttle } from "@/Helpers/globalfunctions";
 import { updateEditPage } from "@/redux/admin/slices/UserManagement";
 import Pagination from "@/components/common/Pagination";
 import SearchBoxNew from "@/components/common/SearchBoxNew";
+import Papa from "papaparse";
+
 const UserManagement = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { users, isUsersFetching, currentPage, totalPages, totalRecords, isStatusLoading } = useSelector((state) => state.userMgmt)
+  const { users, isUsersFetching, userDownloadFeching, currentPage, totalPages, totalRecords, isStatusLoading, downloadUsers } = useSelector((state) => state.userMgmt)
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isDownloadReady, setIsDownloadReady] = useState(false);
   useEffect(() => {
     users.length === 0 && dispatch(getAllUsers({ page: 1, limit: 10 }));
 
@@ -82,7 +85,7 @@ const UserManagement = () => {
     } else if (searchQuery.trim() === "") {
       toast.warn("Search cannot be just spaces");
       return;
-    }else if (!regex.test(searchQuery)) {
+    } else if (!regex.test(searchQuery)) {
       toast.warn("Special characters are not allowed");
       return;
     } else if (searchQuery.length < 3) {
@@ -104,14 +107,87 @@ const UserManagement = () => {
       handleSearch();
     }
   };
+  const handleDownload = () => {
+    setIsDownloadReady(false);  // Reset download state
+    dispatch(downloadUser());   // Fetch the data for download
+    setIsDownloadReady(true);
+  }
+
+  // useEffect(() => {
+  //   if (downloadUsers) {
+  //     // Convert JSON to CSV
+  //     const csv = Papa.unparse(downloadUsers);
+
+  //     // Create a Blob for the CSV
+  //     const blob = new Blob([csv], { type: "text/csv" });
+  //     const url = URL.createObjectURL(blob);
+
+  //     // Trigger a download of the CSV file as .csv
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.download = "user_data.csv";
+  //     link.click();
+
+  //     // Clean up
+  //     URL.revokeObjectURL(url);
+  //   }
+  // }, [downloadUsers]);
+  useEffect(() => {
+    if (isDownloadReady && downloadUsers && downloadUsers.length > 0) {
+      // Convert JSON to CSV
+      const csv = Papa.unparse(downloadUsers);
+
+      // Create a Blob for the CSV
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+
+      // Trigger a download of the CSV file
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "user_data.csv";
+      link.click();
+
+      // Clean up
+      URL.revokeObjectURL(url);
+      toast.success("Data downloaded")
+      setIsDownloadReady(false);  // Reset download state after download completes
+    }
+  }, [isDownloadReady, downloadUsers]);
+  useEffect(() => {
+    const unloadCallback = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    };
+
+    window.addEventListener("beforeunload", unloadCallback);
+    return () => window.removeEventListener("beforeunload", unloadCallback);
+  }, []);
   return (
     <div className="">
       <TitleComponent title={"Admin | User Management"} />
       <div className="flex gap-4 justify-between items-center w-full mb-4">
-        <NavLink to="/dashboard/admin/usermanagement/create-user" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-          Create User
-        </NavLink>
-        <SearchBoxNew queryParam="search"/>
+        <div className="flex gap-4 ">
+
+          <NavLink to="/dashboard/admin/usermanagement/create-user" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+            Create User
+          </NavLink>
+          <button
+            onClick={handleDownload}
+            className={`bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 flex items-center gap-2`}
+            disabled={userDownloadFeching} // disable button during loading
+          >
+            {userDownloadFeching ? (
+              <>
+              <Spinner className="h-5 w-5" color="white" />
+              Downloading...
+              </>
+            ) : (
+              "Download User Data"
+            )}
+          </button>
+        </div>
+        <SearchBoxNew queryParam="search" />
       </div>
 
       {isUsersFetching ?
@@ -161,7 +237,7 @@ const UserManagement = () => {
                           </td>
                           <td >
                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full`}>
-                            <Switch disabled={isStatusLoading} checked={form.active} onChange={() => { handleStatus(form) }} />
+                              <Switch disabled={isStatusLoading} checked={form.active} onChange={() => { handleStatus(form) }} />
                             </span>
                           </td>
                           <td className="px-6 py-4">
@@ -195,7 +271,7 @@ const UserManagement = () => {
           </>
         )
       }
-  {!isUsersFetching && totalRecords > 10 && <Pagination totalItems={totalRecords} itemsPerPage={10}></Pagination>}
+      {!isUsersFetching && totalRecords > 10 && <Pagination totalItems={totalRecords} itemsPerPage={10}></Pagination>}
 
     </div>
 

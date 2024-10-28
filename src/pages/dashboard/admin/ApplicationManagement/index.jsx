@@ -4,7 +4,7 @@ import { updateStatus } from '@/redux/admin/actions/MasterSettings/Department';
 import { useDispatch, useSelector } from 'react-redux';
 import TitleComponent from '@/components/common/TitleComponent';
 import TableShimmer from '@/components/common/TableShimmer';
-import { getAllApplications, updateApplicationStatus } from '@/redux/admin/actions/ApplicationManagement';
+import { getAllApplications, manageApplicationEscalateStatus, updateApplicationStatus } from '@/redux/admin/actions/ApplicationManagement';
 import { Select, Option } from "@material-tailwind/react";
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import Pagination from '@/components/common/Pagination';
@@ -78,6 +78,18 @@ if(!escalate){
       status: newStatus
     })); // Dispatch action to update status in the backend
     setSelectedStatus(newStatus); // Update local status state
+
+    const payload = {
+      "applicationId":applicationId ,
+      // "attributeId":attributeId,
+      "status":"escalate"
+
+    }
+    if(newStatus==="escalate"){
+
+      dispatch(manageApplicationEscalateStatus(payload))
+    }
+  
   };
 
   const nevigateToform=(applicationId,formId,userId)=>{
@@ -188,7 +200,7 @@ if(!escalate){
                                 currentStatus={form?.status} // Pass the current status from the API
                                 onStatusChange={(newStatus) => handleStatusChange(newStatus, form._id,index,form?.escalatedTo)}
                                 loading={submitLoading}
-                                // disabled={form.status==="escalate"&& index=== activeIndex && userRole===form?.escalatedTo?true:false}
+                                disabled={form.status === "escalate" ? userRole !== form?.escalatedTo : false}
                                 escalatedTo={form?.escalatedTo}
                               
                               />

@@ -52,6 +52,7 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
 
     };
 
+    console.log("check form data in form page",formData?.[0]?.user_application?.[0]?.expectedCompletionDate ||"")
 
     useEffect(() => {
         const todayDate = getCurrentDateTime();
@@ -124,6 +125,14 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
         dispatch(manageApplicationEscalateStatus(payload))
 
     }
+
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const formattedDate = date.toISOString().slice(0, 16); // Gets YYYY-MM-DDTHH:MM format
+        return formattedDate;
+    };
+    
 
                                         
 
@@ -258,7 +267,7 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                                 size="sm"
                                 type='datetime-local'
                                 name="completionDate"
-                                value={formValues.completionDate || ''}
+                                value={formValues.completionDate ||formatDateForInput(formData?.[0]?.user_application?.[0]?.expectedCompletionDate )|| ''}
                                 className="!border-t-blue-gray-200 focus:!border-t-gray-900 w-full"
                                 labelProps={{
                                     className: "before:content-none after:content-none",
@@ -274,9 +283,9 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
                 {formData?.map((item) => {
                     
 
-                    const { element, attributesData, value, options, form_subinputs, status ,rejectReason} = item;
+                    const { element, attributesData, value, options, form_subinputs, status ,rejectReason,user_application} = item;
                    
-                    console.log("check the rejectReason value",rejectReason)
+                    console.log("check the rejectReason value",user_application)
 
                     switch (element) {
                         case 'input':

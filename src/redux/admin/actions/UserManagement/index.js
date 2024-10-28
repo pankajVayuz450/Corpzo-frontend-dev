@@ -2,7 +2,7 @@ import userAPIs from "@/constants/APIList/userAPIs";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { updateStatusState,updateBusinessFetching,updateServiceFetching, updateStatusLoading,getUserServicesReducer, getBusinessDetails, getTransactions, updateTransactionFetching } from "../../slices/UserManagement";
+import { updateStatusState, updateBusinessFetching,downloadUsers,updateDownlaodUserFetching, updateServiceFetching, updateStatusLoading, getUserServicesReducer, getBusinessDetails, getTransactions, updateTransactionFetching } from "../../slices/UserManagement";
 
 const BASE_URL = process.env.VITE_BASE_URL;
 
@@ -107,7 +107,7 @@ export const updateStatus = (subCategoryId, data, navigate) => {
             });
             console.log(response)
             if (response.status == 202) {
-                
+
                 console.log(response, "update status")
                 dispatch(updateStatusState(response.data.data))
                 toast.success(`Status updated`)
@@ -140,9 +140,9 @@ export const getAllBusiness = (limit = 10, page = 1, search = "", userId) => {
             console.log(response, "Business details")
             if (response.status == 200) {
                 dispatch(getBusinessDetails({
-                    businessDetails : response.data.data,
+                    businessDetails: response.data.data,
                 }))
-              dispatch(updateBusinessFetching(false));
+                dispatch(updateBusinessFetching(false));
             }
         } catch (error) {
             dispatch(updateBusinessFetching(false));
@@ -165,7 +165,7 @@ export const getUserServices = () => {
             console.log(response, "service details details")
             if (response.status == 200) {
                 dispatch(getUserServicesReducer({
-                    userSteps : response.data.data,
+                    userSteps: response.data.data,
                 }))
                 dispatch(updateServiceFetching(false));
             }
@@ -189,12 +189,61 @@ export const getAllTransactions = () => {
             console.log(response, "service details details")
             if (response.status == 200) {
                 dispatch(getTransactions({
-                    transactionDetails : response.data.data,
+                    transactionDetails: response.data.data,
                 }))
                 dispatch(updateTransactionFetching(false));
             }
         } catch (error) {
             dispatch(updateTransactionFetching(false));
+        }
+    }
+}
+
+export const getAllProgress = () => {
+    return async (dispatch) => {
+        try {
+            // dispatch(updateTransactionFetching(true));
+            let api = `${userAPIs.getAllProgress}?userId=66da879e8ea314c944ea2db4&page=1`
+
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+            console.log(response, "serviceails")
+            if (response.status == 200) {
+                // dispatch(getTransactions({
+                //     transactionDetails : response.data.data,
+                // }))
+                // dispatch(updateTransactionFetching(false));
+            }
+        } catch (error) {
+            // dispatch(updateTransactionFetching(false));
+        }
+    }
+}
+
+export const downloadUser = () => {
+    return async (dispatch) => {
+        try {
+            dispatch(updateDownlaodUserFetching(true));
+            let api = `${userAPIs.downloadUsers}`
+
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+            
+            if (response.status == 200) {
+                dispatch(downloadUsers({
+                    downloadUsers: response.data.data,
+                }))
+                dispatch(updateDownlaodUserFetching(false));
+            }
+        } catch (error) {
+            dispatch(updateDownlaodUserFetching(false));
+            console.log(error)
         }
     }
 }

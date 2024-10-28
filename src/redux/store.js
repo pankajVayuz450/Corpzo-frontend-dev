@@ -31,7 +31,7 @@ import logger from 'redux-logger'; // Import redux-logger
 import documentReducer from './admin/slices/Document'
 import roleReducer from "./admin/slices/rolesSlice"
 import teamReducer from "./admin/slices/teamsSlice"
-
+import logoReducer from "./admin/slices/LogoSlice"
 
 const customMiddleware = store => next => action => {
   console.log('Dispatching action:', action); // Log the action
@@ -70,7 +70,8 @@ export const store = configureStore({
     video : videoReducer, 
     document : documentReducer, 
     role: roleReducer,
-    team: teamReducer
+    team: teamReducer, 
+    logo: logoReducer,
   },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware().concat(customMiddleware, logger)
