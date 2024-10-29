@@ -1,19 +1,32 @@
 import React from 'react'
 import * as Yup from 'yup';
 import AddEditRolesAndTeams from '../AddEditRolesAndTeams';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 
 const AddRole = () => {
 
   const initialValues = {
     role: ""
   };
-  const validationSchema = Yup.object({
-    role: Yup.string().required('Role is required')
-  })
+
+  
+  
+  const breadcrumbData = [
+    {
+      name: 'Roles',
+      url: "/dashboard/admin/roles",
+      children: [
+        {
+          name: 'Add Role'
+        },
+      ],
+}
+  ];
 
   return (
     <div>
-      <AddEditRolesAndTeams initialValues={initialValues} validationSchema={validationSchema} type={"role"} subType={"add"} />
+      <Breadcrumb items={breadcrumbData}/>
+      <AddEditRolesAndTeams initialValues={initialValues} type={"role"} subType={"add"} />
     </div>
   )
 }

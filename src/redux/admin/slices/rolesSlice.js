@@ -22,6 +22,7 @@ const initialState = {
   assignedTo: [{ label: "Select Assignee", value: "" }],
   isFetchingAssignedTo: false,
   fetchingAssignedToError: "",
+  totalCount: 0
 };
 
 const rolesSlice = createSlice({

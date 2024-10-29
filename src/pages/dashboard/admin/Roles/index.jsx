@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ReusableTable from "@/components/common/Tables";
-import { TailSpin } from "react-loader-spinner";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Pagination from "@/components/common/Pagination";
@@ -10,6 +9,10 @@ import { toast } from "react-toastify";
 import { removeDeletingRoleError, removeFetchingRolesError } from "@/redux/admin/slices/rolesSlice";
 import { MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
+import TableShimmer from "@/components/common/TableShimmer";
+import HeaderTitle from "@/components/common/HeaderTitle";
+import Breadcrumb from "@/widgets/layout/TopNavigation";
+import { Button, Dialog, DialogFooter, DialogHeader, Spinner } from "@material-tailwind/react";
 
 const Roles = () => {
   const dispatch = useDispatch();
@@ -20,6 +23,8 @@ const Roles = () => {
     deletingRoleError } = useSelector((state) => state.role);
   const navigate = useNavigate(); 
   const [deleteId, setDeleteId] = useState("")
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(!open);
 
   useEffect(() => {
     if (fetchingRolesError) {
@@ -45,13 +50,18 @@ const Roles = () => {
 
   const handleDelete = (id) => {
     setDeleteId(id);
-    dispatch(deleteRole(id));
+    handleOpen();
+  }
+
+  const confirmDelete = () => {
+    dispatch(deleteRole(deleteId));
   }
 
   useEffect(() => {
     if (deletedRole) {
       toast.success("Deleted successfully")
       setDeleteId("");
+      handleOpen();
     }
     if (deletingRoleError) {
       toast.error("Error in deleting role")
@@ -96,31 +106,28 @@ const Roles = () => {
             onClick={() => handleDelete(row.original?._id)} 
             className="bg-red-300 hover:bg-red-500 transition-all p-2 rounded"
           >
-            {
-              (row.original?._id === deleteId && isDeletingRole) ? (
-                <div className="flex items-center justify-center">
-                  <div className="loader-delete"></div>
-                </div>
-              ) : (
-                <MdDelete className="text-white" />
-              )
-            }
+            <MdDelete className="text-white" />
           </button>
         </div>
       ),
     }
   ];
 
+  
+  
+  const breadcrumbData = [
+    {
+          name: 'Roles',
+    }
+  ];
 
   return (
     <div>
-      <h1 className="text-xl md:text-3xl font-semibold">Roles</h1>
+      <Breadcrumb items={breadcrumbData}/>
+      <HeaderTitle title={`Role Management (${totalCount})`}/>
       {isFetchingRoles ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-          <TailSpin height="80" width="80" color="#4fa94d" ariaLabel="loading" visible={true} />
-        </div>
+        <TableShimmer />
       ) : (
-
         <div>
           <div className="flex justify-between p-3">
             <button
@@ -135,11 +142,31 @@ const Roles = () => {
             editPath={`${window.location.pathname}/edit`}
             columns={columns}   //Must define table columns according to your data
         />
-          <Pagination totalItems={totalCount} itemsPerPage = {10}/>
+          {limit > 10 && <Pagination totalItems={totalCount} itemsPerPage = {10}/>}
         </div>
-
-         
       )}
+      <Dialog open={open} handler={handleOpen}>
+        <DialogHeader>Delete Step?</DialogHeader>
+        
+        <DialogFooter>
+          <Button
+            variant="gradient"
+            color="red"
+            onClick={handleOpen}
+            className="mr-1"
+          >
+            <span>Cancel</span>
+          </Button>
+          <Button onClick={confirmDelete} variant="danger" color="green" >
+          {isDeletingRole ?
+            <div className='flex justify-center items-center gap-3'>
+              <Spinner color='white' className="h-4 w-4" />
+              Deleting Team
+            </div>
+            : "Delete Team"}
+          </Button>
+        </DialogFooter>
+      </Dialog>
     </div>
   );
 };

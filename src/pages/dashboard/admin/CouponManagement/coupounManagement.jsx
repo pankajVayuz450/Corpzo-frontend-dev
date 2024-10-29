@@ -10,20 +10,31 @@ import couponAPIs from '@/constants/APIList/couponAPIs';
 import { formatReadableDate } from '@/Helpers/globalfunctions';
 import { deleteCoupon, getAllCoupons, updateCouponStatus } from '@/redux/admin/actions/coupon';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
-import { Switch } from '@material-tailwind/react';
-import React, { useEffect } from 'react';
+import { Switch, Typography } from '@material-tailwind/react';
+import React, { useEffect, useState } from 'react';
 import { TailSpin } from 'react-loader-spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-
+import { FaFilter } from "react-icons/fa";
+import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from '@material-tailwind/react';
+import Select from 'react-select';
+import { getActiveBusinessEmail, getAllActiveCategories, getAllActiveSelectedSubCategories, getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
 const CouponList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState([[], [], []]); // For three dropdowns
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
   const { couponsList, coupons, isCouponsFetching, totalCount, currentPage, isCouponUpdating } = useSelector((state) => state.coupons);
   console.log("coupons isCouponUpdating", isCouponUpdating);
-
+  const { activeCategories, activeSubCategoriesList, getActiveBusinessEmailList } = useSelector((state) => state.service)
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState('[]');
+  const dropdownOptions = [
+    { value: 'Option 1', label: 'Option 1' },
+    { value: 'Option 2', label: 'Option 2' },
+    { value: 'Option 3', label: 'Option 3' },
+  ];
   const handleCreateCoupon = () => {
     navigate('/dashboard/admin/couponmanagement/create-coupon');
   };
@@ -32,6 +43,28 @@ const CouponList = () => {
   const limit = searchParams.get('limit') || 10
   const search = searchParams.get('search') || "";
 
+  const formattedActiveCategoryList = activeCategories?.map(category => ({
+    value: category.categoryId,
+    label: category.categoryName
+  }));
+
+  const formattedActiveSubCategoryList = activeSubCategoriesList.map(subCategory => ({
+    value: subCategory.subCategoryId,
+    label: subCategory.subSectionTitle
+  }));
+  const formattedActiveBusinessEmail = getActiveBusinessEmailList.map(user => ({
+    value: user.userId,
+    label: user.email
+  }));
+  const handleCategoryChange = (selectedOptions) => {
+    const selectedIds = selectedOptions ? selectedOptions.map(option => option.value) : [];
+    console.log(selectedIds, "selectedIds")
+    setSelectedCategoryIds(selectedIds); // Store as an array
+
+    if (selectedIds.length > 0) {
+      dispatch(getAllActiveSubCategoriesAll({ sectionIds: selectedIds })); // Pass array directly to the API
+    }
+  };
   useEffect(() => {
 
 
@@ -51,8 +84,25 @@ const CouponList = () => {
     // Dispatch the updateCoupon action with the couponId and updated fields
     dispatch(updateCouponStatus(form.couponId, data)); // Pass the couponId and flattened data
   };
+  useEffect(() => {
+    dispatch(getAllActiveCategories(true))
+
+    dispatch(getActiveBusinessEmail());
 
 
+    dispatch(getAllCoupons({ page: page, limit: limit, search: search }));
+    // const foundCoupon = couponsList.find(coupon => coupon.couponId === id);
+
+    // setSelectedCoupon(foundCoupon);
+    // const userSubCatogory = foundCoupon?.subCategoryIds
+    //  const stringifyId= JSON.stringify(userSubCatogory)
+    // dispatch(getAllActiveSelectedSubCategories(stringifyId))
+    //  console.log("check user list id...",stringifyId)
+
+
+
+  }, [couponsList.length == 0, dispatch]);
+  const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
 
   const handleEdit = (id) => {
 
@@ -84,8 +134,119 @@ const CouponList = () => {
       <HeaderTitle title={"Coupon Management"} totalCount={totalCount} />
       <div className='flex justify-between'>
         <button onClick={handleCreateCoupon} className="bg-blue-500 text-white px-2 py-2 rounded mb-4">Create Coupon</button>
-        <SearchBoxNew placeholder={"Search"} queryParam={"search"} />
+        <div className='flex gap-4 items-center'>
+          {/* <span><FaFilter className='fill-blue-500 cursor-pointer' onClick={toggleDialog} /></span> */}
+          <SearchBoxNew placeholder={"Search"} queryParam={"search"} />
+        </div>
       </div>
+      <Dialog open={isDialogOpen} handler={toggleDialog} size="md" className="max-h-[600px] overflow-y-auto">
+        <DialogHeader>Filter Coupons</DialogHeader>
+        <DialogBody divider>
+          {/* Radio Buttons */}
+          <div className='flex gap-4'>
+
+            <div className="flex flex-row gap-4 mb-4">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="option1"
+                  // checked={selectedRadio === 'option1'}
+                  // onChange={() => setSelectedRadio('option1')}
+                  className="mr-2"
+                />
+                Fixed
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  value="option2"
+                  // checked={selectedRadio === 'option2'}
+                  // onChange={() => setSelectedRadio('option2')}
+                  className="mr-2"
+                />
+                Percentage
+              </label>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div>
+              <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
+                Select Category
+              </Typography>
+              <Select
+                isMulti
+                name="categoryId"
+                options={formattedActiveCategoryList}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={handleCategoryChange}
+              />
+              {/* {errors.categoryId && touched.categoryId && <p className='text-sm text-red-500'>{errors.categoryId}</p>} */}
+            </div>
+            <div>
+              <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
+                Select Sub Category
+              </Typography>
+              <Select
+                isMulti
+                name="subCategoryId"
+                options={formattedActiveSubCategoryList}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                // value={formattedActiveSubCategoryList?.filter(option => values?.subCategoryId?.includes(option?.value))}
+                onChange={(selectedOptions) => {
+                  const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
+
+                  setFieldValue("subCategoryId", selectedValues);
+
+                }}
+              
+              />
+            </div>
+            <div>
+              <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
+                Businesses
+              </Typography>
+              <Select
+                isMulti
+                name="activeBusinessEmail"
+                options={formattedActiveBusinessEmail}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                // value={formattedActiveBusinessEmail?.filter(option => values?.activeBusinessEmail?.includes(option?.value))}
+                onChange={(selectedOptions) => {
+                  const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
+                  console.log("check the sub cetegory value ..........", selectedValues)
+                  setFieldValue("activeBusinessEmail", selectedValues);
+
+                }}
+                onBlur={() => setFieldTouched('activeBusinessEmail', true)}
+              />
+            </div>
+            {/* <div>
+              <label className="block">Select Options 4:</label>
+              <Select
+                options={dropdownOptions}
+                isMulti 
+                onChange={(selected) => setSelectedOptions((prev) => [prev[0], prev[1], prev[2], selected])}
+              />
+            </div> */}
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button variant="text" color="red" onClick={toggleDialog} className="mr-2">
+            Cancel
+          </Button>
+          <Button variant="gradient" color="green" onClick={() => {
+            toggleDialog();
+            console.log('Selected options:', selectedOptions);
+            console.log('Selected radio:', selectedRadio); // Log selected radio option
+          }}>
+            Apply
+          </Button>
+        </DialogFooter>
+      </Dialog>
       {isCouponsFetching ? <TableShimmer />
         :
         (
@@ -118,36 +279,36 @@ const CouponList = () => {
                   const idx = ((parseInt(searchParams.get("page") || 1) - 1) * parseInt(searchParams.get("limit") || 10)) + (index + 1);
                   return (
                     <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{idx}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{form?.couponTitle}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{form?.discount}%</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{formatReadableDate(form?.validity)}</div>
-                    </td>
-                    <td >
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form?.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                        {form.active === true ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      {/* {renderActionColumn(form)} */}
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleEdit(form?.couponId)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          Edit
-                        </button>
-                        <Switch checked={form.active} disabled={isCouponUpdating} onChange={() => { handleStatus(form) }} />
-                      </div>
-                    </td>
-                  </tr>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{idx}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{form?.couponTitle}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{form?.discount}%</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{formatReadableDate(form?.validity)}</div>
+                      </td>
+                      <td >
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form?.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {form.active === true ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {/* {renderActionColumn(form)} */}
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(form?.couponId)}
+                            className="text-blue-500 hover:text-blue-700"
+                          >
+                            Edit
+                          </button>
+                          <Switch checked={form.active} disabled={isCouponUpdating} onChange={() => { handleStatus(form) }} />
+                        </div>
+                      </td>
+                    </tr>
                   )
                 })}
               </tbody>

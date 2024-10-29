@@ -19,6 +19,7 @@ const initialState = {
   deletedTeam: null,
   isDeletingTeam: false,
   deletingTeamError: "",
+  totalCount: 0
 };
 
 

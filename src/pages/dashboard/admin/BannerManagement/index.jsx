@@ -11,41 +11,10 @@ import { TailSpin } from 'react-loader-spinner';
 import ReactPaginate from 'react-paginate';
 import TitleComponent from '@/components/common/TitleComponent';
 import TableShimmer from '@/components/common/TableShimmer';
+import { getBanners } from '@/redux/admin/actions/banner';
+import { toast } from 'react-toastify';
+import { removeFetchingBannersError } from '@/redux/admin/slices/bannerSlice';
 
-const DUMMY_DATA = [
-  {
-    id : 1, 
-    bannerImage : "1st ORDER", 
-    bannerTitle: "Banner 1",
-    createdAt : "Sep 10, 2024",
-    url : "",
-    Status : 45,
-  },
-  {
-    id : 2, 
-    bannerImage : "Above 5000", 
-    bannerTitle: "Banner 2",
-    createdAt : "Sep 10, 2024", 
-    url : "",
-    Status : 40,
-  },
-  {
-    id : 3, 
-    bannerImage : "Min purchase 3,999", 
-    bannerTitle: "Banner 3",
-    createdAt : "Sep 10, 2024", 
-    url : "",
-    Status : 30,
-  },
-  {
-    id : 4, 
-    bannerImage : "SPLDIWALI", 
-    bannerTitle: "Banner 4",
-    createdAt : "Sep 10, 2024", 
-    url : "",
-    Status : 35,
-  },
-]
 const BannerManagement = () => {
   
   const dispatch = useDispatch();
@@ -54,6 +23,21 @@ const BannerManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const {departmentList, isFetching, totalCount, totalPages} = useSelector((state)=> state.department)
   const navigate = useNavigate();
+
+  const { banners,
+    isFetchingBanners,
+    fetchingBannersError } = useSelector(state => state.banner)
+  
+  useEffect(() => {
+    dispatch(getBanners());
+  }, [])
+
+  useEffect(() => {
+    if (fetchingBannersError) {
+      toast.error("Error occur in fetching banners data")
+    }
+    dispatch(removeFetchingBannersError())
+  }, [fetchingBannersError])
 
   const handleEdit = id => {
     console.log(id, "id")
@@ -136,12 +120,12 @@ const BannerManagement = () => {
         </div>
       </div>
       {
-        isFetching ? (
+        isFetchingBanners ? (
           <TableShimmer/>
         ) : (
           <>
             {
-             DUMMY_DATA && DUMMY_DATA.length > 0 ? (
+             banners && banners.length > 0 ? (
 <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
@@ -166,7 +150,7 @@ const BannerManagement = () => {
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-200">
-        {DUMMY_DATA && DUMMY_DATA.map((form, index) => (
+        {banners && banners.map((form, index) => (
           <tr key={index}>
             <td className="px-6 py-4 whitespace-nowrap">
               <div className="text-sm text-gray-900">{form.bannerImage}</div>

@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import AddEditRolesAndTeams from '../AddEditRolesAndTeams';
 import { TailSpin } from 'react-loader-spinner';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 
 const EditTeam = () => {
 
@@ -29,12 +30,23 @@ const EditTeam = () => {
     dispatch(removeFetchingSingleTeamError());
   }, [fetchingTeamError])
 
-  const validationSchema = Yup.object({
-    team: Yup.string().required('Team is required')
-  })
+  
+  
+  const breadcrumbData = [
+    {
+      name: 'Teams',
+      url: "/dashboard/admin/teams",
+      children: [
+        {
+          name: 'Edit Team'
+        },
+      ],
+}
+  ];
 
   return (
     <div>
+      <Breadcrumb items={breadcrumbData}/>
         {isFetchingTeam ? (
         <div
           style={{
@@ -54,7 +66,7 @@ const EditTeam = () => {
         </div>
       ) : team ? (
         // Render table with attributes data
-        <AddEditRolesAndTeams initialValues={{ team }} validationSchema={validationSchema} type={"team"} subType={"add"} />
+        <AddEditRolesAndTeams initialValues={{ team }} type={"team"} subType={"add"} />
       ) : (
         // Initially show "No Data" if no attributes are fetched
         <p>No Data</p>

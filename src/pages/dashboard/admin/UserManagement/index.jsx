@@ -16,6 +16,7 @@ import { updateEditPage } from "@/redux/admin/slices/UserManagement";
 import Pagination from "@/components/common/Pagination";
 import SearchBoxNew from "@/components/common/SearchBoxNew";
 import Papa from "papaparse";
+import Breadcrumb from "@/widgets/layout/TopNavigation";
 
 const UserManagement = () => {
   const dispatch = useDispatch()
@@ -163,9 +164,15 @@ const UserManagement = () => {
     window.addEventListener("beforeunload", unloadCallback);
     return () => window.removeEventListener("beforeunload", unloadCallback);
   }, []);
+  const breadcrumbData = [
+    {
+          name: 'User Management',
+    }
+  ];
   return (
     <div className="">
       <TitleComponent title={"Admin | User Management"} />
+      <Breadcrumb items={breadcrumbData}/>
       <div className="flex gap-4 justify-between items-center w-full mb-4">
         <div className="flex gap-4 ">
 

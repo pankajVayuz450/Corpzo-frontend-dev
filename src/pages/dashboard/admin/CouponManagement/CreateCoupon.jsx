@@ -340,7 +340,7 @@ const CouponForm = () => {
 
                 <div>
                   <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
-                    Businesses
+                   Users Email
                   </Typography>
                   <Select
                     isMulti

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -7,8 +8,10 @@ import { removeAddingRoleError, removeUpdatingRoleError } from '@/redux/admin/sl
 import { removeAddingTeamError, removeUpdatingTeamError } from '@/redux/admin/slices/teamsSlice';
 import { createRole, updateRole } from '@/redux/admin/actions/roles';
 import { createTeam, updateTeam } from '@/redux/admin/actions/teams';
+import { handleExtraSpaces } from '@/Helpers/globalfunctions';
+import { Spinner } from '@material-tailwind/react';
 
-function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }) {
+function AddEditRolesAndTeams({ initialValues, type, subType }) {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -32,7 +35,7 @@ function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }
       navigate("/dashboard/admin/roles");
     }
     if (addingRoleError) {
-        toast.error("Error occur in adding role")
+        toast.error(addingRoleError)
     }
     dispatch(removeAddingRoleError());
   }, [addedRole, addingRoleError])
@@ -43,7 +46,7 @@ function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }
       navigate("/dashboard/admin/roles");
     }
     if (updatingRoleError) {
-      toast.error("Error occur in updating role");
+      toast.error(updatingRoleError);
     }
     dispatch(removeUpdatingRoleError());
   }, [updatedRole, updatingRoleError])
@@ -54,7 +57,7 @@ function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }
       navigate("/dashboard/admin/teams");
     }
     if (addingTeamError) {
-        toast.error("Error occur in adding team");
+        toast.error(addingTeamError);
     }
     dispatch(removeAddingTeamError());
   }, [addedTeam, addingTeamError])
@@ -65,7 +68,7 @@ function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }
       navigate("/dashboard/admin/teams");
     }
     if (updatingTeamError) {
-      toast.error("Error occur in updating team");
+      toast.error(updatingTeamError);
     }
     dispatch(removeUpdatingTeamError());
   }, [updatedTeam, updatingTeamError])
@@ -73,19 +76,24 @@ function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }
   // Formik Setup
   const formik = useFormik({
     initialValues,
-    validationSchema,
+    validationSchema: Yup.object({
+      [type]: Yup.string()
+      .required(`${type} is required.`)
+      .matches(/^[A-Za-z\s]+$/, `${type} can only contain letters and spaces`)
+      .max(35, `${type} must be at most 35 characters long`),
+    }),
     onSubmit: (values) => {
       if (type === "role") {
         if (subType === "add") {
-            dispatch(createRole(values));
+            dispatch(createRole({role: handleExtraSpaces(values.role)}));
           } else if (subType === "edit") {
-            dispatch(updateRole(values));
+            dispatch(updateRole({role: handleExtraSpaces(values.role)}));
           }
         } else {
           if (subType === "add") {
-              dispatch(createTeam(values));
+              dispatch(createTeam({team: handleExtraSpaces(values.team)}));
             } else if (subType === "edit") {
-              dispatch(updateTeam(values));
+              dispatch(updateTeam({team: handleExtraSpaces(values.team)}));
             }
       }
     },
@@ -95,13 +103,14 @@ function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }
     <form onSubmit={formik.handleSubmit} className="space-y-6 p-4 bg-gray-100 rounded-md shadow-md">
       {/* Element Name Field */}
       <div className="w-full">
-        <label htmlFor={type} className="block text-sm font-medium text-gray-700">
-          {type}
+        <label htmlFor={type} className="block font-medium text-gray-700">
+          {type === "role" ? "Role" : "Team"}
         </label>
         <input
             id={type}
             name={type}
             value={formik.values[type]}
+            maxLength={35}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -113,13 +122,25 @@ function AddEditRolesAndTeams({ initialValues, type, subType, validationSchema }
 
       <button
         type="submit"
-        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        disabled={isAddingRole || isAddingTeam || isUpdatingRole || isUpdatingTeam}
+        className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAddingRole || isAddingTeam || isUpdatingRole || isUpdatingTeam || !(formik.dirty && formik.isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAddingRole || isAddingTeam || isUpdatingRole || isUpdatingTeam || !(formik.dirty && formik.isValid) ? 'gray-400' : 'blue-500'}`}
+        disabled={isAddingRole || isAddingTeam || isUpdatingRole || isUpdatingTeam || !(formik.dirty && formik.isValid)}
       >
         {
-          (isAddingRole || isAddingTeam || isUpdatingRole || isUpdatingTeam) ? <div className='flex items-center justify-center'>
-            <div className='loader'></div>
-          </div> : "Submit"
+          type === "role" ? <>
+            {(isAddingRole || isAddingTeam || isUpdatingRole || isUpdatingTeam) ?
+            <div className='flex justify-center items-center gap-3'>
+              <Spinner color='white' className="h-4 w-4" />
+              {subType === "edit Role" ? "Updating" : "Adding Role"}
+            </div>
+            : subType === "edit Role" ? "Update" : "Add Role"}
+          </> : <>
+          {(isAddingRole || isAddingTeam || isUpdatingRole || isUpdatingTeam) ?
+            <div className='flex justify-center items-center gap-3'>
+              <Spinner color='white' className="h-4 w-4" />
+              {subType === "edit Team" ? "Updating" : "Adding Team"}
+            </div>
+            : subType === "edit Team" ? "Update" : "Add Team"}
+          </>
         }
       </button>
     </form>

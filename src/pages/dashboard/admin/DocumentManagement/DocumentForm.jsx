@@ -31,7 +31,7 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
     const dispatch = useDispatch();
     const { isAdding, documentList } = useSelector((state) => state.document);
     const [file, setFile] = useState(null);
-
+    const [fileError, setFileError] = useState("");
     const {
         values,
         errors,
@@ -66,6 +66,10 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                     dispatch(addDocuments(folderData));
                 }
             } else {
+                if (!file) {
+                    setFileError("Please select a file before proceeding.");
+                    return;
+                }
                 // File upload handling 
                 const formData = new FormData();
                 formData.append('files', file)
@@ -74,6 +78,7 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                 dispatch(uploadDocument(formData))
             }
             setErrors({});
+            setFileError("");
         },
     });
 
@@ -82,6 +87,7 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
         const file = e.target.files[0]; // Get the first file from the input
         setFile(file); // Set the file in state
         console.log(file, "Selected file"); // Log the file to verify
+        setFileError(selectedFile ? "" : "Please select a file before proceeding.");
     };
 
     useEffect(() => {
@@ -132,10 +138,10 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                 </DialogBody>
                 <DialogFooter className='flex gap-2'>
                     <button
-                        disabled={isAdding || !(dirty && isValid)}
+                        disabled={isAdding || !(dirty && isValid)|| (!file && modalType !== 'folder')}
                         form='docform'
                         type='submit'
-                        className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
+                        className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) || (!file && modalType !== 'folder') ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
                     >
                         {isAdding ?
                             <div className='flex justify-center items-center gap-3'>

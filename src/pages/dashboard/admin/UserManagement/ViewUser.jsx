@@ -25,6 +25,7 @@ import ServiceDetails from './ServiceDetails';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import TransactionDetails from './TransactionDetails';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 const ViewUser = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
@@ -44,13 +45,13 @@ const ViewUser = () => {
       desc: `Because it's about motivating the doers. Because I'm here
           to follow my dreams and inspire other people to follow their dreams, too.`,
     },
-    {
-      label: "Service Detail",
-      value: "service_details",
-      icon: FaWrench,
-      desc: `Because it's about motivating the doers. Because I'm here
-          to follow my dreams and inspire other people to follow their dreams, too.`,
-    },
+    // {
+    //   label: "Service Detail",
+    //   value: "service_details",
+    //   icon: FaWrench,
+    //   desc: `Because it's about motivating the doers. Because I'm here
+    //       to follow my dreams and inspire other people to follow their dreams, too.`,
+    // },
     {
       label: "Transaction Detail",
       value: "transaction_details",
@@ -83,10 +84,22 @@ const ViewUser = () => {
     setSearchQuery(query);
     dispatch(getAllBusiness(limit, page, query,'66da879e8ea314c944ea2db4'))
   }, [searchParams, dispatch]);
-  
+  const breadcrumbData = [
+    {
+          name: 'User Management',
+         url: "/dashboard/admin/usermanagement", 
+         children: [
+          {
+            name:  'View User Details',
+            url:'',
+          },
+        ],
+    }
+  ];
   return (
     <div>
-      <HeaderTitle title="VIew User"/>
+      <HeaderTitle title="View User"/>
+      <Breadcrumb items={breadcrumbData}/>
       <Tabs value="basic_detail" >
         <TabsHeader className="w-full">
           {data.map(({ label, value, icon }) => (
@@ -136,7 +149,7 @@ const ViewUser = () => {
             <BusinessDetails />
           </TabPanel>
           <TabPanel value={'service_details'}>
-            <ServiceDetails />
+            {/* <ServiceDetails /> */}
           </TabPanel>
           <TabPanel value={'transaction_details'}>
             <TransactionDetails />

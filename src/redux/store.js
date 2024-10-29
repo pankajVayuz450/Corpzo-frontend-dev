@@ -32,6 +32,8 @@ import documentReducer from './admin/slices/Document'
 import roleReducer from "./admin/slices/rolesSlice"
 import teamReducer from "./admin/slices/teamsSlice"
 import logoReducer from "./admin/slices/LogoSlice"
+import bannerReducer from "./admin/slices/bannerSlice"
+
 
 const customMiddleware = store => next => action => {
   console.log('Dispatching action:', action); // Log the action
@@ -72,6 +74,7 @@ export const store = configureStore({
     role: roleReducer,
     team: teamReducer, 
     logo: logoReducer,
+    banner: bannerReducer
   },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware().concat(customMiddleware, logger)

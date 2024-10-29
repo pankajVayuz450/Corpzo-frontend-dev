@@ -1,3 +1,4 @@
+import HeaderTitle from '@/components/common/HeaderTitle';
 import { getFolderDocumentsList } from '@/redux/admin/actions/Document';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import React, { useState, useEffect, Children } from 'react';
@@ -8,6 +9,7 @@ import { useParams } from 'react-router-dom';
 const ViewDocument = () => {
   const [docUrl, setDocUrl] = useState('');
   const { folderId, docId } = useParams();
+  const [docName, setDocName] = useState('');
   const dispatch = useDispatch();
   const { folderDocuments, isFetching } = useSelector((state) => state.document);
 
@@ -20,6 +22,7 @@ const ViewDocument = () => {
       const foundDocument = folderDocuments.find(doc => doc._id === docId);
       if (foundDocument) {
         setDocUrl(foundDocument.url);
+        setDocName(foundDocument?.name);
       }
     }
   }, [folderDocuments, docId, isFetching]);
@@ -96,6 +99,8 @@ const ViewDocument = () => {
   return (
     <div>
       <Breadcrumb items={breadcrumbData} />
+      <HeaderTitle title={"View Dcument"} />
+      <h4 className='text-2xl'>{docName}</h4>
       {isFetching ? (
         <div className="flex justify-center items-center min-h-screen">
           <TailSpin height={50} width={50} color="blue" />
@@ -103,7 +108,11 @@ const ViewDocument = () => {
       ) : docUrl ? (
         renderDocument()
       ) : (
-        <p>No document available to display.</p>
+
+        <div className='flex items-center justify-center'>
+          <p>No document available to display.</p>
+
+        </div>
       )}
     </div>
   );
