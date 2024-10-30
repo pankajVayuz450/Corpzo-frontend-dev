@@ -164,9 +164,11 @@ const Offer = () => {
                           <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                         </td>
                         <td >
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {/* <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                             {form.active === true ? 'Active' : 'Inactive'}
-                          </span>
+                          </span> */}
+                                                      <Switch disabled={isStatusLoading} checked={form.active} onChange={() => { handleStatus(form) }} />
+
                         </td>
                         <td className="px-6 py-4">
                           {/* {renderActionColumn(form)} */}
@@ -177,7 +179,7 @@ const Offer = () => {
                             >
                               Edit
                             </button>
-                            <Switch disabled={isStatusLoading} checked={form.active} onChange={() => { handleStatus(form) }} />
+                            {/* <Switch disabled={isStatusLoading} checked={form.active} onChange={() => { handleStatus(form) }} /> */}
                           </div>
                         </td>
                       </tr>

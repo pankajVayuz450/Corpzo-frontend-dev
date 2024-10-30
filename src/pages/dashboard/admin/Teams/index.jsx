@@ -13,6 +13,8 @@ import { FaEdit } from "react-icons/fa";
 import HeaderTitle from "@/components/common/HeaderTitle";
 import Breadcrumb from "@/widgets/layout/TopNavigation";
 import { Button, Dialog, DialogFooter, DialogHeader, Spinner } from "@material-tailwind/react";
+import TitleComponent from "@/components/common/TitleComponent";
+import TableShimmer from "@/components/common/TableShimmer";
 
 const Teams = () => {
   const dispatch = useDispatch();
@@ -126,10 +128,9 @@ const Teams = () => {
     <div>
       <Breadcrumb items={breadcrumbData}/>
       <HeaderTitle title={`Team Management (${totalCount})`}/>
+      <TitleComponent title="CORPZO | Teams"/>
       {isFetchingTeams ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-          <TailSpin height="80" width="80" color="#4fa94d" ariaLabel="loading" visible={true} />
-        </div>
+       <TableShimmer/>
       ) : (
 
         <div>
@@ -150,7 +151,7 @@ const Teams = () => {
         </div>
       )}
       <Dialog open={open} handler={handleOpen}>
-        <DialogHeader>Delete Step?</DialogHeader>
+        <DialogHeader>Delete Team?</DialogHeader>
         
         <DialogFooter>
           <Button

@@ -21,6 +21,7 @@ import { TailSpin } from 'react-loader-spinner';
 import { Spinner } from "@material-tailwind/react";
 import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
 const AddCategory = () => {
   const dispatch = useDispatch()
   const { id } = useParams();
@@ -106,13 +107,14 @@ const AddCategory = () => {
     <div>
             <Breadcrumb items={breadcrumbData}/>
       <TitleComponent title={id ? "CORPZO | Edit Category" : "CORPZO | Add Category"} />
+      <HeaderTitle title={id ? "Update Category" : "Add Category"}/>
       {
         id && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">
           <TailSpin height={50} width={50} color="blue" />
         </div>
         ) : (
-          <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4 mt-4">
             <Typography variant="small" color="blue-gray" className="mb-3 font-medium">
               Category
             </Typography>

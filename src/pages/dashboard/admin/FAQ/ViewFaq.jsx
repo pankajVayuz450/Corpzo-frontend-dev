@@ -1,10 +1,13 @@
 import { getSingleFaq } from '@/redux/admin/actions/FAQ';
-import React, { useEffect } from 'react'
+import React, { Children, useEffect } from 'react'
 import { TailSpin } from 'react-loader-spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom'
-import { convert  } from 'html-to-text';
+import { convert } from 'html-to-text';
 import DOMPurify from 'dompurify';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import TitleComponent from '@/components/common/TitleComponent';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 const ViewFaq = () => {
     const { id } = useParams();
 
@@ -15,7 +18,18 @@ const ViewFaq = () => {
         dispatch(getSingleFaq(id));
     }, [])
     const sanitizedHTML = DOMPurify.sanitize(faq.answer);
-    console.log("faq.answer",faq.answer)
+    console.log("faq.answer", faq.answer)
+    const breadcrumbData=[
+        {
+            name : "FAQ Management", 
+            url : "/dashboard/admin/faq", 
+            children : [
+                {
+                    name : "View Document"
+                }
+            ]
+        }
+    ]
     return (
         <div>
             {
@@ -25,17 +39,20 @@ const ViewFaq = () => {
                     </div>
                 ) : (
                     <>
+                        <HeaderTitle title="View FAQ" />
+                        <TitleComponent title="Corpzo | View FAQ"/>
+                        <Breadcrumb items={breadcrumbData}/>
                         <div className='relative flex flex-col mt-6 gap-4 text-gray-700 bg-white shadow-md bg-clip-border p-4 rounded-xl w-full'>
                             <div className=''>
                                 <span><strong>Question</strong> </span>
                                 <h3 className="break-words text-lg">{faq.question} ?</h3> {/* Ensures question wraps */}
                             </div>
-                            
+
                             <div className=''>
-                            <span><strong>Answer</strong> </span>
-                            <span dangerouslySetInnerHTML={{ __html: sanitizedHTML }} />
+                                <span><strong>Answer</strong> </span>
+                                <span dangerouslySetInnerHTML={{ __html: sanitizedHTML }} />
                             </div>
-                            
+
                         </div>
                     </>
 

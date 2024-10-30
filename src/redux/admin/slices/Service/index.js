@@ -23,7 +23,8 @@ const initialState = {
   uploadVideoLoading: false,
   buttonContent : "Upload Video",
   updateHeader : "", 
-  stepValue : 0
+  stepValue : 0,
+  activeCategoryLoading:false,
 };
 
 
@@ -99,6 +100,9 @@ const serivceSlice = createSlice({
     updateLoading: (state, action) => {
       state.isFetching = action.payload;
     },
+    setCategoryLoading: (state, action) => {
+      state.activeCategoryLoading = action.payload;
+    },
     updateAdding: (state, action) => {
       state.isAdding = action.payload;
     },
@@ -125,6 +129,6 @@ const serivceSlice = createSlice({
     }
   },
 });
-export const { getServices, updateUploadLoading,updateHeader,handleStepValue, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1,getActiveSelectedSubCategoryListAll } = serivceSlice.actions;
+export const { getServices, updateUploadLoading,updateHeader,handleStepValue, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1,getActiveSelectedSubCategoryListAll,setCategoryLoading } = serivceSlice.actions;
 
 export default serivceSlice.reducer;

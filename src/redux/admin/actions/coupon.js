@@ -1,7 +1,7 @@
 import couponApis from '@/constants/APIList/couponAPIs';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { couponLoadingCreate, couponLoadingFatch, couponLoadingUpdate, getAllCouponsList, updateCouponStatusState } from '../slices/coupon';
+import { couponLoadingCreate, couponLoadingFatch, couponLoadingUpdate, createCouponReducer, getAllCouponsList, updateCouponStatusState } from '../slices/coupon';
 export const getAllCoupons = (urlData) => {
     return async (dispatch) => {
         try {
@@ -57,13 +57,13 @@ export const createCoupon = (coupon, navigate) => {
                     Authorization: `Bearer ${authToken}`
                 }
             })
-            console.log(response, "add response");
+           
             if (response.status === 201) {
                 console.log(navigate)
                 dispatch(couponLoadingCreate(false))
                 navigate(`/dashboard/admin/coupounmanagement`)
                 toast.success(`Coupon Added Successfully`)
-                dispatch(createCoupon(response.data.data))
+                dispatch(createCouponReducer(response.data.data))
             }
         } catch (error) {
             console.log(error, "adding error");

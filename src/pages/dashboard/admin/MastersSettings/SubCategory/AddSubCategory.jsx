@@ -14,6 +14,7 @@ import TitleComponent from '@/components/common/TitleComponent';
 import { TailSpin } from 'react-loader-spinner';
 import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
 const initialValues = {
   subSectionTitle: "",
   sectionId: "",
@@ -130,14 +131,14 @@ const AddSubCategory = () => {
     <div>
       <Breadcrumb items={breadcrumbData}/>
       <TitleComponent title={id ? "CORPZO | Edit Sub Category" : "CORPZO | Add Sub Category"}></TitleComponent>
-      <h1 className="text-xl md:text-3xl font-semibold mb-4">{id ? "Edit Sub Category" : "Add Sub Category"}</h1>
+      <HeaderTitle title={id ? " Update Sub Category" : "Add Sub Category"}/>
       {
         isFetching && id ? (
           <div className="flex justify-center items-center min-h-screen">
           <TailSpin height={50} width={50} color="blue" />
         </div>
         ) : (
-          <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4 mt-4">
             <Typography variant="small" color="blue-gray" className=" font-medium">
               Select Category
             </Typography>

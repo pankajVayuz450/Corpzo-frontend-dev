@@ -34,16 +34,6 @@ const Faq = () => {
     dispatch(updateEditPage(searchParams.get("page") || 1));
   };
 
-  // Handle pagination
-  const handlePageClick = (e) => {
-    if (searchQuery !== "") {
-      setSearchParams({ page: e.selected + 1, limit: 10, search: searchQuery });
-    } else {
-
-      setSearchParams({ page: e.selected + 1, limit: 10 });
-    }
-  };
-
   // Toggle FAQ status
   const handleStatus = (form) => {
     const newStatus = !form.active;
@@ -54,55 +44,15 @@ const Faq = () => {
     };
     dispatch(updateStatus(form.faqId, data));
   };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
   // Automatically fetch FAQ based on searchParams
   useEffect(() => {
     const query = searchParams.get('search') || '';
     const page = searchParams.get('page') || 1;
     const limit = searchParams.get('limit') || 10;
 
-    setSearchQuery(query);
-
     dispatch(getAllFaqs(limit, page, query));
   }, [searchParams, dispatch]);
 
-  // Clear filter
-  const handleClearFilter = () => {
-    setSearchQuery('');
-    setSearchParams({});
-  };
-
-
-  const throttledSearch = useCallback(throttle(() => {
-    const regex = /^[a-zA-Z0-9 ]*$/;
-    if (searchQuery === "") {
-      toast.warn("Search cannot be empty");
-      return;
-    } else if (searchQuery.trim() === "") {
-      toast.warn("Search cannot be just spaces");
-      return;
-    } else if (!regex.test(searchQuery)) {
-      toast.warn("Special characters are not allowed");
-      return;
-    } else if (searchQuery !== "" && searchQuery.length > 50) {
-      toast.warn("Search term cannot be more than 50 characters long")
-      return
-    } else if (searchQuery.length < 3) {
-      toast.warn("Search cannot be less than 3 characters")
-      return
-    } else {
-      setSearchParams({ search: searchQuery });
-    }
-  }, 500), [searchQuery, dispatch, setSearchParams]);
-
-  const handleSearch = () => {
-    throttledSearch();
-  };
 
   const breadcrumbData = [
     {
@@ -114,7 +64,7 @@ const Faq = () => {
   return (
     <>
       <TitleComponent title={"CORPZO | FAQ Management"}></TitleComponent>
-      <Breadcrumb items={breadcrumbData}/>
+      <Breadcrumb items={breadcrumbData} />
       <HeaderTitle title={"FAQ"} totalCount={totalCount} />
 
       <div className='w-full h-full mt-2'>
@@ -165,9 +115,11 @@ const Faq = () => {
                           <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                         </td>
                         <td>
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                          {/* <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                             {form.active === true ? 'Active' : 'Inactive'}
-                          </span>
+                          </span> */}
+                          <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} />
+
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex space-x-2">
@@ -177,7 +129,7 @@ const Faq = () => {
                             <NavLink to={`/dashboard/admin/FAQ/view-faq/${form.faqId}`} className="text-blue-500 hover:text-blue-700">
                               View
                             </NavLink>
-                            <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} />
+                            {/* <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} /> */}
                           </div>
                         </td>
                       </tr>

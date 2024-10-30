@@ -13,6 +13,7 @@ import TableShimmer from "@/components/common/TableShimmer";
 import HeaderTitle from "@/components/common/HeaderTitle";
 import Breadcrumb from "@/widgets/layout/TopNavigation";
 import { Button, Dialog, DialogFooter, DialogHeader, Spinner } from "@material-tailwind/react";
+import TitleComponent from "@/components/common/TitleComponent";
 
 const Roles = () => {
   const dispatch = useDispatch();
@@ -21,25 +22,26 @@ const Roles = () => {
     fetchingRolesError, totalCount, deletedRole,
     isDeletingRole,
     deletingRoleError } = useSelector((state) => state.role);
-  const navigate = useNavigate(); 
+    console.log(isFetchingRoles, "isFetchingRolesisFetchingRolesisFetchingRoles")
+  const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState("")
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
 
   useEffect(() => {
     if (fetchingRolesError) {
-        toast.error("Error occur in fetching roles.")
+      toast.error("Error occur in fetching roles.")
     }
     dispatch(removeFetchingRolesError());
   }, [fetchingRolesError])
 
-    //handling pagination here..
-    const [searchParams] = useSearchParams();
-    // const [limit, setLimit]= useState(searchParams.get('limit') || 10);
-    const page = searchParams.get('page') || 1;
-    const limit = searchParams.get('limit') || 10;
-    
-  
+  //handling pagination here..
+  const [searchParams] = useSearchParams();
+  // const [limit, setLimit]= useState(searchParams.get('limit') || 10);
+  const page = searchParams.get('page') || 1;
+  const limit = searchParams.get('limit') || 10;
+
+
   useEffect(() => {
     dispatch(fetchAllRoles({ page, limit }));
   }, [page, limit]);
@@ -72,7 +74,7 @@ const Roles = () => {
   const handleEdit = (id) => {
     navigate(`/dashboard/admin/roles/edit/${id}`);
   }
-  
+
 
   //This Column is requred for the Table 
   const columns = [
@@ -96,14 +98,14 @@ const Roles = () => {
       accessor: 'actions',
       Cell: ({ row }) => (
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={() => handleEdit(row.original?._id)} 
+          <button
+            onClick={() => handleEdit(row.original?._id)}
             className="bg-blue-300 hover:bg-blue-500 transition-all p-2 rounded"
           >
             <FaEdit className="text-white" />
           </button>
-          <button 
-            onClick={() => handleDelete(row.original?._id)} 
+          <button
+            onClick={() => handleDelete(row.original?._id)}
             className="bg-red-300 hover:bg-red-500 transition-all p-2 rounded"
           >
             <MdDelete className="text-white" />
@@ -113,18 +115,19 @@ const Roles = () => {
     }
   ];
 
-  
-  
+
+
   const breadcrumbData = [
     {
-          name: 'Roles',
+      name: 'Roles',
     }
   ];
 
   return (
     <div>
-      <Breadcrumb items={breadcrumbData}/>
-      <HeaderTitle title={`Role Management (${totalCount})`}/>
+      <Breadcrumb items={breadcrumbData} />
+      <HeaderTitle title={`Role Management`} totalCount={totalCount} />
+      <TitleComponent title="CORPZO | Roles" />
       {isFetchingRoles ? (
         <TableShimmer />
       ) : (
@@ -132,22 +135,22 @@ const Roles = () => {
           <div className="flex justify-between p-3">
             <button
               className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-            onClick={()=>navigate("/dashboard/admin/role/create")} 
+              onClick={() => navigate("/dashboard/admin/role/create")}
             >
               Add
             </button>
           </div>
           <ReusableTable
-            data={roles||[]}
+            data={roles || []}
             editPath={`${window.location.pathname}/edit`}
             columns={columns}   //Must define table columns according to your data
-        />
-          {limit > 10 && <Pagination totalItems={totalCount} itemsPerPage = {10}/>}
+          />
+          {limit > 10 && <Pagination totalItems={totalCount} itemsPerPage={10} />}
         </div>
       )}
       <Dialog open={open} handler={handleOpen}>
-        <DialogHeader>Delete Step?</DialogHeader>
-        
+        <DialogHeader>Delete Role?</DialogHeader>
+
         <DialogFooter>
           <Button
             variant="gradient"
@@ -158,12 +161,12 @@ const Roles = () => {
             <span>Cancel</span>
           </Button>
           <Button onClick={confirmDelete} variant="danger" color="green" >
-          {isDeletingRole ?
-            <div className='flex justify-center items-center gap-3'>
-              <Spinner color='white' className="h-4 w-4" />
-              Deleting Team
-            </div>
-            : "Delete Team"}
+            {isDeletingRole ?
+              <div className='flex justify-center items-center gap-3'>
+                <Spinner color='white' className="h-4 w-4" />
+                Deleting Role
+              </div>
+              : "Delete Role"}
           </Button>
         </DialogFooter>
       </Dialog>

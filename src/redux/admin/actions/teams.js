@@ -45,6 +45,7 @@ export const fetchTeamById = createAsyncThunk(
         });
         return response.data;
       } catch (error) {
+        console.log(error, "error from create team")
         return rejectWithValue(error.response.data);
       }
     }

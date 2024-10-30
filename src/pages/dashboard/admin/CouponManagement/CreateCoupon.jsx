@@ -14,6 +14,7 @@ import HeaderTitle from '@/components/common/HeaderTitle';
 import LoadingPage from '@/components/common/LoadingPage';
 import { setDateMin } from '@/Helpers/globalfunctions';
 import { getActiveSubCategoryListAll } from '@/redux/admin/slices/Service';
+import Spinner from '@/components/common/Spinner';
 
 const CouponForm = () => {
   const { id } = useParams();
@@ -22,7 +23,7 @@ const CouponForm = () => {
   const [searchParams] = useSearchParams();
 
 
-  const { activeCategories, activeSubCategoriesList, getActiveBusinessEmailList } = useSelector((state) => state.service)
+  const { activeCategories, activeSubCategoriesList, getActiveBusinessEmailList,activeCategoryLoading } = useSelector((state) => state.service)
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const CouponForm = () => {
 
 
 
-  
+  console.log("check the cetegory value ..........", activeCategoryLoading)
 
 
   const formattedActiveCategoryList = activeCategories?.map(category => ({
@@ -96,11 +97,13 @@ const CouponForm = () => {
     subCategoryId: Yup.array()
       .of(Yup.string().required('At least one sub-category is required'))
       .min(1, 'At least one sub-category must be selected'),
-    // activeBusinessEmail: Yup.array()
-    //   .of(Yup.string().required('At least one business email is required'))
-    //   .min(1, 'At least one business email must be selected'),
+    activeBusinessEmail: Yup.array()
+      .of(Yup.string().optional('At least one business email is required'))
+      .min(1, 'At least one business email must be selected'),
     oneTime: Yup.boolean(),
     multiUse: Yup.boolean(),
+    percentage: Yup.boolean(),
+    fixed: Yup.boolean(),
   });
 
 
@@ -116,7 +119,7 @@ const CouponForm = () => {
         categoryIds: values.categoryId,
         subCategoryIds: values.subCategoryId,
         usageType: values.multiUse == true ? "Multi Use" : values.oneTime == true ? "One Time" : "",
-        discountType: values.fixed == true ? "fixed" : values.percentage == true ? "percentage" : "",
+        discountType: values.fixed == true ? "amount" : values.percentage == true ? "percentage" : "",
         businesses: values.activeBusinessEmail
 
       }
@@ -135,7 +138,7 @@ const CouponForm = () => {
         categoryIds: values.categoryId,
         subCategoryIds: values.subCategoryId,
         usageType: values.multiUse == true ? "Multi Use" : values.oneTime == true ? "One Time" : "",
-        discountType: values.fixed == true ? "fixed" : values.percentage == true ? "percentage" : "",
+        discountType: values.fixed == true ? "amount" : values.percentage == true ? "percentage" : "",
         businesses: values.activeBusinessEmail,
       
 
@@ -151,12 +154,7 @@ const CouponForm = () => {
     }
   };
 
-  const handleResetForm = (resetForm) => {
-
-    setSelectedCoupon({})
-    resetForm()
-
-  }
+ 
 
   const breadcrumbData = [
     {
@@ -207,7 +205,7 @@ const CouponForm = () => {
               oneTime: selectedCoupon?.usageType === 'One Time',
               multiUse: selectedCoupon?.usageType === 'Multi Use',
               activeBusinessEmail: selectedCoupon?.businesses || [],
-              fixed: selectedCoupon?.discountType === 'fixed',
+              fixed: selectedCoupon?.discountType === 'amount',
               percentage: selectedCoupon?.discountType === 'percentage',
 
             }}
@@ -216,7 +214,7 @@ const CouponForm = () => {
 
           >
             {({ isSubmitting, resetForm, setFieldValue, values, handleBlur, touched,
-              handleChange, setFieldTouched,
+              handleChange, setFieldTouched,dirty,isValid,
               errors, }) => (
               <Form className="space-y-4">
                 <div>
@@ -242,7 +240,7 @@ const CouponForm = () => {
                       type="radio"
                       name="discountType"
                       className='p-2'
-                      value="fixed"
+                      value="amount"
                       checked={values?.fixed}
                       onChange={() => {
                         setFieldValue('fixed', true);  // Set 'oneTime' as true
@@ -299,11 +297,12 @@ const CouponForm = () => {
                     name="categoryId"
                     options={formattedActiveCategoryList}
                     className="basic-multi-select"
+                    isLoading={activeCategoryLoading}
                     classNamePrefix="select"
                     value={formattedActiveCategoryList?.filter(option => values?.categoryId.includes(option.value))}
                     onChange={(selectedOptions) => {
                       const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
-                      console.log("check the cetegory value ..........", selectedValues)
+                      
                       setFieldValue("categoryId", selectedValues);
                       if (selectedValues.length > 0) {
                         dispatch(getAllActiveSubCategoriesAll({ sectionIds: selectedValues }));
@@ -312,6 +311,7 @@ const CouponForm = () => {
                     }}
                     onBlur={() => setFieldTouched('categoryId', true)}
                   />
+                
                   {errors.categoryId && touched.categoryId && <p className='text-sm text-red-500'>{errors.categoryId}</p>}
                 </div>
 
@@ -397,8 +397,8 @@ const CouponForm = () => {
                 <div className="flex space-x-4">
                   <button
                     type="submit"
-                    disabled={isCouponCreating || isCouponUpdating}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                    disabled={isCouponCreating || isCouponUpdating || !(dirty && isValid)}
+                    className="bg-blue-500 disabled:opacity-75 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   >
                     {isCouponCreating ? <TailSpin color="#fff" height={20} width={20} /> : id ? 'Update Coupon' : 'Create Coupon'}
                   </button>

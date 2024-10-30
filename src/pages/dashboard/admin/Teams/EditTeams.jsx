@@ -38,7 +38,7 @@ const EditTeam = () => {
       url: "/dashboard/admin/teams",
       children: [
         {
-          name: 'Edit Team'
+          name: 'Update Team'
         },
       ],
 }
@@ -66,7 +66,7 @@ const EditTeam = () => {
         </div>
       ) : team ? (
         // Render table with attributes data
-        <AddEditRolesAndTeams initialValues={{ team }} type={"team"} subType={"add"} />
+        <AddEditRolesAndTeams initialValues={{ team }} type={"team"} subType={"edit"} />
       ) : (
         // Initially show "No Data" if no attributes are fetched
         <p>No Data</p>

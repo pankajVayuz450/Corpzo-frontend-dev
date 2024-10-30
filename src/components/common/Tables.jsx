@@ -6,12 +6,12 @@ import Pagination from './Pagination';
 import { Switch } from '@material-tailwind/react';
 import SearchBox from './SearchBox';
 
-const ReusableTable = ({ data, totalData, columns=[], editPath, onDelete, onStatusChange}) => {
+const ReusableTable = ({ data, totalData, columns = [], editPath, onDelete, onStatusChange }) => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const navigate = useNavigate();
 
-  
+
 
   const [searchParams] = useSearchParams('page');
 
@@ -31,12 +31,12 @@ const ReusableTable = ({ data, totalData, columns=[], editPath, onDelete, onStat
   // const handleEdit = id => {
   //   navigate(`${editPath}/${id}`);
   // };
-  
+
 
   const tableColumns = useMemo(() => [
     {
       Header: 'Sr. No',
-      Cell: ({ row }) => <div>{(page - 1)*10 +row.index + 1}</div>, // Add custom Sr. No column
+      Cell: ({ row }) => <div>{(page - 1) * 10 + row.index + 1}</div>, // Add custom Sr. No column
     },
     ...columns, // Spread parent-passed columns
     //  {
@@ -69,7 +69,7 @@ const ReusableTable = ({ data, totalData, columns=[], editPath, onDelete, onStat
     // },
   ], []);
 
-  
+
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: tableColumns, data });
 
@@ -112,7 +112,9 @@ const ReusableTable = ({ data, totalData, columns=[], editPath, onDelete, onStat
           </table>
           {/* <Pagination totalItems={totalData} itemsPerPage={10} /> */}
         </div>
-      ) : <div className="text-center text-gray-500">No data found</div>}
+      ) : <div className="flex justify-center items-center h-screen">
+        <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
+      </div>}
 
       <Transition appear show={open} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={() => setOpen(false)}>

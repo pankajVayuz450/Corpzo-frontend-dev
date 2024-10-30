@@ -20,6 +20,7 @@ import { throttle } from '@/Helpers/globalfunctions';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import Pagination from '@/components/common/Pagination';
+import HeaderTitle from '@/components/common/HeaderTitle';
 const Category = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isInitial, setIsInitial] = useState(true);
@@ -36,12 +37,6 @@ const Category = () => {
 
     navigate(`/dashboard/admin/masterSettings/Sub-Category/edit-sub-category/${id}`);
     dispatch(updateEditPage(searchParams.get("page") || 1));
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
   };
 
   useEffect(() => {
@@ -66,60 +61,8 @@ const Category = () => {
     }
     dispatch(updateStatus(form.subCategoryId, data, navigate));
   };
-  const handlePageClick = (e) => {
-    if (searchQuery !== "") {
-      setSearchParams({ page: e.selected + 1, limit: 10, search: searchQuery })
-    } else {
-      setSearchParams({ page: e.selected + 1, limit: 10 })
-    }
 
-  }
 
-  const handleClearFilter = () => {
-    setSearchQuery('');
-    setSearchParams({});
-    setSearchQuery('')
-    setIsInitial(true);
-  };
-
-useEffect(()=>{
-  let timer = setTimeout(()=>{
-    setIsInitial(false);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, 2000)
-
-  return 
-})
-  const throttledSearch = useCallback(throttle(() => {
-    const regex = /^[a-zA-Z0-9 ]*$/;
-    if (searchQuery === "") {
-      toast.warn("Search cannot be empty");
-      return;
-    }else if (searchQuery.trim() === "") {
-      toast.warn("Search cannot be just spaces");
-      return;
-    }else if (!regex.test(searchQuery)) {
-      toast.warn("Special characters are not allowed");
-      return;
-    }  else if (searchQuery.length <= 3) {
-      toast.warn("Seach term should more than 3 characters long")
-      return;
-    } else if (searchQuery.length > 50) {
-      toast.warn("Searhch term cannot be more than 50 characters long")
-      return;
-    } else {
-      setSearchParams({ search: searchQuery });
-    }
-  }, 500), [searchQuery, dispatch, setSearchParams]);
-
-  const handleSearch = () => {
-    setIsSearching(true);
-    throttledSearch();
-    setIsInitial(false);
-  };
 
   const breadcrumbData = [
     {
@@ -136,9 +79,10 @@ useEffect(()=>{
   ];
   return (
 
-    <div className='w-full'>
+    <div className='w-full mt-4'>
       <Breadcrumb items={breadcrumbData}/>
       <TitleComponent title={"CORPZO | Sub Category"}></TitleComponent>
+      <HeaderTitle title={"Sub Category Management"} totalCount={totalRecords}/>
       <div className='flex gap-4 justify-between items-center w-full mb-4'>
         <NavLink to="/dashboard/admin/masterSettings/Sub-Category/add-sub-category" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Create Sub Category

@@ -2,7 +2,7 @@ import OfferApis from '@/constants/APIList/offerAPIs';
 import serviceAPIs from '@/constants/APIList/ServiceAPIs';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getServices, updateLoading, getActiveCategoryList, getServiceById, updateUploadLoading, getActiveSubCategoryList, getForms, updateAdding, updateVideoUrl, updateStatusLoading, updateStatusState, getActiveSubCategoryListAll, getActiveBusinessEmail1, updateContent, updateHeader, getActiveSelectedSubCategoryListAll } from "../../slices/Service"
+import { getServices, updateLoading, getActiveCategoryList, getServiceById, updateUploadLoading, getActiveSubCategoryList, getForms, updateAdding, updateVideoUrl, updateStatusLoading, updateStatusState, getActiveSubCategoryListAll, getActiveBusinessEmail1, updateContent, updateHeader, getActiveSelectedSubCategoryListAll, setCategoryLoading } from "../../slices/Service"
 const authToken = localStorage.getItem('authToken');
 
 export const getAllServices = (limit = 10, page = 1, search = "", id) => {
@@ -153,6 +153,7 @@ export const getAllActiveSubCategories = (categoryId) => {
 export const getAllActiveSubCategoriesAll = (categoryId) => {
     console.log(categoryId, "categoryId................")
     return async (dispatch) => {
+        dispatch(setCategoryLoading(true))
 
         try {
 
@@ -164,6 +165,7 @@ export const getAllActiveSubCategoriesAll = (categoryId) => {
                 }
             });
             if (response.status === 200) {
+                dispatch(setCategoryLoading(false))
                 dispatch(getActiveSubCategoryListAll({
                     activeSubCategoriesList: response.data.data || [],
                 }));
@@ -171,10 +173,11 @@ export const getAllActiveSubCategoriesAll = (categoryId) => {
         } catch (error) {
             console.error('Error fetching subcategories:', error);
             // toast.error(error.response.data.error)
+            dispatch(setCategoryLoading(false))
 
         } finally {
 
-            dispatch(updateLoading(false));
+            dispatch(setCategoryLoading(false))
 
         }
     };
@@ -251,9 +254,10 @@ export const getAllForms = () => {
                     Authorization: `Bearer ${authToken}`
                 }
             });
+            console.log(response.data.data.data, "response.data.data")
             if (response.status === 200) {
                 dispatch(getForms({
-                    forms: response.data.data || [],
+                    forms: response.data.data.data || [],
                 }));
             }
         } catch (error) {

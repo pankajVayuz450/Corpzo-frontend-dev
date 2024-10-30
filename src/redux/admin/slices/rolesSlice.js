@@ -54,17 +54,17 @@ const rolesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllRoles.pending, (state) => {
-        state.isFetchingRole = true;
+        state.isFetchingRoles = true;
       })
     builder.addCase(fetchAllRoles.fulfilled, (state, action) => {
-      state.isFetchingRole = false;
+      state.isFetchingRoles = false;
       state.roles = action.payload.roles;
       state.page = action.payload.page;
       state.limit = action.payload.limit;
       state.totalCount = action.payload.totalCount;
     })
     builder.addCase(fetchAllRoles.rejected, (state, action) => {
-      state.isFetchingRole = false;
+      state.isFetchingRoles = false;
       state.fetchingRoleError = action.payload;
     })
 

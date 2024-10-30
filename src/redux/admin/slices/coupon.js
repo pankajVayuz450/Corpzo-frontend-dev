@@ -8,6 +8,7 @@ const initialState = {
     isCouponsFetching: false,
     isCouponUpdating: false,
     isCouponDeleting: false,
+    isActiveCouponIndex:0,
     totalPages : 0,
  totalCount : 0,
  department : {},
@@ -25,14 +26,14 @@ const CouponSlice = createSlice({
       state.totalCount = action.payload.totalCount
       state.currentPage = action.payload.currentPage
     }, 
-    createCoupon : (state, action)=>{
+    createCouponReducer : (state, action)=>{
       const newCoupon = action.payload; 
-      console.log("create coupon dispatch ",newCoupon)
+     
       
     }, 
     updateCoupon : (state, action)=>{
       const newCoupon = action.payload; 
-      console.log("create coupon dispatch ",newCoupon)
+     
       
     }, 
     couponLoadingCreate : (state, action)=> {
@@ -81,11 +82,14 @@ const CouponSlice = createSlice({
     }, 
     updateEditPage : (state, action)=> {
       state.editPage = action.payload;
+    },
+    setCouponIndex : (state, action)=> {
+      state.isActiveCouponIndex = action.payload;
     }
     
   },
 });
 
-export const { getAllCouponsList,couponLoadingFatch,couponLoadingCreate,createCoupon,couponLoadingUpdate,updateCouponStatusState,updateCoupon} = CouponSlice.actions;
+export const { getAllCouponsList,couponLoadingFatch,couponLoadingCreate,createCouponReducer,couponLoadingUpdate,updateCouponStatusState,updateCoupon,setCouponIndex} = CouponSlice.actions;
 
 export default CouponSlice.reducer;

@@ -18,10 +18,10 @@ import { updateEditPage } from '@/redux/admin/slices/MasterSettings/DepartmentSl
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import Pagination from '@/components/common/Pagination';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
+import HeaderTitle from '@/components/common/HeaderTitle';
 const Department = () => {
 
   const dispatch = useDispatch();
-  const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const { departmentList, isFetching, totalCount, totalPages, isStatusLoading } = useSelector((state) => state.department);
   const navigate = useNavigate();
@@ -30,16 +30,6 @@ const Department = () => {
   const handleEdit = (id) => {
     navigate(`/dashboard/admin/masterSettings/Department/edit-department/${id}`);
     dispatch(updateEditPage(searchParams.get("page") || 1));
-  };
-
-  // Handle pagination
-  const handlePageClick = (e) => {
-    if (searchQuery !== "") {
-      setSearchParams({ page: e.selected + 1, limit: 10, search: searchQuery });
-    } else {
-
-      setSearchParams({ page: e.selected + 1, limit: 10 });
-    }
   };
 
   // Toggle department status
@@ -53,54 +43,15 @@ const Department = () => {
     dispatch(updateStatus(form.departmentId, data));
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
   // Automatically fetch departments based on searchParams
   useEffect(() => {
     const query = searchParams.get('search') || '';
     const page = searchParams.get('page') || 1;
     const limit = searchParams.get('limit') || 10;
 
-    setSearchQuery(query);
-
     dispatch(getAllDepartments(page, limit, query));
   }, [searchParams, dispatch]);
 
-  // Clear filter
-  const handleClearFilter = () => {
-    setSearchQuery('');
-    setSearchParams({});
-  };
-
-
-  const throttledSearch = useCallback(throttle(() => {
-    const regex = /^[a-zA-Z0-9 ]*$/;
-    if (searchQuery === "") {
-      toast.warn("Search cannot be empty");
-      return;
-    }else if (searchQuery.trim() === "") {
-      toast.warn("Search cannot be just spaces");
-      return;
-    }else if (!regex.test(searchQuery)) {
-      toast.warn("Special characters are not allowed");
-      return;
-    }  else if (searchQuery !== "" && searchQuery.length > 50) {
-      toast.warn("Search term cannot be more than 50 characters long")
-      return
-    } else if (searchQuery.length < 3) {
-      toast.warn("Search cannot be less than 3 characters")
-      return
-    } else {
-      setSearchParams({ search: searchQuery });
-    }
-  }, 500), [searchQuery, dispatch, setSearchParams]);
-
-  const handleSearch = () => {
-    throttledSearch();
-  };
 
   const breadcrumbData = [
     {
@@ -114,9 +65,10 @@ const Department = () => {
     }
   ];
   return (
-    <div className='w-full h-full'>
+    <div className='w-full h-full mt-4'>
        <Breadcrumb items={breadcrumbData}/>
       <TitleComponent title={"CORPZO | Department Management"}></TitleComponent>
+      <HeaderTitle title={"Department Management"} totalCount={totalCount}/>
       <div className='flex gap-4 justify-between items-center w-full mb-4'>
         <NavLink to="/dashboard/admin/masterSettings/Department/add-department" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
           Create Department
@@ -174,16 +126,14 @@ const Department = () => {
                         <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                       </td>
                       <td>
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {form.active === true ? 'Active' : 'Inactive'}
-                        </span>
+                      <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} />
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex space-x-2">
                           <button onClick={() => handleEdit(form.departmentId)} className="text-blue-500 hover:text-blue-700">
                             Edit
                           </button>
-                          <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} />
+                          {/* <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} /> */}
                         </div>
                       </td>
                     </tr>

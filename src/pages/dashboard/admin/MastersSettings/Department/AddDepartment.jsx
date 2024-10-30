@@ -3,6 +3,7 @@ import {
   Input,
   Spinner,
   Switch,
+  Textarea,
   Typography
 } from "@material-tailwind/react";
 import { useFormik } from 'formik';
@@ -14,6 +15,7 @@ import TitleComponent from '@/components/common/TitleComponent';
 import { validationSchema } from './ValidationSchema';
 import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
 const initialValues = {
   name: "",
   description: "",
@@ -70,8 +72,6 @@ const AddDepartment = () => {
   useEffect(() => {
     console.log(data)
     if (id !== undefined && data) {
-      console.log("insdie useeffect departmnet......")
-      console.log(data, "DATA FROM USEEFFECT")
       setFieldValue("name", data.name || "")
       setFieldValue("description", data.description || "")
     } else {
@@ -106,23 +106,23 @@ const AddDepartment = () => {
   ];
 
   return (
-    <div className='relative'>
+    <div className=''>
       <Breadcrumb items={breadcrumbData}/>
-      <TitleComponent title={id ? "CORPZO | Update Department" : "CORPZO | Add Department"} />
-      <h1 className="text-xl md:text-3xl font-semibold mb-4">{id !== undefined ? "Update Department" : "Add Department"}</h1>
+      <TitleComponent title={id ? "CORPZO | Update Department" : "CORPZO | Create Department"} />
+      <HeaderTitle title={id ? "Update Department" : "Create Department"}/>
       {
         id !== undefined && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">
             <TailSpin height={50} width={50} color="blue" />
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4 mt-4">
             <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
               Department
             </Typography>
             <Input
               size="sm"
-              placeholder="Add Department"
+              placeholder="Enter Department"
               className="!border-t-blue-gray-200 focus:!border-t-gray-900 w-full"
               labelProps={{
                 className: "before:content-none after:content-none",
@@ -138,9 +138,9 @@ const AddDepartment = () => {
             <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
               Description
             </Typography>
-            <Input
+            <Textarea
               size="sm"
-              placeholder="Add Description"
+              placeholder="Enter Description"
               className="!border-t-blue-gray-200 focus:!border-t-gray-900 w-full"
               labelProps={{
                 className: "before:content-none after:content-none",

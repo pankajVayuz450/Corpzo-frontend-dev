@@ -50,17 +50,17 @@ const teamsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllTeams.pending, (state) => {
-        state.isFetchingTeam = true;
+        state.isFetchingTeams = true;
       })
       builder.addCase(fetchAllTeams.fulfilled, (state, action) => {
-        state.isFetchingTeam = false;
+        state.isFetchingTeams = false;
         state.teams = action.payload.teams;
         state.page = action.payload.page;
         state.limit = action.payload.limit;
         state.totalCount = action.payload.totalCount;
       })
       builder.addCase(fetchAllTeams.rejected, (state, action) => {
-        state.isFetchingTeam = false;
+        state.isFetchingTeams = false;
         state.fetchingTeamError = action.payload.message;
       })
 

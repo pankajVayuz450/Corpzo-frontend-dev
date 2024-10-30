@@ -16,7 +16,7 @@ const AddTeam = () => {
           url: "/dashboard/admin/teams",
           children: [
             {
-              name: 'Add Team'
+              name: 'Create Team'
             },
           ],
     }

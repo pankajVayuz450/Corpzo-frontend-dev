@@ -19,6 +19,8 @@ import { FaFilter } from "react-icons/fa";
 import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from '@material-tailwind/react';
 import Select from 'react-select';
 import { getActiveBusinessEmail, getAllActiveCategories, getAllActiveSelectedSubCategories, getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
+import { setCouponIndex } from '@/redux/admin/slices/coupon';
+import Spinner from '@/components/common/Spinner';
 const CouponList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -26,7 +28,7 @@ const CouponList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([[], [], []]); // For three dropdowns
   const [selectedCoupon, setSelectedCoupon] = useState(null);
-  const { couponsList, coupons, isCouponsFetching, totalCount, currentPage, isCouponUpdating } = useSelector((state) => state.coupons);
+  const { couponsList, coupons, isCouponsFetching, totalCount, currentPage, isCouponUpdating, isActiveCouponIndex } = useSelector((state) => state.coupons);
   console.log("coupons isCouponUpdating", isCouponUpdating);
   const { activeCategories, activeSubCategoriesList, getActiveBusinessEmailList } = useSelector((state) => state.service)
   const [selectedCategoryIds, setSelectedCategoryIds] = useState('[]');
@@ -42,6 +44,10 @@ const CouponList = () => {
   const page = searchParams.get('page') || 1;
   const limit = searchParams.get('limit') || 10
   const search = searchParams.get('search') || "";
+
+
+
+  console.log("check coupon value", isActiveCouponIndex, isCouponsFetching, isCouponUpdating)
 
   const formattedActiveCategoryList = activeCategories?.map(category => ({
     value: category.categoryId,
@@ -74,12 +80,14 @@ const CouponList = () => {
 
   }, [page, limit, search]);
 
-  const handleStatus = (form) => {
+  const handleStatus = (form, index) => {
     const newStatus = !form.active; // Toggle the status
     const data = {
-
       active: newStatus, // Updated status
     };
+
+    dispatch(setCouponIndex(index))
+
 
     // Dispatch the updateCoupon action with the couponId and updated fields
     dispatch(updateCouponStatus(form.couponId, data)); // Pass the couponId and flattened data
@@ -201,7 +209,7 @@ const CouponList = () => {
                   setFieldValue("subCategoryId", selectedValues);
 
                 }}
-              
+
               />
             </div>
             <div>
@@ -291,9 +299,11 @@ const CouponList = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">{formatReadableDate(form?.validity)}</div>
                       </td>
-                      <td >
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form?.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                          {form.active === true ? 'Active' : 'Inactive'}
+                      <td className="px-6 py-4 whitespace-nowrap" >
+                        <span className=''>
+                          {isCouponUpdating && isActiveCouponIndex === index ? <Spinner size="2" color="text-green-500" />:<Switch key={index} checked={form.active} disabled={isCouponUpdating} onChange={() => { handleStatus(form, index) }} color={form?.active == true ? 'green' : 'red'} />}
+
+                          
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -305,7 +315,7 @@ const CouponList = () => {
                           >
                             Edit
                           </button>
-                          <Switch checked={form.active} disabled={isCouponUpdating} onChange={() => { handleStatus(form) }} />
+
                         </div>
                       </td>
                     </tr>

@@ -61,7 +61,7 @@ const CreateFaq = () => {
           active: values.active
         }
         dispatch(editFaq(id, data, navigate, editPage))
-        setFieldValue("answer", "")
+        // setFieldValue("answer", "")
       } else {
         const data = {
           question: handleExtraSpaces(values.question),

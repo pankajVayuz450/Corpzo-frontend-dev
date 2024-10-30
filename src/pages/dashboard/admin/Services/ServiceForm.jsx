@@ -117,15 +117,15 @@ const ServiceForm = () => {
 
   console.log(forms, "from state");
 
-  const formattedFormsList = forms?.data?.map(form => ({
-    value: form._id,
-    label: form.title
-  }));
   useEffect(() => {
     dispatch(getAllActiveCategories(true))
     dispatch(getAllForms())
   }, [])
-
+  const formattedFormsList = forms?.map(form => ({
+    value: form._id,
+    label: form.title
+  }));
+  // const formattedFormsList = []
   useEffect(() => {
     if (id !== undefined && service) {
       setFieldValue("name", service.name || "");
@@ -235,7 +235,26 @@ const ServiceForm = () => {
       setFieldValue('cost', null);
     }
   };
-
+  const handleServiceDetailChange = (e) => {
+    const { value } = e.target;
+    // Check for at least one alphabet character
+    const containsAlphabet = /[a-zA-Z]/.test(value);
+  
+    // Only set the value if there’s at least one alphabet character
+    if (containsAlphabet || value === "") {
+      setFieldValue("details", value);
+    }
+  };
+  const handleServiceAboutChange = (e) => {
+    const { value } = e.target;
+    // Check for at least one alphabet character
+    const containsAlphabet = /[a-zA-Z]/.test(value);
+  
+    // Only set the value if there’s at least one alphabet character
+    if (containsAlphabet || value === "") {
+      setFieldValue("about", value);
+    }
+  };
   const handleUpload = (file, type) => {
     const formData = new FormData();
     formData.append('files', file); // Pass file to FormData
@@ -363,7 +382,7 @@ const ServiceForm = () => {
                     }}
                     name='details'
                     value={values.details}
-                    onChange={handleChange}
+                    onChange={handleServiceDetailChange}
                     // onChange={(e) => {
                     //   const value = e.target.value.trim();
                     //   if (/^[a-zA-Z0-9]*$/.test(value)) {
@@ -506,7 +525,7 @@ const ServiceForm = () => {
                     }}
                     name='about'
                     value={values.about}
-                    onChange={handleChange}
+                    onChange={handleServiceAboutChange}
                     onBlur={handleBlur}
                     maxLength={200}
                   />

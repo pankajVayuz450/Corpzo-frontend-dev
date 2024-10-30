@@ -45,6 +45,7 @@ const CreateOffer = () => {
     isValid,
     setErrors,
     resetForm,
+    setFieldError, 
     dirty,
     setFieldTouched
   } = useFormik({
@@ -93,6 +94,10 @@ const CreateOffer = () => {
       setFieldValue("discountPercent", offer.discountPercent)
       setFieldValue("validity", formattedDate)
       setFieldValue("applicableUserType", offer.applicableUserType)
+
+      if (new Date(formattedDate) < new Date()) {
+        setFieldError("validity", "The selected date is in the past. Please choose a future date.");
+      }
     } else {
       setFieldValue("offerTitle", "")
       setFieldValue("serviceId", []);
@@ -103,8 +108,9 @@ const CreateOffer = () => {
       resetForm();  
       setTouched({});  
     }
-    setTouched({});  
-    setErrors({})
+    // setTouched({});  
+    // setErrors({})
+
 
 
   }, [offer, setFieldValue])
@@ -124,6 +130,17 @@ const CreateOffer = () => {
   
     if (isValid) {
       setFieldValue('discountPercent', formattedValue);
+    }
+  };
+
+  const handleOfferDetailChange = (e) => {
+    const { value } = e.target;
+    // Check for at least one alphabet character
+    const containsAlphabet = /[a-zA-Z]/.test(value);
+  
+    // Only set the value if there’s at least one alphabet character
+    if (containsAlphabet || value === "") {
+      setFieldValue("offerDetail", value);
     }
   };
   const breadcrumbData = [
@@ -188,7 +205,7 @@ const CreateOffer = () => {
                   name='offerDetail'
                   onFocus={() => touched.offerDetail = true}
                   value={values.offerDetail}
-                  onChange={handleChange}
+                  onChange={handleOfferDetailChange}
                   onBlur={handleBlur}
                 />
                 {errors.offerDetail && touched.offerDetail && <p className='text-sm text-red-500'>{errors.offerDetail}</p>}
