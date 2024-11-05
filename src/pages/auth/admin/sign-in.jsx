@@ -7,7 +7,7 @@ import {
 } from "@material-tailwind/react";
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState,useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { loginAdmin } from '../../../redux/admin/actions/user';
 import { toast } from 'react-toastify';
 import { TailSpin } from "react-loader-spinner";
@@ -18,10 +18,17 @@ import * as Yup from 'yup';
 import { adminLogin, handleOtp, resendOtp, verifyOTP, handleLoading } from "@/redux/admin/slices/adminSlice";
 import TitleComponent from "@/components/common/TitleComponent";
 import ReCAPTCHA from "react-google-recaptcha";
-import ReCAPTCHAForm from "../../../components/common/ReCaptcha";
 // Validation schema for Formik
 const validationSchema = Yup.object({
-  email: Yup.string().email('Invalid email address').matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|io|info|biz)$', 'Invalid email format').required('Email is required'),
+  // email: Yup.string().email('Invalid email address').matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|io|info|biz)$', 'Invalid email format').required('Email is required'),
+  password: Yup.string().required('Password is required'),
+  emailOrPhone: Yup.string()
+  .required('This field is required')
+  .test('emailOrPhone', 'Enter a valid email or phone number', function (value) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|io|info|biz)$/;
+    const phoneRegex = /^\d{10}$/; // Example 10-digit phone number format
+    return emailRegex.test(value) || phoneRegex.test(value);
+  }),
 });
 
 export function SignIn() {
@@ -30,42 +37,49 @@ export function SignIn() {
   const isLoading = useSelector((state) => state?.admin?.isLoading);
   const store = useSelector((state) => state?.admin?.user);
   const isOtp = useSelector((state) => state.admin.isOtp)
+  const id = useSelector((state)=> state.admin.id)
   const navigate = useNavigate();
   const [isResendDisabled, setIsResendDisabled] = useState(false);
   const [resendTimer, setResendTimer] = useState(null);
-  const [recaptcha, setRecaptchaToken]= useState('');
+  const [recaptcha, setRecaptchaToken] = useState('');
   const [loading, setLoading] = useState(isLoading)
 
-  const recaptchaRef =useRef();
+  const recaptchaRef = useRef();
   const { values, touched, errors, handleBlur, handleChange, handleSubmit, setFieldValue, setErrors, setTouched, dirty, isValid } = useFormik({
     initialValues: {
-      email: "",
+      // email: "",
+      password : "",
+      emailOrPhone: ""
     },
     validationSchema: validationSchema,
-    onSubmit: async(values) => {
+    onSubmit: async (values) => {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|org|net|edu|gov|io|info|biz)$/;
+      const payload = emailRegex.test(values.emailOrPhone)
+      ? { email: values.emailOrPhone, password: values.password }
+      : { phoneNumber: values.emailOrPhone, password: values.password };
+      let data
+      const token = await recaptchaRef.current.executeAsync().then((res) => {
+        console.log("check response ", res)
 
-      let  data 
-      const token = await recaptchaRef.current.executeAsync().then((res)=>{
-        console.log("check response ",res)
-
-        data = {email:values.email,recaptchaToken:res}
+        data = {...payload, recaptchaToken: res }
+        console.log(data, "data from form")
         verifyEmail(data);
 
-      })       
-      
+      })
+
     }
   });
 
-  
- 
+
+
 
   const verifyEmail = async (data) => {
-    
+
     // if(isLoading){
     //   return;
     // }
     setLoading(true);
-    dispatch(adminLogin(data)); 
+    dispatch(adminLogin(data));
     setLoading(false);
   };
 
@@ -82,8 +96,6 @@ export function SignIn() {
     }
   };
 
-  const siteKey = "6LdmW04qAAAAAEkCdYv1iA3LfoJaZmRlwse5EWqt"
-  const secreteKey = "6LdmW04qAAAAAMmce8jot6nLRNTKZG2fmcgi1D5t"
   const handleBackButton = () => {
     dispatch(handleOtp(false))
     setFieldValue("email", "")
@@ -118,19 +130,19 @@ export function SignIn() {
   const verifyOTPHandler = (e) => {
     e.preventDefault();
     const otpCode = otp.join('');
-    dispatch(verifyOTP({ email: values.email, otp: otpCode, navigate }));
+    dispatch(verifyOTP({ id: id, otp: otpCode, navigate }));
   };
 
   // if (store?.role === "admin") {
   //   login(store.role, store.token);
   // }
 
- 
+
   const handleResendOtp = () => {
     console.log("Current Formik values:", values);
-    console.log("Email value on resend:", values.email); 
+    console.log("Email value on resend:", values.email);
     setOtp(new Array(6).fill(""))
-    dispatch(resendOtp({ email: values.email }));
+    dispatch(resendOtp({ id: id }));
     setIsResendDisabled(true);
     setResendTimer(60);
   };
@@ -158,40 +170,55 @@ export function SignIn() {
       <section className="m-8 flex items-center gap-4">
         <TitleComponent title={"CORPZO | Sign In"} />
         <div className="w-full lg:w-3/5">
-          <div className="text-center">
-            <Typography variant="h2" className="font-bold mb-4">Sign In</Typography>
-            <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your email to Sign In.</Typography>
-          </div>
+          <div className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
 
-          <form onSubmit={handleSubmit} className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
-            <div className="mb-1 flex flex-col gap-6">
-              <Input
-                name="email"
-                value={values.email}
-                size="lg"
-                placeholder="example@mail.com"
-                onFocus={() => touched.email = true}
-                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                labelProps={{
-                  className: "before:content-none after:content-none",
-                }}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              <span className="text-red-500 text-xs">{touched.email && errors.email}</span>
+            <div className="text-left">
+              <Typography variant="h2" className="font-bold mb-4">Sign In</Typography>
+              <Typography variant="paragraph" className="text-lg font-normal text-gray-600">Please Sign In to continue to your account.</Typography>
             </div>
-            <ReCAPTCHA
-        ref={recaptchaRef}
-        size="invisible"
-        sitekey="6LemSE0qAAAAADhn4nN770nVLBJxAGRz_LoFXP6h"
-      />
-            {!isLoading
-              ? <Button disabled={!dirty && isValid} type="submit" className={`mt-6 ${loading || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-300 to-gray-400 cursor-not-allowed text-white' : ''}}`} fullWidth>Next</Button>
-              : <div className="flex items-center justify-center "><TailSpin color="#000" height={30} width={30} /></div>}
-          </form>
+
+            <form onSubmit={handleSubmit} className="mt-8 mb-2 mx-auto max-w-screen-lg">
+              <div className="mb-4 flex flex-col gap-2">
+                <Input
+                  name="emailOrPhone"
+                  variant="outlined"
+                  value={values.emailOrPhone}
+                  size="lg"
+                  label="Email/Phone Number"
+                  // placeholder="example@mail.com"
+                  onFocus={() => touched.emailOrPhone = true}
+                  
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <span className="text-red-500 text-xs">{touched.emailOrPhone && errors.emailOrPhone}</span>
+              </div>
+              <div className="mb-4 flex flex-col gap-2">
+              <Input
+                  name="password"
+                  variant="outlined"
+                  value={values.password}
+                  size="lg"
+                  label="Password"
+                  onFocus={() => touched.password = true}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                />
+                <span className="text-red-500 text-xs">{touched.password && errors.password}</span>
+              </div>
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                size="invisible"
+                sitekey="6LemSE0qAAAAADhn4nN770nVLBJxAGRz_LoFXP6h"
+              />
+              {!isLoading
+                ? <Button disabled={!dirty && isValid} type="submit" className={`mt-6 ${loading || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-300 to-gray-400 cursor-not-allowed text-white' : ''}}`} fullWidth>Sign In</Button>
+                : <div className="flex items-center justify-center "><TailSpin color="#000" height={30} width={30} /></div>}
+            </form>
+          </div>
         </div>
         <div className="w-[25%] hidden lg:block">
-          <img
+          <img  
             src="/img/pattern.png"
             className=" w-full object-cover rounded-3xl"
           />

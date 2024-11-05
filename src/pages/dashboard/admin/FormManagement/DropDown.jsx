@@ -15,7 +15,7 @@ function Dropdown({ field }) {
   return (
     <div className="bg-gray-300 p-4 m-4 w-96 rounded-md flex flex-col">
       <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">{field.label}</label>
+        <label className="block text-sm font-medium text-gray-700">{field.lebel}</label>
       </div>
 
       <select
@@ -24,9 +24,9 @@ function Dropdown({ field }) {
         className="mt-1 p-4 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
       >
         <option value="" disabled>Select an option</option> {/* Placeholder option */}
-        {field.options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.name}
+        {field.options?.map((option) => (
+          <option key={option} value={option}>
+            {option}
           </option>
         ))}
       </select>

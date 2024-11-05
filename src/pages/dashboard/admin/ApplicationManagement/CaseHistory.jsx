@@ -28,6 +28,7 @@ const CaseHistory = () => {
           
             
               name: 'Application',
+              url:"/dashboard/admin/application-management",
               children: [
                 {
                   name: 'Application Form',

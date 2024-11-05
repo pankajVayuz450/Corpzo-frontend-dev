@@ -26,7 +26,7 @@ function TextArea({ field }) {
     <div className="bg-blue-100 p-4 m-4 w-96 rounded-md flex flex-col">
       <div className="flex  flex-col items-center mb-2 mx-4  bg-gray-400 p-4 rounded-md">
         <label htmlFor={field.name} className="block text-sm font-medium text-gray-700">
-          {field.label}
+          {field.lebel}
         </label>
         <textarea
           id={field.name}

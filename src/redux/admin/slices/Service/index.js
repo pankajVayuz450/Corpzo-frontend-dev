@@ -63,13 +63,16 @@ const serivceSlice = createSlice({
       console.log(action.payload, "service slice video url");
       if (action.payload.fieldName === "deliverable") {
         state.delivrableVideoUrl = action.payload.url;
-        state.stepValue = 1
+        // state.stepValue = 1
       } else if (action.payload.fieldName === "step") {
         state.stepsVideoUrl = action.payload.url;
-        state.stepValue = 2
+        // state.stepValue = 2
       } else if (action.payload.fieldName === "document") {
         state.documentVideoUrl = action.payload.url;
-        state.stepValue = 2
+        // state.stepValue = 2
+      }
+      if (state.delivrableVideoUrl && state.stepsVideoUrl && state.documentVideoUrl) {
+        state.stepValue = 2;
       }
     },
     handleStepValue : (state, action)=>{

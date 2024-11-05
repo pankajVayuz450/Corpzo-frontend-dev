@@ -73,7 +73,9 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                 // File upload handling 
                 const formData = new FormData();
                 formData.append('files', file)
-                formData.append('folderId', folderId)
+                if (folderId) {
+                    formData.append('folderId', folderId);
+                }
                 console.log(file, "file mil gyi ")
                 dispatch(uploadDocument(formData))
             }

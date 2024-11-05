@@ -30,6 +30,7 @@ import SubadminPage from "./pages/dashboard/admin/SubAdminManagement/createSubAd
 import FolderDocuments from "./pages/dashboard/admin/DocumentManagement/DocumentFolders";
 import ViewService from "./pages/dashboard/admin/Services/ViewService";
 import ProtectedRoute from "./wrappers/ProtectedRoute";
+import ViewTransactionDocument from "./pages/dashboard/admin/UserManagement/ViewTransactionDocument";
 const Logo = lazy(()=> import("./pages/dashboard/admin/LogoModule"))
 const CouponForm = lazy(() => import('./pages/dashboard/admin/CouponManagement/CreateCoupon'));
 const CouponList = lazy(() => import('./pages/dashboard/admin/CouponManagement/coupounManagement'));
@@ -519,6 +520,12 @@ const adminRoutes = [
     path: "admin/usermanagement/view-all-business",
     name: "View All Business",
     element: <ViewAllBusiness />,
+    showInSidebar: false,
+  },
+  {
+    path: "admin/usermanagement/view-business-document/:transactionId",
+    name: "View All Business",
+    element: <ViewTransactionDocument/>,
     showInSidebar: false,
   }
   ,{

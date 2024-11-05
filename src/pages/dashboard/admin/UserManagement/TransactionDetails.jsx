@@ -2,13 +2,18 @@ import { getAllTransactions } from '@/redux/admin/actions/UserManagement'
 import { Switch } from '@material-tailwind/react';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom';
 const TransactionDetails = () => {
     const dispatch = useDispatch();
     const { transactionDetails } = useSelector((state) => state.userMgmt)
-    console.log(transactionDetails, "akldjnbladnlkafn")
+
+    const navigate = useNavigate();
     useEffect(() => {
         dispatch(getAllTransactions())
     }, [])
+    const handleView=(id)=>{
+        navigate(`/dashboard/admin/usermanagement/view-business-document/${id}`);
+    }
     return (
         <>
             {transactionDetails && transactionDetails.length > 0 ?

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Stepper, Step, Typography, Dialog, DialogBody } from "@material-tailwind/react";
+import { Stepper, Step, Typography, Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 import VideoPlayer from "@/components/common/VideoPlayer";
 import { useSelector } from "react-redux";
 
@@ -9,6 +9,7 @@ const StepperWithContent = ({
     handleConfirm,
 }) => {
     const {stepValue, delivrableVideoUrl,stepsVideoUrl, documentVideoUrl, uploadVideoLoading}=useSelector((state)=> state.service);
+    console.log(stepValue, "stepvalue")
     const [activeStep, setActiveStep] = useState(stepValue || 0);
     const [uploadedVideos, setUploadedVideos] = useState([null, null, null]); // State to store videos for each step
 
@@ -29,6 +30,7 @@ const StepperWithContent = ({
     }, [stepValue])
     return (
         <Dialog size="xs" open={open} handler={handleOpen}>
+            <DialogHeader>Upload videos for the service.</DialogHeader>
             <DialogBody>
                 <div className="w-full px-8 py-4">
                     <Stepper activeStep={activeStep}>

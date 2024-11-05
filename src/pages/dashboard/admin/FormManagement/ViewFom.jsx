@@ -5,6 +5,10 @@ import TextArea from './TextArea';
 import CheckBox from './CheckBox';
 import RadioButton from './RadioButton';
 import Dropdown from './DropDown';
+import { useParams } from 'react-router-dom';
+import { Spinner } from '@material-tailwind/react';
+import { TailSpin } from 'react-loader-spinner';
+import FileUpload from './FileUpload';
 
 
 const staticFormFieldData =  [
@@ -442,23 +446,37 @@ const staticFormFieldData =  [
 ]
 
 function ViewFom() {
-    const [formFields,setFormFields] = useState(staticFormFieldData);
-    console.log("formFields:",formFields);
-    
-    // useEffect(()=>{
-    //     const fetchFormfields = async ()=>{
-    //         const response = await axios.get('https://backend-ns7g.onrender.com/api/admin/form/dynamic-form?formId=671607ff69688d31daa1a687',{
-    //             headers: {
-    //                 Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjhiYjcwYWJjODA0YmJkYmI0NjExOWQiLCJuYW1lIjoiUGFua2FqIiwiZW1haWwiOiJyYWphcy52YXl1ekBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjczMzU5NDd9.xTcXjlhoMTYCUcZB4s8xc8UL-OJ8qoCEPfHMDf05Xqg`,
-    //               }
-    //         })
+    const [formFields,setFormFields] = useState([]);
 
-    //         // console.log("response",response.data?.data);
-    //         setFormFields(response.data?.data)
+    const [isLoading, setIsLoading] = useState(false);
+    const [noData, setNoData] = useState(false);
+
+    console.log("formFields:",formFields);
+    const { id } = useParams();
+    console.log(id);
+    
+
+    
+    useEffect(()=>{
+        const fetchFormfields = async ()=>{
+            setIsLoading(true);
+            const response = await axios.get(`https://backend-ns7g.onrender.com/api/admin/form/dynamic-form?formId=${id}`,{
+                headers: {
+                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjhiYjcwYWJjODA0YmJkYmI0NjExOWQiLCJuYW1lIjoiUGFua2FqIiwiZW1haWwiOiJyYWphcy52YXl1ekBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjczMzU5NDd9.xTcXjlhoMTYCUcZB4s8xc8UL-OJ8qoCEPfHMDf05Xqg`,
+                  }
+            })
+            setIsLoading(false)
+            console.log("response",response.data?.data);
+            if(response.data?.data.length<=0){
+                setNoData(true);
+            }else{
+                setNoData(false);
+            }
+            setFormFields(response.data?.data)
             
-    //     }
-    //     fetchFormfields();
-    // },[]);
+        }
+        fetchFormfields();
+    },[]);
 
     
 
@@ -473,6 +491,16 @@ function ViewFom() {
         
     }
 
+    if(isLoading){
+        return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        <TailSpin height="80" width="80" color="#4fa94d" ariaLabel="loading" visible={true} />
+      </div>
+    }
+
+    if(noData){
+        return <div>NO DATA</div>
+    }
+
   return (
     <div>
         <h1>View form page</h1>
@@ -482,10 +510,10 @@ function ViewFom() {
 
                 return <InputField field={field}/>
             }
-            else if(field.inputType === 'textarea'){
+            else if(field.inputType === "paragraph"){
 
                 return <TextArea field={field}/>
-            }else if(field.inputType === 'checkbox'){
+            }else if(field.inputType === 'checkboxes'){
 
                 return <CheckBox field={field}/>
             }else if(field.inputType === 'multiple_choice'){
@@ -494,6 +522,9 @@ function ViewFom() {
             }else if(field.inputType === 'dropdown'){
 
                 return <Dropdown field={field}/>
+            }else if(field.inputType === 'file'){
+
+                return <FileUpload field={field}/>
             }
         })}
         <button>Submit</button>

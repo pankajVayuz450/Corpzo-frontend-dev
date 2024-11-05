@@ -17,6 +17,9 @@ import Pagination from "@/components/common/Pagination";
 import SearchBoxNew from "@/components/common/SearchBoxNew";
 import Papa from "papaparse";
 import Breadcrumb from "@/widgets/layout/TopNavigation";
+import { BiSolidUserDetail } from "react-icons/bi";
+import { MdEdit } from "react-icons/md";
+import HeaderTitle from "@/components/common/HeaderTitle";
 
 const UserManagement = () => {
   const dispatch = useDispatch()
@@ -25,11 +28,11 @@ const UserManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const [isDownloadReady, setIsDownloadReady] = useState(false);
-  useEffect(() => {
-    users.length === 0 && dispatch(getAllUsers({ page: 1, limit: 10 }));
+  // useEffect(() => {
+  //   users.length === 0 && dispatch(getAllUsers({ page: 1, limit: 10 }));
 
-    console.log(users)
-  }, [])
+  //   console.log(users)
+  // }, [])
 
   const handleCreate = () => {
     navigate('/dashboard/admin/usermanagement/create-user')
@@ -56,8 +59,6 @@ const UserManagement = () => {
     setSearchParams({ page: e.selected + 1, limit: 10 })
   }
 
-
-
   useEffect(() => {
     const query = searchParams.get('search') || '';
     const page = searchParams.get('page') || 1;
@@ -70,69 +71,12 @@ const UserManagement = () => {
   }, [searchParams, dispatch]);
 
 
-  const handleClearFilter = () => {
-    const page = searchParams.get('page') || 1;
-    const limit = searchParams.get('limit') || 10;
-    setSearchQuery('');
-    setSearchParams({});
-    setSearchQuery('')
-  };
-
-  const throttledSearch = useCallback(throttle(() => {
-    const regex = /^[a-zA-Z0-9 ]*$/;
-    if (searchQuery === "") {
-      toast.warn("Search cannot be empty");
-      return;
-    } else if (searchQuery.trim() === "") {
-      toast.warn("Search cannot be just spaces");
-      return;
-    } else if (!regex.test(searchQuery)) {
-      toast.warn("Special characters are not allowed");
-      return;
-    } else if (searchQuery.length < 3) {
-      toast.warn("search must be atleast 3 characters long")
-      return;
-    }
-    else if (searchQuery !== "" && searchQuery > 30) {
-      toast.warn("search query cannot be more than 30 characters long")
-      return;
-    }
-    setSearchParams({ search: searchQuery });
-  }, 500), [searchQuery, dispatch, setSearchParams]);
-
-  const handleSearch = () => {
-    throttledSearch();
-  };
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
   const handleDownload = () => {
     setIsDownloadReady(false);  // Reset download state
     dispatch(downloadUser());   // Fetch the data for download
     setIsDownloadReady(true);
   }
 
-  // useEffect(() => {
-  //   if (downloadUsers) {
-  //     // Convert JSON to CSV
-  //     const csv = Papa.unparse(downloadUsers);
-
-  //     // Create a Blob for the CSV
-  //     const blob = new Blob([csv], { type: "text/csv" });
-  //     const url = URL.createObjectURL(blob);
-
-  //     // Trigger a download of the CSV file as .csv
-  //     const link = document.createElement("a");
-  //     link.href = url;
-  //     link.download = "user_data.csv";
-  //     link.click();
-
-  //     // Clean up
-  //     URL.revokeObjectURL(url);
-  //   }
-  // }, [downloadUsers]);
   useEffect(() => {
     if (isDownloadReady && downloadUsers && downloadUsers.length > 0) {
       // Convert JSON to CSV
@@ -166,13 +110,14 @@ const UserManagement = () => {
   }, []);
   const breadcrumbData = [
     {
-          name: 'User Management',
+      name: 'User Management',
     }
   ];
   return (
     <div className="">
-      <TitleComponent title={"Admin | User Management"} />
-      <Breadcrumb items={breadcrumbData}/>
+      <TitleComponent title={"CORPZO | User Management"} />
+      <Breadcrumb items={breadcrumbData} />
+      <HeaderTitle title="User Management" totalCount={totalRecords}/>
       <div className="flex gap-4 justify-between items-center w-full mb-4">
         <div className="flex gap-4 ">
 
@@ -186,8 +131,8 @@ const UserManagement = () => {
           >
             {userDownloadFeching ? (
               <>
-              <Spinner className="h-5 w-5" color="white" />
-              Downloading...
+                <Spinner className="h-5 w-5" color="white" />
+                Downloading...
               </>
             ) : (
               "Download User Data"
@@ -234,7 +179,7 @@ const UserManagement = () => {
                             <div className="text-sm text-gray-900">{form.name}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{form.gender}</div>
+                            <div className="text-sm text-gray-900">{form?.gender ? form?.gender : "N/A"}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">{form.email}</div>
@@ -254,13 +199,13 @@ const UserManagement = () => {
                                 onClick={() => handleEdit(form._id)}
                                 className="text-blue-500 hover:text-blue-700"
                               >
-                                Edit
+                                <MdEdit />
                               </button>
                               <button
                                 onClick={() => handleView(form._id)}
                                 className="text-blue-500 hover:text-blue-700"
                               >
-                                View
+                                <BiSolidUserDetail />
                               </button>
 
                             </div>

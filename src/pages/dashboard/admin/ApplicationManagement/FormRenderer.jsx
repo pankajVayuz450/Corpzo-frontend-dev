@@ -50,6 +50,15 @@ const FormRenderer = ({ formData, caseId, amount, startDate, agentData }) => {
             "agentId": agentState
         }));
 
+        dispatch(addCaseHistory({
+            "applicationId": applicationId,
+            "action": `Agent and Expected date of completion update`,
+            "performedBy": userId,
+            //   "reason": rejectReason,
+            // "statusBefore": status,
+            // "statusAfter": value
+        }));
+
     };
 
     console.log("check form data in form page",formData?.[0]?.user_application?.[0]?.expectedCompletionDate ||"")

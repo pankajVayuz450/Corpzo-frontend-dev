@@ -10,15 +10,19 @@ export const adminLogin = createAsyncThunk(
     console.log("check data .........",data )
     try {
       const response = await axios.post(adminAPIs.login, data);
-      if (response.data.statusCode === 200) {
-        toast.success(response.data.data.message);
+      console.log(response, "login response")
+      if (response.data.code === 200) {
+        // toast.success(response.data.data.message);
         
-        return response.data.data;
+        return response.data.data[0];
       } else {
-        return rejectWithValue(response.data);
+        console.log(response.data, "response when rejected")
+        toast.warn(response.data.message)
+        return rejectWithValue(response.data.data);
       }
     } catch (error) {
-        
+      console.log("called ")
+        console.log(error, "l;ogin error")
       toast.warn(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
@@ -27,14 +31,18 @@ export const adminLogin = createAsyncThunk(
 
 export const verifyOTP = createAsyncThunk(
   'user/verifyOTP',
-  async ({ email, otp, navigate }, { rejectWithValue, dispatch }) => {
+  async ({ id, otp, navigate }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await axios.post(adminAPIs.verifyOTP, { email, otp });
+      const response = await axios.post(adminAPIs.verifyOTP, { id, otp });
       console.log(response, "verify login")
-      if(response.status === 200){
-        localStorage.setItem("authToken", response.data.data.token)
-        localStorage.setItem("role", response.data.data.role)
+      if(response.data.code === 200){
+        console.log( response.data.data[0], "response.data.data[0].token")
+        localStorage.setItem("authToken", response.data.data[0].token)
+        localStorage.setItem("role", response.data.data[0].role)
+        toast.success(response.data.message)
         navigate("/dashboard/admin/home")
+      }else{
+        toast.warn(response.data.message)
       }
       return response.data.data;
     } catch (error) {
@@ -47,9 +55,10 @@ export const verifyOTP = createAsyncThunk(
 
 export const resendOtp = createAsyncThunk(
   'user/resendOtp',
-  async ({ email }, { rejectWithValue, dispatch }) => {
+  async ({ id }, { rejectWithValue, dispatch }) => {
     try {
-      const response = await axios.post(adminAPIs.resendOTP, { email });
+      const response = await axios.post(adminAPIs.resendOTP, { id });
+      console.log(response, "resend otp ")
       toast.success(response.data.data.message);
       return response.data.data;
     } catch (error) {
@@ -67,6 +76,7 @@ const initialState = {
   isLoading: false,
   isError: false,
   isOtp : false ,
+  id:''
 };
 
 export const adminSlice = createSlice({
@@ -99,12 +109,16 @@ export const adminSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(adminLogin.fulfilled, (state, action) => {
+        console.log(action.payload, "payloa from slice")
+        if(!action.payload) return;
         state.isLoading = false;
         state.isError = false;
         state.user = action.payload;
         state.isOtp = true;
+        state.id = action.payload.id
       })
       .addCase(adminLogin.rejected, (state, action) => {
+        console.log(action.payload, "payloa from rejected")
         state.isLoading = false;
         state.isError = true;
         state.error = action.payload;

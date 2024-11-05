@@ -22,7 +22,6 @@ const Roles = () => {
     fetchingRolesError, totalCount, deletedRole,
     isDeletingRole,
     deletingRoleError } = useSelector((state) => state.role);
-    console.log(isFetchingRoles, "isFetchingRolesisFetchingRolesisFetchingRoles")
   const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState("")
   const [open, setOpen] = useState(false);
@@ -145,7 +144,7 @@ const Roles = () => {
             editPath={`${window.location.pathname}/edit`}
             columns={columns}   //Must define table columns according to your data
           />
-          {limit > 10 && <Pagination totalItems={totalCount} itemsPerPage={10} />}
+          {totalCount > 10 && <Pagination totalItems={totalCount} itemsPerPage={10} />}
         </div>
       )}
       <Dialog open={open} handler={handleOpen}>
@@ -161,12 +160,12 @@ const Roles = () => {
             <span>Cancel</span>
           </Button>
           <Button onClick={confirmDelete} variant="danger" color="green" >
-            {isDeletingRole ?
-              <div className='flex justify-center items-center gap-3'>
-                <Spinner color='white' className="h-4 w-4" />
-                Deleting Role
-              </div>
-              : "Delete Role"}
+          {isDeletingRole ?
+            <div className='flex justify-center items-center gap-3'>
+              <Spinner color='white' className="h-4 w-4" />
+              Deleting Role
+            </div>
+            : "Delete Role"}
           </Button>
         </DialogFooter>
       </Dialog>

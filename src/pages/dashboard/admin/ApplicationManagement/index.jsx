@@ -4,7 +4,7 @@ import { updateStatus } from '@/redux/admin/actions/MasterSettings/Department';
 import { useDispatch, useSelector } from 'react-redux';
 import TitleComponent from '@/components/common/TitleComponent';
 import TableShimmer from '@/components/common/TableShimmer';
-import { getAllApplications, manageApplicationEscalateStatus, updateApplicationStatus } from '@/redux/admin/actions/ApplicationManagement';
+import { addCaseHistory, getAllApplications, manageApplicationEscalateStatus, updateApplicationStatus } from '@/redux/admin/actions/ApplicationManagement';
 import { Select, Option } from "@material-tailwind/react";
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import Pagination from '@/components/common/Pagination';
@@ -20,7 +20,7 @@ const ApplicationManagement = () => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
-  const { applicationsList, totalCount, isFetching,submitLoading,activeIndex } = useSelector((state) => state.applications)
+  const { applicationsList, totalCount, isFetching,submitLoading,activeIndex,userId } = useSelector((state) => state.applications)
   const [selectedStatus, setSelectedStatus] = useState('pending');
   const navigate = useNavigate();
   const userRole = localStorage.getItem("role")
@@ -68,9 +68,9 @@ if(!escalate){
   ];
 
 
-  const handleStatusChange = (newStatus, applicationId,index,escalatedTo) => {
+  const handleStatusChange = (newStatus, applicationId,index,escalatedTo,status) => {
 
-    console.log("check isEscalated value",escalatedTo)
+   
   dispatch(setActiveIndex(index))
 
     dispatch(updateApplicationStatus({
@@ -78,6 +78,14 @@ if(!escalate){
       status: newStatus
     })); // Dispatch action to update status in the backend
     setSelectedStatus(newStatus); // Update local status state
+    dispatch(addCaseHistory({
+      "applicationId": applicationId,
+      "action": ` Status changed ${status} to ${newStatus}`,
+      "performedBy": userId,
+        // "reason": rejectReason,
+      // "statusBefore": status,
+      // "statusAfter": newStatus
+  }));
 
     const payload = {
       "applicationId":applicationId ,
@@ -103,9 +111,8 @@ if(!escalate){
   const breadcrumbData = [
     {
       
-        
-          name: 'Application',
-          url:"/dashboard/admin/application-management",
+          name:escalate?"Escalate": 'Application',
+          url:escalate?"/dashboard/admin/application-management?isEscalated=true":"/dashboard/admin/application-management",
          
     }
   ];
@@ -198,7 +205,7 @@ if(!escalate){
                                 index={index}
                                 statusList={statusOptions}
                                 currentStatus={form?.status} // Pass the current status from the API
-                                onStatusChange={(newStatus) => handleStatusChange(newStatus, form._id,index,form?.escalatedTo)}
+                                onStatusChange={(newStatus) => handleStatusChange(newStatus, form._id,index,form?.escalatedTo,form?.status)}
                                 loading={submitLoading}
                                 disabled={form.status === "escalate" ? userRole !== form?.escalatedTo : false}
                                 escalatedTo={form?.escalatedTo}
@@ -218,8 +225,8 @@ if(!escalate){
                 
                 {!escalate?<HeaderTitle title="Application Management" />:<HeaderTitle title="Escalation" />}
                 <div className="flex justify-center items-center h-screen">
-                  <img src="/img/Nodata.svg" className="w-[50%]" alt="No data found" />
-                </div>
+                <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
+              </div>
                 </>
               )
             }

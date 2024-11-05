@@ -15,22 +15,22 @@ function RadioButton({ field }) {
     <div className="bg-gray-300 p-4 m-4 w-96 rounded-md flex flex-col">
       {/* Label */}
       <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">{field.label}</label>
+        <label className="block text-sm font-medium text-gray-700">{field.lebel}</label>
       </div>
 
       {/* Radio Buttons */}
       <div className="flex flex-col space-y-2 bg-white p-4 rounded-md">
-        {field.options.map((option, index) => (
+        {field.options?.map((option, index) => (
           <label key={index} className="inline-flex items-center">
             <input
               type="radio"
-              name={field.label}
-              value={option.value}
-              checked={selectedValue === option.value}
+              name={field.lebel}
+              value={option}
+              checked={selectedValue === option}
               onChange={(e) => handleValueChange(e.target.value)}
               className="form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
             />
-            <span className="ml-2 text-gray-700">{option.name}</span>
+            <span className="ml-2 text-gray-700">{option}</span>
           </label>
         ))}
       </div>

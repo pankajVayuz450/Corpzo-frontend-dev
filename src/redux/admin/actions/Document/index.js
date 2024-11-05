@@ -49,8 +49,11 @@ export const getFolderDocuments=(folderId)=>{
     return async(dispatch)=>{
         try{
             dispatch(updateLoading(true));
-            let api = `${DocumentApis.getFolderDocuments}?folderId=${folderId}`
-         
+            // let api = `${DocumentApis.getFolderDocuments}?folderId=${folderId}`
+            let api = DocumentApis.getFolderDocuments;
+            if (folderId) {
+                api += `?folderId=${folderId}`;
+            }
             const response = await axios.get(`${api}`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`

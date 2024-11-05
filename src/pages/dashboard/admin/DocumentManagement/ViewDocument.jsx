@@ -1,10 +1,11 @@
+// src/pages/ViewDocument.js
 import HeaderTitle from '@/components/common/HeaderTitle';
 import { getFolderDocumentsList } from '@/redux/admin/actions/Document';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
-import React, { useState, useEffect, Children } from 'react';
-import { TailSpin } from 'react-loader-spinner';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import DocumentViewer from '@/components/common/DocumnetViewr';
 
 const ViewDocument = () => {
   const [docUrl, setDocUrl] = useState('');
@@ -19,101 +20,32 @@ const ViewDocument = () => {
 
   useEffect(() => {
     if (!isFetching) {
-      const foundDocument = folderDocuments.find(doc => doc._id === docId);
+      const foundDocument = folderDocuments.find((doc) => doc._id === docId);
       if (foundDocument) {
         setDocUrl(foundDocument.url);
-        setDocName(foundDocument?.name);
+        setDocName(foundDocument.name);
       }
     }
   }, [folderDocuments, docId, isFetching]);
-
-  const getFileExtension = (url) => {
-    return url.split('.').pop().toLowerCase();
-  };
 
   const breadcrumbData = [
     {
       name: 'Document Management',
       url: '/dashboard/admin/document-management',
-      children: [{
-        name: 'View Document',
-        url: '',
-      }]
-    }
+      children: [
+        {
+          name: 'View Document',
+          url: '',
+        },
+      ],
+    },
   ];
-
-  const renderDocument = () => {
-    const fileExtension = getFileExtension(docUrl);
-    switch (fileExtension) {
-      case 'pdf':
-        return (
-          <iframe
-            src={`https://docs.google.com/gview?url=${docUrl}&embedded=true`}
-            title="PDF Document"
-            width="100%"
-            height="500px"
-            frameBorder="0"
-          ></iframe>
-        );
-      case 'xlsx':
-      case 'xls':
-        return (
-          <iframe
-            src={`https://view.officeapps.live.com/op/embed.aspx?src=${docUrl}`}
-            title="Excel Document"
-            width="100%"
-            height="500px"
-            frameBorder="0"
-          ></iframe>
-        );
-      case 'ppt':
-      case 'pptx':
-        return (
-          <iframe
-            src={`https://view.officeapps.live.com/op/embed.aspx?src=${docUrl}`}
-            title="PowerPoint Presentation"
-            width="100%"
-            height="500px"
-            frameBorder="0"
-          ></iframe>
-        );
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-      case 'gif':
-        return <img src={docUrl} alt="Document" style={{ width: '100%', height: 'auto' }} />;
-      case 'mp4':
-      case 'webm':
-      case 'ogg':
-        return (
-          <video controls width="100%" height="auto">
-            <source src={docUrl} type={`video/${fileExtension}`} />
-            Your browser does not support the video tag.
-          </video>
-        );
-      default:
-        return <p>Unsupported file type</p>;
-    }
-  };
 
   return (
     <div>
       <Breadcrumb items={breadcrumbData} />
-      <HeaderTitle title={"View Dcument"} />
-      <h4 className='text-2xl'>{docName}</h4>
-      {isFetching ? (
-        <div className="flex justify-center items-center min-h-screen">
-          <TailSpin height={50} width={50} color="blue" />
-        </div>
-      ) : docUrl ? (
-        renderDocument()
-      ) : (
-
-        <div className='flex items-center justify-center'>
-          <p>No document available to display.</p>
-
-        </div>
-      )}
+      <HeaderTitle title="View Document" />
+      <DocumentViewer docUrl={docUrl} docName={docName} isLoading={isFetching} />
     </div>
   );
 };

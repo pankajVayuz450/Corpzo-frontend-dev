@@ -147,7 +147,7 @@ const Teams = () => {
             editPath={`${window.location.pathname}/edit`}
             columns={columns}   //Must define table columns according to your data
         />
-          {limit > 10 && <Pagination totalItems={totalCount} itemsPerPage = {10}/>}
+          {totalCount > 10 && <Pagination totalItems={totalCount} itemsPerPage = {10}/>}
         </div>
       )}
       <Dialog open={open} handler={handleOpen}>

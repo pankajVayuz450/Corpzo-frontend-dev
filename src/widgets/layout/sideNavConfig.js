@@ -100,12 +100,12 @@ export const menuConfig = [
     label: 'Intro Video',
     icon: FaVideo,
   },
-  // {
-  //   key: 'bannerManagement',
-  //   path: '/dashboard/admin/banner-management',
-  //   label: 'Banner Management',
-  //   icon: FaImages,
-  // },
+  {
+    key: 'bannerManagement',
+    path: '/dashboard/admin/banner-management',
+    label: 'Banner Management',
+    icon: FaImages,
+  },
   {
     key: 'logoManagement',
     path: '/dashboard/admin/logo-management',

@@ -23,7 +23,11 @@ const userManageSlice = createSlice({
     transactionDetails : [],
     transactionFetching : false,
     downloadUsers : [], 
-    userDownloadFeching : false
+    userDownloadFeching : false, 
+    servivceProgress : [], 
+    isServiceprogressFetching : false,
+    transactionUrl : '', 
+    isTransactionDocumentLoading : false,
     },
     reducers: {
         updateStatusState: (state, action) => {
@@ -69,6 +73,19 @@ const userManageSlice = createSlice({
           }, 
           downloadUsers :(state, action)=>{
             state.downloadUsers = action.payload.downloadUsers;
+          },
+          serviceProgress : (state,action)=>{
+            state.servivceProgress = action.payload.servivceProgress
+          }, 
+          updateProgressLoading : (state,action)=>{
+            state.isServiceprogressFetching = action.payload;
+          }, 
+          transactionDocumentUrl : (state, action)=>{
+            state.transactionUrl = action.payload;
+          }, 
+          transactionDocumentLoading : (state,action)=>{
+            console.log(action.payload, "value")
+            state.isTransactionDocumentLoading = action.payload;
           }
     },
     
@@ -183,5 +200,5 @@ const userManageSlice = createSlice({
             });
     }
 });
-export const {updateStatusState,getTransactions,updateDownlaodUserFetching,downloadUsers,updateTransactionFetching, updateBusinessFetching,updateServiceFetching,getBusinessDetails,getUserServicesReducer, updateStatusLoading, updateEditPage} = userManageSlice.actions
+export const {updateStatusState,getTransactions,transactionDocumentUrl,transactionDocumentLoading,updateProgressLoading,serviceProgress,updateDownlaodUserFetching,downloadUsers,updateTransactionFetching, updateBusinessFetching,updateServiceFetching,getBusinessDetails,getUserServicesReducer, updateStatusLoading, updateEditPage} = userManageSlice.actions
 export default userManageSlice.reducer;

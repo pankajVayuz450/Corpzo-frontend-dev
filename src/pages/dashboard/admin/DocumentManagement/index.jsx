@@ -17,9 +17,10 @@ import DocumentForm from './DocumentForm';
 import TitleComponent from '@/components/common/TitleComponent';
 import { formatReadableDate, throttle } from '@/Helpers/globalfunctions';
 import { NavLink, useSearchParams } from 'react-router-dom';
-import { getAllDocuments } from '@/redux/admin/actions/Document';
+import { getAllDocuments, getFolderDocuments } from '@/redux/admin/actions/Document';
 import HeaderTitle from '@/components/common/HeaderTitle';
-import { BsThreeDotsVertical } from 'react-icons/bs'; 
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { MdGridView } from "react-icons/md";
 
 const DocumentManagement = () => {
   const [openFile, setOpenFile] = useState(false);   // For file modal
@@ -80,6 +81,7 @@ const DocumentManagement = () => {
     setSearchQuery(query);
 
     dispatch(getAllDocuments(limit, page, query));
+    dispatch(getFolderDocuments())
   }, [searchParams, dispatch]);
   useEffect(() => {
     if (!isAdding) {
@@ -98,16 +100,20 @@ const DocumentManagement = () => {
   return (
     <div className='w-full mt-4'>
       <TitleComponent title={"CORPZO | Document Management"} />
-      <HeaderTitle title="Document Management" totalCount={documentList.length}/>
+      <HeaderTitle title="Document Management" totalCount={documentList.length} />
       <Breadcrumb items={breadcrumbData} />
 
       <div className='flex gap-4 justify-between items-center w-full mb-4 mt-4'>
-        <div className='w-[20%]'>
+        <div>
           <Select label='Add Folder/File'>
             <Option onClick={() => handleFolderModal()}>Create Folder</Option>
             <Option onClick={() => handleFileModal()}>Add File</Option>
           </Select>
         </div>
+        {/* <Button className="flex items-center gap-3">
+          <MdGridView className="w-5 h-5 text-inherit" />
+          Add to Bookmark
+        </Button> */}
       </div>
 
       <>
@@ -142,27 +148,27 @@ const DocumentManagement = () => {
                           <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                         </td>
                         <td className="px-6 py-4">
-                         
-                           <Menu>
-                          <MenuHandler>
-                            <Button className="p-0 shadow-none bg-white text-black hover:text-gray-700">
-                              <BsThreeDotsVertical size={20} />
-                            </Button>
-                          </MenuHandler>
-                          <MenuList>
-                            <MenuItem onClick={form.folderId ? () => handleFolderModal(form.folderId) : () => handleFileModal(form.fileId)}>
-                              Edit
-                            </MenuItem>
-                            <MenuItem onClick={() => handleFileUploadFOrDoc(form._id)}>
-                              Add Document  
-                            </MenuItem>
-                            <MenuItem>
+
+                          <Menu>
+                            <MenuHandler>
+                              <Button className="p-0 shadow-none bg-white text-black hover:text-gray-700">
+                                <BsThreeDotsVertical size={20} />
+                              </Button>
+                            </MenuHandler>
+                            <MenuList>
+                              <MenuItem onClick={form.folderId ? () => handleFolderModal(form.folderId) : () => handleFileModal(form.fileId)}>
+                                Edit
+                              </MenuItem>
+                              <MenuItem onClick={() => handleFileUploadFOrDoc(form._id)}>
+                                Add Document
+                              </MenuItem>
                               <NavLink to={`/dashboard/admin/document-management/documents/${form._id}`}>
-                                View Documents
+                                <MenuItem>
+                                  View Documents
+                                </MenuItem>
                               </NavLink>
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
+                            </MenuList>
+                          </Menu>
                         </td>
                       </tr>
                     ))}

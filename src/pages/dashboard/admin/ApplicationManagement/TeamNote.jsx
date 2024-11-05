@@ -60,6 +60,7 @@ const TeamNote = () => {
       
         
           name: 'Application',
+          url:"/dashboard/admin/application-management",
           children: [
             {
               name: 'Application Form',
@@ -134,6 +135,7 @@ const TeamNote = () => {
                                 placeholder="Add a comment"
                                 className="border p-2 rounded w-full text-black"
                                 value={values.comment}
+                                
                                 onChange={(e) => {
                                   setFieldValue('comment', e.target.value);
                                   setComments((prevComments) => ({

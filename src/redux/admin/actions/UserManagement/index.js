@@ -2,7 +2,7 @@ import userAPIs from "@/constants/APIList/userAPIs";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { updateStatusState, updateBusinessFetching,downloadUsers,updateDownlaodUserFetching, updateServiceFetching, updateStatusLoading, getUserServicesReducer, getBusinessDetails, getTransactions, updateTransactionFetching } from "../../slices/UserManagement";
+import { updateStatusState,serviceProgress,transactionDocumentLoading,updateProgressLoading,transactionDocumentUrl, updateBusinessFetching,downloadUsers,updateDownlaodUserFetching, updateServiceFetching, updateStatusLoading, getUserServicesReducer, getBusinessDetails, getTransactions, updateTransactionFetching } from "../../slices/UserManagement";
 
 const BASE_URL = process.env.VITE_BASE_URL;
 
@@ -202,7 +202,7 @@ export const getAllTransactions = () => {
 export const getAllProgress = () => {
     return async (dispatch) => {
         try {
-            // dispatch(updateTransactionFetching(true));
+            dispatch(updateProgressLoading(true));
             let api = `${userAPIs.getAllProgress}?userId=66da879e8ea314c944ea2db4&page=1`
 
             const response = await axios.get(`${api}`, {
@@ -212,13 +212,13 @@ export const getAllProgress = () => {
             })
             console.log(response, "serviceails")
             if (response.status == 200) {
-                // dispatch(getTransactions({
-                //     transactionDetails : response.data.data,
-                // }))
-                // dispatch(updateTransactionFetching(false));
+                dispatch(updateProgressLoading(true));
+                dispatch(serviceProgress({
+                    servivceProgress : response.data.data,
+                }))
             }
         } catch (error) {
-            // dispatch(updateTransactionFetching(false));
+            dispatch(updateProgressLoading(false));
         }
     }
 }
@@ -239,6 +239,55 @@ export const downloadUser = () => {
                 dispatch(downloadUsers({
                     downloadUsers: response.data.data,
                 }))
+                dispatch(updateDownlaodUserFetching(false));
+            }
+        } catch (error) {
+            dispatch(updateDownlaodUserFetching(false));
+            console.log(error)
+        }
+    }
+}
+export const viewInvoice = (transactionId) => {
+    return async (dispatch) => {
+        try {
+            dispatch(transactionDocumentLoading(true));
+
+            const response = await axios.get(`${userAPIs.viewInvoice}?transactionId=${transactionId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+            
+            if (response.status == 200) {
+                dispatch(transactionDocumentUrl(response?.data?.data))
+
+                dispatch(transactionDocumentLoading(false));
+            }
+        } catch (error) {
+            dispatch(transactionDocumentLoading(false));
+            console.log(error)
+            toast.error(error.response.data.message)
+        }
+    }
+}
+
+const getProgress =()=>{
+    return async (dispatch) => {
+        try {
+            dispatch(updateDownlaodUserFetching(true));
+            let api = `${userAPIs.downloadUsers}`
+
+            const response = await axios.get(`https://backend-ns7g.onrender.com/api/admin/all-service-progress?userId=66da879e8ea314c944ea2db4&page=1`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('authToken')}`
+                }
+            })
+            
+            if (response.status == 200) {
+                // dispatch(downloadUsers({
+                //     downloadUsers: response.data.data,
+                // }))
+                console.log(response.data, "progressAPI")
                 dispatch(updateDownlaodUserFetching(false));
             }
         } catch (error) {

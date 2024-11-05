@@ -45,13 +45,13 @@ const ViewUser = () => {
       desc: `Because it's about motivating the doers. Because I'm here
           to follow my dreams and inspire other people to follow their dreams, too.`,
     },
-    // {
-    //   label: "Service Detail",
-    //   value: "service_details",
-    //   icon: FaWrench,
-    //   desc: `Because it's about motivating the doers. Because I'm here
-    //       to follow my dreams and inspire other people to follow their dreams, too.`,
-    // },
+    {
+      label: "Service Detail",
+      value: "service_details",
+      icon: FaWrench,
+      desc: `Because it's about motivating the doers. Because I'm here
+          to follow my dreams and inspire other people to follow their dreams, too.`,
+    },
     {
       label: "Transaction Detail",
       value: "transaction_details",
@@ -149,7 +149,7 @@ const ViewUser = () => {
             <BusinessDetails />
           </TabPanel>
           <TabPanel value={'service_details'}>
-            {/* <ServiceDetails /> */}
+            <ServiceDetails />
           </TabPanel>
           <TabPanel value={'transaction_details'}>
             <TransactionDetails />

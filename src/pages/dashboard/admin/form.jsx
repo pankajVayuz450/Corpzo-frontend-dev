@@ -11,9 +11,10 @@ import Pagination from '@/components/common/Pagination';
 import { changeFormStatus, fetchAllForms } from '@/redux/admin/slices/FormManagement/formSlice';
 import { formatReadableDate } from '@/Helpers/globalfunctions';
 import { Switch } from '@material-tailwind/react';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 
 
-
+ 
 const Form = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -141,16 +142,28 @@ const Form = () => {
           >
             Add Fields
           </button>
+          <button
+            onClick={() =>navigate(`/dashboard/admin/formbuilder/view-form/${row.original._id}`)}
+            className="text-blue-500 hover:text-blue-700"
+          >
+            View
+          </button>
         </div>
       ),
     },
   ]
 
 
-
+  const breadcrumbData = [
+    {
+      name: 'Form Management',
+      url: '/dashboard/admin/form',
+    },
+  ];
 
   return (
     <div>
+            <Breadcrumb items={breadcrumbData} />
       <h1 className="text-xl md:text-3xl font-semibold">All Forms</h1>
       {isFormLoading ? (
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>

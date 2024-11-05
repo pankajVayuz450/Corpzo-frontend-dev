@@ -6,6 +6,7 @@ const VideoPlayer = ({ open, handleOpen, title, handleConfirm, url, loading, but
     const [videoUrl, setVideoUrl] = useState(url || "");
     const [error, setError] = useState("");
     const [cancelFileChange, setCancelFileChnage] = useState(false);
+    console.log(videoFile, "videoFilevideoFile")
     const fileInputRef = useRef(null);
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -115,7 +116,7 @@ const VideoPlayer = ({ open, handleOpen, title, handleConfirm, url, loading, but
                 {cancelFileChange && !loading && !videoFile && <Button variant="gradient" color="green" onClick={handleCancelFileChange}>
                     <span>Cancel</span>
                 </Button>}
-                {videoFile && (
+                {(videoFile || url) && (
                     <Button
                         disabled={loading}
                         variant="gradient"

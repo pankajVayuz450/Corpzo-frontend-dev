@@ -12,5 +12,6 @@ const userAPIs = {
     getAllTransactions :`${BASE_URL}/admin/applications/transaction`,
     getAllProgress :`${BASE_URL}/admin/all-service-progress`,
     downloadUsers : `${BASE_URL}/admin/users?role=user`,
+    viewInvoice : `${BASE_URL}/admin/applications/download-invoice`
 }
 export default userAPIs;

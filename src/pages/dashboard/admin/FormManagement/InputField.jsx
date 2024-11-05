@@ -104,7 +104,7 @@ function InputField({ field }) {
         <div className=' bg-gray-300 p-4 m-4 w-96 rounded-md flex flex-col'>
             <div className="flex items-center mb-2 mx-4 bg-white rounded-md">
               <Input
-                label={field.lebal}
+                label={field.lebel}
                 name={field.name}
                 value={value || ''} 
                 onChange={(e) => handleValueChange(e.target.value)}  

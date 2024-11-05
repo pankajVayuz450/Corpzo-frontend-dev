@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { TailSpin } from 'react-loader-spinner';
 // import { createForm, updateForm } from '@/redux/admin/actions/form';
 import { setIsFormCreated,createForm,updateForm } from '@/redux/admin/slices/FormManagement/formSlice';
 import { clearFields } from '@/redux/admin/slices/fields';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
 
 
 const FormCreationPage = () => {
@@ -25,6 +26,7 @@ const FormCreationPage = () => {
     description: Yup.string().required('Description is required'),
     url: Yup.string(),
   });
+  const { id } = useParams();
   const { isFormCreating, isFormCreated ,forms} = useSelector((state) => state.forms);
   console.log("store:  isFormCreating, isFormCreated: ", isFormCreating, isFormCreated );
   console.log("forms::",forms);
@@ -38,9 +40,25 @@ const FormCreationPage = () => {
     // dispatch(clearFields())
   }
 
+  const breadcrumbData = [
+    {
+      name: 'Form Management',
+      url: '/dashboard/admin/form',
+      children: [
+        {
+          name: id ? 'Update Form' : 'Create Form',
+          url: id
+            ? ''
+            : '/dashboard/admin/form/create-form',
+        },
+      ],
+    }
+  ];
+
 
   return (
     <div className="max-w-4xl mx-auto my-10 p-5 shadow-lg rounded-lg bg-white">
+              <Breadcrumb items={breadcrumbData} />
       <Formik
         initialValues={initialForm || { title: '', description: '', url: '' }}
         validationSchema={formSchema}
@@ -63,6 +81,7 @@ const FormCreationPage = () => {
                   id: response.data._id, title: response.data.title
                 })
                 // navigate(-1);
+                navigate('/dashboard/admin/form')
               })
 
             console.log("values:",values);
@@ -109,7 +128,7 @@ const FormCreationPage = () => {
             )}
             <button
               type="button"
-              onClick={() => navigate('/dashboard/admin/formManagement')}
+              onClick={() => navigate('/dashboard/admin/form')}
               className="px-6 py-3 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
             >
               Cancel
