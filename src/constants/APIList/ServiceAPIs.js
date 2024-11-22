@@ -11,6 +11,10 @@ const serviceAPIs= {
     uploadVideo : `${BASE_URL}/user/auth/upload-file`,
     getForms : `${BASE_URL}/admin/form`,
     addService : `${BASE_URL}/admin/service`,
-    editService : `${BASE_URL}/admin/service`
+    editService : `${BASE_URL}/admin/service`,
+    uploadCsv : `${BASE_URL}/admin/upload`,
+    getAllStateWiseCharges : `${BASE_URL}/admin/service-charges`,
+    getChargesById : `${BASE_URL}/admin/get-fee`,
+    editCharges : `${BASE_URL}/admin/update-service-charge`
 }
 export default serviceAPIs;

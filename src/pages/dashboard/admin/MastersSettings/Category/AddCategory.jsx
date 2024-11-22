@@ -8,7 +8,7 @@ import {
 const initialValues = {
   categoryName: "",
   createdBy: "6f8e254d-0d1d-4f36-8d8c-52c61c4aeb4b",
-  active: false
+  active: true
 }
 import { useFormik } from "formik";
 import { addCatgeory, getSingleCategory, editCategory } from '@/redux/admin/actions/MasterSettings/Category';
@@ -29,8 +29,8 @@ const AddCategory = () => {
   const data = useSelector((state) => state.category.category);
   const isAdding = useSelector((state) => state.category.isAdding);
   const isFetching = useSelector((state) => state.category.isFetching)
-  const editPage = useSelector((state)=> state.category.editPage);
-  
+  const editPage = useSelector((state) => state.category.editPage);
+
   const navigate = useNavigate()
   const {
     values,
@@ -43,25 +43,34 @@ const AddCategory = () => {
     setTouched,
     isValid,
     setErrors,
+    setFieldTouched,
+    setFieldError,
     dirty,
   } = useFormik({
-    initialValues: initialValues,
+    initialValues: data ? data : initialValues,
     validationSchema: validationSchema,
     validateOnChange: true,
     validateOnBlur: true,
+    isInitialValid: id ? true : false,
     onSubmit: async (values, action) => {
 
       const categoryData = {
         categoryName: handleExtraSpaces(values.categoryName),
-        active: false,
+        createdBy: "6f8e254d-0d1d-4f36-8d8c-52c61c4aeb4b",
+        active: id ? data?.active : true
+      }
+      const newCatgeoryData = {
+        ...initialValues, categoryName: handleExtraSpaces(values.categoryName),
         createdBy: "6f8e254d-0d1d-4f36-8d8c-52c61c4aeb4b",
       }
       console.log(categoryData, "category data after removing spaces");
-      setTouched({}, false);
       if (id !== undefined) {
-        dispatch(editCategory(id, categoryData,navigate, editPage));
+        dispatch(editCategory(id, categoryData, navigate, editPage));
       } else {
         dispatch(addCatgeory(categoryData, navigate));
+        setFieldError({
+          categoryName: false
+        })
       }
       setErrors({});
     },
@@ -76,6 +85,13 @@ const AddCategory = () => {
     if (id !== undefined && data) {
 
       setFieldValue("categoryName", data.categoryName || "")
+      // setFieldValue("active", data.active || true)
+
+      setTouched({
+        categoryName: true,
+      });
+      setFieldTouched("categoryName", false);
+
     } else {
       setFieldValue("categoryName", "")
     }
@@ -84,35 +100,35 @@ const AddCategory = () => {
 
   const breadcrumbData = [
     {
-      
-        
-          name: 'Master Settings',
+
+
+      name: 'Master Settings',
+      children: [
+        {
+          name: 'Category',
+          url: '/dashboard/admin/masterSettings/Category',
           children: [
             {
-              name: 'Category',
-              url: '/dashboard/admin/masterSettings/Category',
-              children: [
-                {
-                  name: id ? 'Update category' : 'Create category',
-                  url: id
-                    ? ''
-                    : '/dashboard/admin/masterSettings/Category/add-category',
-                },
-              ],
+              name: id ? 'Update category' : 'Create category',
+              url: id
+                ? ''
+                : '/dashboard/admin/masterSettings/Category/add-category',
             },
           ],
+        },
+      ],
     }
   ];
   return (
     <div>
-            <Breadcrumb items={breadcrumbData}/>
+      <Breadcrumb items={breadcrumbData} />
       <TitleComponent title={id ? "CORPZO | Edit Category" : "CORPZO | Add Category"} />
-      <HeaderTitle title={id ? "Update Category" : "Add Category"}/>
+      <HeaderTitle title={id ? "Update Category" : "Create Category"} path={"/dashboard/admin/masterSettings/Category"}/>
       {
         id && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">
-          <TailSpin height={50} width={50} color="blue" />
-        </div>
+            <TailSpin height={50} width={50} color="blue" />
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4 mt-4">
             <Typography variant="small" color="blue-gray" className="mb-3 font-medium">
@@ -131,13 +147,19 @@ const AddCategory = () => {
               onChange={handleChange}
               onBlur={handleBlur}
               maxLength={30}
+              // autoFocus={true}
             />
             {errors.categoryName && touched.categoryName && <p className='text-sm text-red-500'>{errors.categoryName}</p>}
             {/* <button  disabled={!(dirty && isValid)} onClick={handleSubmit} className="bg-blue-500 text-white w-full mt-4 font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">{isAdding ? <div className='flex justify-center items-center gap-3'><Spinner color='white' className="h-4 w-4"/>{id ? "Editing" : "Adding"}</div> : id ? "Edit" : "Add"}</button> */}
             <button
               type='submit'
-              disabled={isAdding || !(dirty && isValid)}
-              className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
+              // disabled={isAdding || !(dirty && isValid)}
+              // className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
+              disabled={isAdding || !isValid }
+              className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !isValid 
+                  ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white'
+                  : 'bg-blue-500 hover:bg-blue-700 text-white'
+                }`}
             >
               {isAdding ?
                 <div className='flex justify-center items-center gap-3'>

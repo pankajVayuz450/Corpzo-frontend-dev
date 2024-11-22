@@ -43,10 +43,10 @@ function InputField({ field }) {
 
         if(field.inputSubType==="text"){
             if(field.inputSubTypeValidation === "does_not_contains"){
-                field.shouldNotContain && newValue.includes(field.shouldNotContain) ?  setIsError(true):setIsError(false);
+                field.text && newValue.includes(field.text) ?  setIsError(true):setIsError(false);
 
             }else if(field.inputSubTypeValidation === "contains"){                
-                field.shouldContain && !newValue.includes(field.shouldContain) ?  setIsError(true):setIsError(false);
+                field.text && !newValue.includes(field.text) ?  setIsError(true):setIsError(false);
 
             }else if(field.inputSubTypeValidation === "email"){
                 //For now adding static Email RegEx
@@ -67,10 +67,10 @@ function InputField({ field }) {
             }
         }else if(field.inputSubType==="regex"){
             if(field.inputSubTypeValidation === "contains"){
-                field.contains && !newValue.includes(field.contains) ?  setIsError(true):setIsError(false);
+                field.text && !newValue.includes(field.text)  ?  setIsError(true):setIsError(false);
 
             }else if(field.inputSubTypeValidation === "does_not_contains"){
-                field.contains && newValue.includes(field.contains) ?  setIsError(true):setIsError(false);
+                field.text && newValue.includes(field.text) ?  setIsError(true):setIsError(false);
 
             }
         }else if(field.inputSubType==="number"){

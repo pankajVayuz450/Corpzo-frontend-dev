@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Stepper, Step, Typography, Dialog, DialogBody, DialogHeader } from "@material-tailwind/react";
 import VideoPlayer from "@/components/common/VideoPlayer";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { handleStepValue } from "@/redux/admin/slices/Service";
 const StepperWithContent = ({
     open,
     handleOpen,
     handleConfirm,
 }) => {
+    const dispatch = useDispatch(); 
     const {stepValue, delivrableVideoUrl,stepsVideoUrl, documentVideoUrl, uploadVideoLoading}=useSelector((state)=> state.service);
     console.log(stepValue, "stepvalue")
     const [activeStep, setActiveStep] = useState(stepValue || 0);
     const [uploadedVideos, setUploadedVideos] = useState([null, null, null]); // State to store videos for each step
-
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const handleFileChange = (file) => {
         const newUploadedVideos = [...uploadedVideos];
         newUploadedVideos[activeStep] = file; // Save the video for the current step
@@ -25,9 +26,16 @@ const StepperWithContent = ({
         }
     };
 
-    useEffect(()=>{
-        setActiveStep(stepValue);
-    }, [stepValue])
+    useEffect(() => {
+        if (isInitialLoad) {
+            // Set step to 0 only on initial load
+            dispatch(handleStepValue(0));
+            setIsInitialLoad(false);
+        } else {
+            // Follow Redux state on subsequent loads
+            setActiveStep(stepValue);
+        }
+    }, [stepValue, isInitialLoad, dispatch]);
     return (
         <Dialog size="xs" open={open} handler={handleOpen}>
             <DialogHeader>Upload videos for the service.</DialogHeader>

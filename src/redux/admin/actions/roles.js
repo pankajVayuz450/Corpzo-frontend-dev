@@ -1,6 +1,7 @@
 import roleAPIs from '@/constants/APIList/roleAPIs';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { updateStatusLoading, updateStatusState } from '../slices/rolesSlice';
 
 export const fetchAllRoles = createAsyncThunk(
     'fetchAllRoles',
@@ -52,9 +53,10 @@ export const fetchRoleById = createAsyncThunk(
   
   export const updateRole = createAsyncThunk(
     'updateRole',
-    async ({ roleId, formData }, { rejectWithValue }) => {
+    async ({ roleId, role }, { rejectWithValue }) => {
+      console.log(role, 'from action')
       try {
-        const response = await axios.put(`${roleAPIs.updateRoleById}/${roleId}`, formData, {
+        const response = await axios.put(`${roleAPIs.updateRoleById}/${roleId}`, {role}, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("authToken")}`,
           },
@@ -66,6 +68,30 @@ export const fetchRoleById = createAsyncThunk(
     }
   );
   
+  export const updateStatus = ({_id, active})=>{
+    return async (dispatch) => {
+      try {
+          dispatch(updateStatusLoading(true))
+          const response = await axios.put(`${roleAPIs.updateRoleById}/${_id}`, {active}, {
+              headers: {
+                  Authorization: `Bearer ${localStorage.getItem('authToken')}`
+              }
+          });
+          if (response.status == 200) {
+             
+              dispatch(updateStatusState({_id, active}))
+              // dispatch(updateStatusLoading(false))
+             toast.success("Status updated from toggle")
+          }
+      } catch (error) {
+          console.log(error, "error")
+          // toast.error(error.response.data.message)
+          dispatch(updateStatusLoading(false))
+  
+      }
+  }
+  }
+
   export const deleteRole = createAsyncThunk(
     'deleteRole',
     async (roleId, { rejectWithValue }) => {

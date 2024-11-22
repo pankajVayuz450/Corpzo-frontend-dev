@@ -16,7 +16,7 @@ const EditRole = () => {
   const { role,
     isFetchingRole,
     fetchingRoleError } = useSelector(state => state.role)
-
+console.log(role, "role data")
   useEffect(() => {
     if (roleId) {
         dispatch(fetchRoleById(roleId));
@@ -38,7 +38,7 @@ const EditRole = () => {
       url: "/dashboard/admin/roles",
       children: [
         {
-          name: 'Edit Role'
+          name: 'Update Role'
         },
       ],
 }
@@ -59,14 +59,14 @@ const EditRole = () => {
           <TailSpin
             height="80"
             width="80"
-            color="#4fa94d"
+            color="blue"
             ariaLabel="loading"
             visible={true}
           />
         </div>
       ) : role ? (
         // Render table with attributes data
-        <AddEditRolesAndTeams initialValues={{ role }} type={"role"} subType={"edit"} />
+        <AddEditRolesAndTeams initialValues={{ role }} type={"role"} subType={"edit"} roleId={roleId} />
       ) : (
         // Initially show "No Data" if no attributes are fetched
         <p>No Data</p>

@@ -1,5 +1,4 @@
-import { createSlice, current } from '@reduxjs/toolkit';
-import { toast } from 'react-toastify';
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
  isFetching : false, 

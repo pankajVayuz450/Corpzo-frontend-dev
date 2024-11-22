@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { Input, Spinner, Textarea, Typography } from '@material-tailwind/react'
 import Select from 'react-select';
-import { Checkbox } from "@material-tailwind/react";
 import { Radio } from "@material-tailwind/react"
 import TitleComponent from '@/components/common/TitleComponent';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,6 +12,9 @@ import { validationSchema } from './ValidationSchema';
 import { TailSpin } from 'react-loader-spinner';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const initialValues = {
   offerTitle: "",
@@ -21,7 +23,7 @@ const initialValues = {
   validity: "",
   applicableUserType: "",
   serviceId: [],
-  active: false
+  active: true,
 }
 const CreateOffer = () => {
   const dispatch = useDispatch();
@@ -45,8 +47,10 @@ const CreateOffer = () => {
     isValid,
     setErrors,
     resetForm,
-    setFieldError, 
+    setFieldError,
+    validateField,
     dirty,
+    validateForm,
     setFieldTouched
   } = useFormik({
     initialValues: initialValues,
@@ -67,7 +71,7 @@ const CreateOffer = () => {
 
   const date = setDateMin();
   useEffect(() => {
-    dispatch(getActiveServices())
+    serviceList.length === 0 && dispatch(getActiveServices())
   }, [])
 
   const sanitizeSAerviceArray = () => {
@@ -87,7 +91,7 @@ const CreateOffer = () => {
       const sanitizedArray = sanitizeSAerviceArray()
 
       const formattedDate = offer.validity ? new Date(offer.validity).toISOString().split('T')[0] : '';
-
+      console.log(formattedDate, "formated date")
       setFieldValue("offerTitle", offer.offerTitle);
       setFieldValue("serviceId", sanitizedArray.map(service => service.value));
       setFieldValue("offerDetail", offer.offerDetail)
@@ -95,9 +99,21 @@ const CreateOffer = () => {
       setFieldValue("validity", formattedDate)
       setFieldValue("applicableUserType", offer.applicableUserType)
 
-      if (new Date(formattedDate) < new Date()) {
-        setFieldError("validity", "The selected date is in the past. Please choose a future date.");
-      }
+      // const today = new Date(); 
+      // const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate())); // Normalize to UTC midnight
+
+
+      // const validityDate = new Date(offer.validity);
+
+      // console.log(todayUTC, validityDate);
+
+      // // Check if the validityDate exists and is in the past
+      // if (validityDate && validityDate < todayUTC) {
+      //   setTouched({ validity: true });
+      //   setFieldError("validity", "The selected date is in the past. Please choose a future date.");
+      // } else {
+      //   setFieldError("validity", ""); // Clear the error if valid date
+      // }
     } else {
       setFieldValue("offerTitle", "")
       setFieldValue("serviceId", []);
@@ -105,15 +121,40 @@ const CreateOffer = () => {
       setFieldValue("discountPercent", "")
       setFieldValue("validity", "")
       setFieldValue("applicableUserType", "")
-      resetForm();  
-      setTouched({});  
+      resetForm();
+      setTouched({});
     }
     // setTouched({});  
     // setErrors({})
 
 
 
-  }, [offer, setFieldValue])
+  }, [offer, setFieldValue, validateForm])
+
+  useEffect(() => {
+    const validateDate = () => {
+      const today = new Date();
+      const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+      const validityDate = new Date(values.validity);
+
+      if (validityDate && validityDate < todayUTC) {
+        setFieldTouched("validity", true);
+        setFieldError("validity", "The selected date is in the past. Please choose a future date.");
+      } else {
+        setFieldError("validity", undefined); // Clear the error if the date is valid
+      }
+    };
+
+    if (values.validity) {
+      validateDate();
+    }
+  }, [values.validity, setFieldError, setFieldTouched]);
+
+  useEffect(() => {
+    if (errors.validity && touched.validity) {
+      validateForm();  // Ensure form re-validates on each render if touched and has an error
+    }
+  }, [errors.validity, touched.validity, validateForm]);
   useEffect(() => {
     if (id) {
       dispatch(getSingleOffer(id))
@@ -121,13 +162,13 @@ const CreateOffer = () => {
   }, [])
   const handleDiscountChange = (e, setFieldValue) => {
     const { value } = e.target;
-  
+
     // Remove any non-digit characters except decimal point
     const formattedValue = value.replace(/[^0-9.]/g, '');
-  
+
     // Allow only two decimal places and a maximum value of 100
     const isValid = /^(\d{1,2}(\.\d{0,2})?|100(\.0{1,2})?)?$/.test(formattedValue);
-  
+
     if (isValid) {
       setFieldValue('discountPercent', formattedValue);
     }
@@ -137,7 +178,7 @@ const CreateOffer = () => {
     const { value } = e.target;
     // Check for at least one alphabet character
     const containsAlphabet = /[a-zA-Z]/.test(value);
-  
+
     // Only set the value if there’s at least one alphabet character
     if (containsAlphabet || value === "") {
       setFieldValue("offerDetail", value);
@@ -162,7 +203,7 @@ const CreateOffer = () => {
     <div className='w-1/2'>
       <Breadcrumb items={breadcrumbData} />
       <TitleComponent title={id ? `CORPZO | Update Offer` : `CORPZO | Create Offer`}></TitleComponent>
-      <HeaderTitle title={id ? "Update Offer" : "Create Offer"}/>
+      <HeaderTitle title={id ? "Update Offer" : "Create Offer"} />
       {
         id && isFetching ?
           (<div className="absolute inset-0 flex justify-center items-center min-h-screen">
@@ -210,6 +251,27 @@ const CreateOffer = () => {
                 />
                 {errors.offerDetail && touched.offerDetail && <p className='text-sm text-red-500'>{errors.offerDetail}</p>}
               </div>
+              {/* <div>
+                <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
+                  Discount Type
+                </Typography>
+                <div className="flex gap-4">
+                  <Radio
+                    name="discountType"
+                    label="Percentage"
+                    value="percentage"
+                    // checked={values.discountType === "percentage"}
+                    // onChange={(e) => setFieldValue("discountType", e.target.value)}
+                  />
+                  <Radio
+                    name="discountType"
+                    label="Fixed"
+                    value="fixed"
+                    // checked={values.discountType === "fixed"}
+                    // onChange={(e) => setFieldValue("discountType", e.target.value)}
+                  />
+                </div>
+              </div> */}
               <div>
 
                 <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
@@ -226,7 +288,7 @@ const CreateOffer = () => {
                   name='discountPercent'
                   value={values.discountPercent}
                   onFocus={() => touched.discountPercent = true}
-                  onChange={(e) => handleDiscountChange(e, setFieldValue)} 
+                  onChange={(e) => handleDiscountChange(e, setFieldValue)}
                   onBlur={handleBlur}
                 />
                 {errors.discountPercent && touched.discountPercent && <p className='text-sm text-red-500'>{errors.discountPercent}</p>}
@@ -237,20 +299,16 @@ const CreateOffer = () => {
                 <Typography variant="small" color="blue-gray" className="mb-2 font-medium">
                   Validity
                 </Typography>
-                <Input
-                  type='date'
-                  size="sm"
-                  placeholder="Enter Offer Validity"
-                  className="!border-t-blue-gray-200 focus:!border-t-gray-900 w-full"
-                  labelProps={{
-                    className: "before:content-none after:content-none",
-                  }}
-                  min={date}
-                  name='validity'
-                  value={values.validity}
-                  onFocus={() => touched.validity = true}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                <DatePicker
+                  selected={values.validity}
+                  onChange={(date) => setFieldValue("validity", date)}
+                  onBlur={() => setFieldTouched("validity", true)}
+                  minDate={date}
+                  dateFormat="yyyy-MM-dd"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  placeholderText="Select Offer Validity (YYYY/MM/DD)"
+                  style={{ width: "100%" }}
+                  onKeyDown={(e) => e.preventDefault()}
                 />
                 {errors.validity && touched.validity && <p className='text-sm text-red-500'>{errors.validity}</p>}
               </div>

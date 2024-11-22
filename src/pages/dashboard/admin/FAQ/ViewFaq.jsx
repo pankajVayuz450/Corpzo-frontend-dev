@@ -50,7 +50,7 @@ const ViewFaq = () => {
 
                             <div className=''>
                                 <span><strong>Answer</strong> </span>
-                                <span dangerouslySetInnerHTML={{ __html: sanitizedHTML }} />
+                                <div dangerouslySetInnerHTML={{ __html: sanitizedHTML }} />
                             </div>
 
                         </div>

@@ -18,10 +18,11 @@ import { TailSpin } from 'react-loader-spinner';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import { handleExtraSpaces } from '@/Helpers/globalfunctions';
+import DOMPurify from 'dompurify';
 const initialValues = {
   question: "",
   answer: "",
-  active: false,
+  active: true,
 };
 
 const MAX_EDITOR_LENGTH = 1000;
@@ -109,6 +110,19 @@ const CreateFaq = () => {
     },
     maxlength: { maxLength: MAX_EDITOR_LENGTH }, // Use the custom maxlength module
   };
+
+  const handleAnswerChange=(value)=>{
+    console.log(value, "answer value")
+
+    const cleanedValue = value
+    .replace(/<ul>\s*<\/ul>/g, '') // Remove empty <ul> tags
+    .replace(/<li>\s*<\/li>/g, '') // Remove empty <li> tags
+    .replace(/<p>(\s|<br>)*<\/p>/g, '') // Remove empty <p> tags
+    .replace(/<ul>(\s|<li><br><\/li>)*<\/ul>/g, ''); // Remove <ul> with empty <li><br></li>
+
+    console.log(cleanedValue, "cleaned value")
+    setFieldValue("answer", value)
+  }
   const breadcrumbData = [
     {
       name: 'FAQ Management',
@@ -162,7 +176,7 @@ const CreateFaq = () => {
               className='h-50'
               theme="snow"
               placeholder={"Write something awesome..."}
-              onChange={(value) => setFieldValue("answer", value)}
+              onChange={handleAnswerChange}
               onBlur={() => setFieldTouched('answer', true)}
               name="answer"
 

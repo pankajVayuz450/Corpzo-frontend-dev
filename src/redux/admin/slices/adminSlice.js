@@ -5,7 +5,7 @@ import axios from 'axios';
 
 export const adminLogin = createAsyncThunk(
   'user/adminLogin',
-  async (data, { rejectWithValue, dispatch }) => {
+  async ({data, navigate}, { rejectWithValue, dispatch }) => {
 
     console.log("check data .........",data )
     try {
@@ -13,16 +13,14 @@ export const adminLogin = createAsyncThunk(
       console.log(response, "login response")
       if (response.data.code === 200) {
         // toast.success(response.data.data.message);
-        
+        navigate("/auth/otp-verification")
         return response.data.data[0];
       } else {
-        console.log(response.data, "response when rejected")
         toast.warn(response.data.message)
         return rejectWithValue(response.data.data);
       }
     } catch (error) {
-      console.log("called ")
-        console.log(error, "l;ogin error")
+     
       toast.warn(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
@@ -116,6 +114,7 @@ export const adminSlice = createSlice({
         state.user = action.payload;
         state.isOtp = true;
         state.id = action.payload.id
+        localStorage.setItem('userId', action.payload.id)
       })
       .addCase(adminLogin.rejected, (state, action) => {
         console.log(action.payload, "payloa from rejected")

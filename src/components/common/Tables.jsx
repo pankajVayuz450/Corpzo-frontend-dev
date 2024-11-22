@@ -6,7 +6,7 @@ import Pagination from './Pagination';
 import { Switch } from '@material-tailwind/react';
 import SearchBox from './SearchBox';
 
-const ReusableTable = ({ data, totalData, columns = [], editPath, onDelete, onStatusChange }) => {
+const ReusableTable = ({ data, totalData, columns = [], editPath, onDelete, onStatusChange, key }) => {
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const navigate = useNavigate();
@@ -76,8 +76,8 @@ const ReusableTable = ({ data, totalData, columns = [], editPath, onDelete, onSt
   return (
     <div>
       {data && data.length ? (
-        <div className='overflow-x-scroll'>
-          <table {...getTableProps()} className="min-w-full divide-y divide-gray-200">
+        <div className='overflow-x-scroll overflow-y-hidden'>
+          <table key={key} {...getTableProps()} className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
@@ -100,7 +100,7 @@ const ReusableTable = ({ data, totalData, columns = [], editPath, onDelete, onSt
                     {row.cells.map(cell => (
                       <td
                         {...cell.getCellProps()}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                        className="px-6 py-2 whitespace-nowrap text-sm text-gray-500"
                       >
                         {cell.render('Cell')}
                       </td>

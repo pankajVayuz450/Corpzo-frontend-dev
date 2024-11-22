@@ -6,9 +6,12 @@ import CheckBox from './CheckBox';
 import RadioButton from './RadioButton';
 import Dropdown from './DropDown';
 import { useParams } from 'react-router-dom';
-import { Spinner } from '@material-tailwind/react';
+import { Button, Spinner } from '@material-tailwind/react';
 import { TailSpin } from 'react-loader-spinner';
 import FileUpload from './FileUpload';
+import TitleComponent from '@/components/common/TitleComponent';
+import formAPIs from '@/constants/APIList/formAPIs';
+import HeaderTitle from '@/components/common/HeaderTitle';
 
 
 const staticFormFieldData =  [
@@ -451,19 +454,36 @@ function ViewFom() {
     const [isLoading, setIsLoading] = useState(false);
     const [noData, setNoData] = useState(false);
 
+    const [formDetails,setFormDetails]=useState(null);
+    
     console.log("formFields:",formFields);
     const { id } = useParams();
     console.log(id);
     
 
+    useEffect(()=>{
+        const fetchformDetails = async ()=>{
+            setIsLoading(true);
+            const response = await axios.get(`${formAPIs.getFormById}?formId=${id}`,{
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`
+                }
+            })
+            setIsLoading(false);
+            // console.log("responsessss",response.data?.data[0]);
+            setFormDetails(response.data?.data[0])
+        }
+        fetchformDetails();
+    },[]);
+
     
     useEffect(()=>{
         const fetchFormfields = async ()=>{
             setIsLoading(true);
-            const response = await axios.get(`https://backend-ns7g.onrender.com/api/admin/form/dynamic-form?formId=${id}`,{
+            const response = await axios.get(`${process.env.BACKEND_BASE_URL}/admin/form/dynamic-form?formId=${id}`,{
                 headers: {
-                    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjhiYjcwYWJjODA0YmJkYmI0NjExOWQiLCJuYW1lIjoiUGFua2FqIiwiZW1haWwiOiJyYWphcy52YXl1ekBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MjczMzU5NDd9.xTcXjlhoMTYCUcZB4s8xc8UL-OJ8qoCEPfHMDf05Xqg`,
-                  }
+                    Authorization: `Bearer ${localStorage.getItem("authToken")}`
+                }
             })
             setIsLoading(false)
             console.log("response",response.data?.data);
@@ -503,8 +523,16 @@ function ViewFom() {
 
   return (
     <div>
-        <h1>View form page</h1>
-        <form action="" className=' border-red-500' onSubmit={e=>handleSubmit(e)}>
+        <TitleComponent title={"CORPZO | Preview Form"}></TitleComponent>
+        <HeaderTitle title={"Form Management"} />
+
+        <form action="" className='border rounded-md shadow-lg  w-fit  p-5' onSubmit={e=>handleSubmit(e)}>
+
+        <div className='border-b-2 flex flex-col justify-center items-center border-b-blue-400    p-5'>
+            <p className=' text-3xl'>{formDetails?.title}</p>
+            <p>{formDetails?.description}</p>
+
+        </div>
         {formFields.length>0 && formFields.map((field)=>{
             if(field.inputType === 'text'){
 
@@ -527,7 +555,7 @@ function ViewFom() {
                 return <FileUpload field={field}/>
             }
         })}
-        <button>Submit</button>
+        <Button  className ="p-4 m-4" disabled={true}>Submit</Button>
         </form>
     </div>
   )

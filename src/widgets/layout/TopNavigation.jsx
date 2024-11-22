@@ -24,7 +24,7 @@ const Breadcrumb = ({ items }) => {
   return (
     <nav className='ml-3 absolute top-4'>
       <ul className='flex'>
-        {items.map((item, index) => (
+        {items?.map((item, index) => (
           <>
           
             <BreadcrumbItem key={item.name} item={item} isLast={index === items.length - 1} />

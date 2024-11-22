@@ -25,6 +25,13 @@ const initialState = {
   updateHeader : "", 
   stepValue : 0,
   activeCategoryLoading:false,
+  isStateWiseServiceLoading : false,
+  stateWiseChargesList : [],
+  stateWiseServiceChargesCount: null,
+  singleServiceCharges :{},
+  singleServiceLoading : false,
+  editChargesPageNumber:1,
+  csvLoading : false
 };
 
 
@@ -63,23 +70,24 @@ const serivceSlice = createSlice({
       console.log(action.payload, "service slice video url");
       if (action.payload.fieldName === "deliverable") {
         state.delivrableVideoUrl = action.payload.url;
-        // state.stepValue = 1
+        state.stepValue = 1
       } else if (action.payload.fieldName === "step") {
         state.stepsVideoUrl = action.payload.url;
-        // state.stepValue = 2
+        state.stepValue = 2
       } else if (action.payload.fieldName === "document") {
         state.documentVideoUrl = action.payload.url;
-        // state.stepValue = 2
+        state.stepValue = 2
       }
-      if (state.delivrableVideoUrl && state.stepsVideoUrl && state.documentVideoUrl) {
-        state.stepValue = 2;
-      }
+      
     },
     handleStepValue : (state, action)=>{
       state.stepValue = action.payload || 0;
     }, 
     updateUploadLoading: (state, action) => {
       state.uploadVideoLoading = action.payload;
+    },
+    uploadCsvLoading: (state, action) => {
+      state.csvLoading = action.payload;
     },
     updateHeader : (state, action)=>{
       state.header = action.payload;
@@ -117,21 +125,38 @@ const serivceSlice = createSlice({
       const { serviceId, active } = action.payload;
 
 
-      state.serviceList = state.serviceList.map((offer) => {
-        console.log(offer, "offer from reducer")
-        if (offer._id
+      state.serviceList = state.serviceList.map((service) => {
+        if (service._id
           === serviceId
         ) {
-          return { ...offer, active };
+          return { ...service, active };
         }
-        return offer;
+        return service;
       });
     },
     updateEditPage: (state, action) => {
       state.editPage = action.payload;
+    },
+    updateServiceEditPage: (state, action) => {
+      console.log(action.payload, "from slice")
+      state.editChargesPageNumber = action.editChargesPageNumber;
+    },
+    updateSatateWiseServiceLoading:(state, action)=>{
+      state.isStateWiseServiceLoading = action.payload;
+    },
+    getAllStateWiseCharges :(state, action)=>{
+     state.stateWiseChargesList = action.payload.stateWiseChargesList;
+     state.stateWiseServiceChargesCount = action.payload.totalCount
+    },
+    upadteSingleServiceCharges :(state, action)=>{
+      console.log(action.payload, "single charge")
+      state.singleServiceCharges = action.payload;
+    },
+    updateSingleServiceLoading : (state, action)=>{
+      state.singleServiceLoading = action.payload;
     }
   },
 });
-export const { getServices, updateUploadLoading,updateHeader,handleStepValue, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1,getActiveSelectedSubCategoryListAll,setCategoryLoading } = serivceSlice.actions;
+export const { getServices, updateUploadLoading,updateHeader,uploadCsvLoading,updateServiceEditPage,updateSingleServiceLoading,upadteSingleServiceCharges,updateSatateWiseServiceLoading,getAllStateWiseCharges,handleStepValue, updateContent, getActiveCategoryList, updateVideoUrl, getForms, getActiveSubCategoryList, addSteps, updateEditPage, updateStatusLoading, updateLoading, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure, deleteStepBId, updateAdding, getServiceById, getActiveSubCategoryListAll, getActiveBusinessEmail1,getActiveSelectedSubCategoryListAll,setCategoryLoading } = serivceSlice.actions;
 
 export default serivceSlice.reducer;

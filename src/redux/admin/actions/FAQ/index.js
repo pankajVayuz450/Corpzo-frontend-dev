@@ -34,8 +34,17 @@ export const getAllFaqs =(limit = 10, page = 1, search="")=>{
         }catch(error){
             dispatch(updateLoading(false));
             console.log(error)
-            if(error.response.data.statusCode === 400){
-                toast.warn(error.response.data.message)
+            // if(error.response.data.statusCode === 400){
+            //     toast.warn(error.response.data.message)
+            // }
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
             }
         }
     }
@@ -68,8 +77,15 @@ export const getServiceFaqs =(serviceId)=>{
             }
         }catch(error){
             dispatch(updateLoading(false));
-            console.log(error)
-        }
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }        }
     }
 }
 
@@ -91,8 +107,15 @@ export const addServiceFaq =(serviceFaqs, navigate)=>{
         }catch(error){
             console.log(error, "add faq error");
             dispatch(updateAdding(false))
-            toast.error(error.response.data.message)
-        }
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }        }
     }
 }
 export const addFaq=(faq, navigate)=>{
@@ -105,16 +128,26 @@ export const addFaq=(faq, navigate)=>{
                 }
             })
             console.log(response, "add faq response")
-            if(response.status === 200){
+            if(response.data.code === 200){
                 dispatch(updateAdding(false))
                 toast.success(response.data.message);
                 navigate(`/dashboard/admin/faq`)
+            }else{
+                if(response.data.code == 404){
+                    toast.error(response.data.message);
+                    dispatch(updateAdding(false))
+                }
             }
         }catch(error){
             console.log(error, "add faq error");
             dispatch(updateAdding(false))
-            toast.error(error.response.data.message)
-        }
+            if (!error.response) {
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }        }
     }
 }
 
@@ -136,7 +169,7 @@ export const getSingleFaq=(faqId)=>{
         }catch(error){
             console.log(error)
             dispatch(updateLoading(false))
-            // toast.error(error.response.data.error)
+            toast.error(error.response.data.message)
 
         }
     }
@@ -161,7 +194,13 @@ export const editFaq=(categoryId, data, navigate, editPage = 1)=>{
         }catch(error){
             dispatch(updateAdding(false))
             console.log(error)
-            toast.error(error.response.data.message)
+            if (!error.response) {
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
 
         }
     }
@@ -194,6 +233,7 @@ export const updateStatus =(subCategoryId, data, navigate)=>{
                 const errorMessage = error.response.data?.message || "Something went wrong!";
                 toast.error(errorMessage);
             }
+            
            
         }
     }

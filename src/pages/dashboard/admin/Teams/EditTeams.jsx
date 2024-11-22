@@ -59,14 +59,14 @@ const EditTeam = () => {
           <TailSpin
             height="80"
             width="80"
-            color="#4fa94d"
+            color="blue"
             ariaLabel="loading"
             visible={true}
           />
         </div>
       ) : team ? (
         // Render table with attributes data
-        <AddEditRolesAndTeams initialValues={{ team }} type={"team"} subType={"edit"} />
+        <AddEditRolesAndTeams initialValues={{ team }} type={"team"} subType={"edit"} teamId={teamId}/>
       ) : (
         // Initially show "No Data" if no attributes are fetched
         <p>No Data</p>

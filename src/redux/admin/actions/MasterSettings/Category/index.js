@@ -1,6 +1,6 @@
 import categoryAPIs from '@/constants/APIList/categoryAPIs';
 import axios from 'axios';
-import { getCategoryList, updateLoading, updateAdding, updateStatusLoading, deleteCategoryById, getSingleCategoryById, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure } from '@/redux/admin/slices/MasterSettings/CategorySlice/categorySlice';
+import { getCategoryList, updateLoading, childLoading, updateAdding, updateStatusLoading, deleteCategoryById, getSingleCategoryById, updateStatusState, toggleSwitchSuccess, toggleSwitchFailure } from '@/redux/admin/slices/MasterSettings/CategorySlice/categorySlice';
 // import { toast } from 'react-toastify/dist/components';
 import { toast } from 'react-toastify';
 const authToken  = localStorage.getItem('authToken');
@@ -119,11 +119,12 @@ export const editCategory=(categoryId, data, navigate, editPage)=>{
     }
 }
 
-export const updateStatus =(subCategoryId, data, navigate)=>{
+export const updateStatus =(CategoryId, data, navigate)=>{
     return async(dispatch)=>{
         try{
             dispatch(updateStatusLoading(true))
-            const response = await axios.put(`${categoryAPIs.editCategory}/${subCategoryId}`, data, {
+            dispatch(childLoading({CategoryId, loading : true}))
+            const response = await axios.put(`${categoryAPIs.editCategory}/${CategoryId}`, data, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
@@ -131,12 +132,14 @@ export const updateStatus =(subCategoryId, data, navigate)=>{
             if(response.status == 200){
                 console.log(response.data, "single category")
                 dispatch(updateStatusState(response.data.data))
-                toast.success(`Status updated successfully`)
+                // toast.success(`Status updated successfully`)
                 dispatch(updateStatusLoading(false))
+                dispatch(childLoading({CategoryId, loading : false}))
             }
         }catch(error){
             toast.error(error.response.data.error)
             dispatch(updateStatusLoading(false))
+            dispatch(childLoading({CategoryId, loading : false}))
            
         }
     }

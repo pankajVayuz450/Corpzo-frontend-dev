@@ -2,7 +2,7 @@ import OfferApis from '@/constants/APIList/offerAPIs';
 import serviceAPIs from '@/constants/APIList/ServiceAPIs';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { getServices, updateLoading, getActiveCategoryList, getServiceById, updateUploadLoading, getActiveSubCategoryList, getForms, updateAdding, updateVideoUrl, updateStatusLoading, updateStatusState, getActiveSubCategoryListAll, getActiveBusinessEmail1, updateContent, updateHeader, getActiveSelectedSubCategoryListAll, setCategoryLoading } from "../../slices/Service"
+import { getServices, updateLoading, getActiveCategoryList,uploadCsvLoading,upadteSingleServiceCharges,updateSingleServiceLoading, getServiceById, updateUploadLoading, getActiveSubCategoryList, getForms, updateAdding, updateVideoUrl, updateStatusLoading, updateStatusState, getActiveSubCategoryListAll, getActiveBusinessEmail1, updateContent, updateHeader, getActiveSelectedSubCategoryListAll, setCategoryLoading, updateSatateWiseServiceLoading, getAllStateWiseCharges } from "../../slices/Service"
 const authToken = localStorage.getItem('authToken');
 
 export const getAllServices = (limit = 10, page = 1, search = "", id) => {
@@ -31,16 +31,16 @@ export const getAllServices = (limit = 10, page = 1, search = "", id) => {
                 if (id !== "") {
                     dispatch(getServiceById(response.data.data[0]))
                     dispatch(updateVideoUrl({
-                        fieldName : 'deliverable', 
-                        url : response.data.data[0]?.delivrableVideoUrl
+                        fieldName: 'deliverable',
+                        url: response.data.data[0]?.delivrableVideoUrl
                     }))
                     dispatch(updateVideoUrl({
-                        fieldName : 'document', 
-                        url : response.data.data[0]?.documentVideoUrl
+                        fieldName: 'document',
+                        url: response.data.data[0]?.documentVideoUrl
                     }))
                     dispatch(updateVideoUrl({
-                        fieldName : 'step', 
-                        url : response.data.data[0]?.stepsVideoUrl
+                        fieldName: 'step',
+                        url: response.data.data[0]?.stepsVideoUrl
                     }))
                     console.log(response.data.data, "service by id ")
                 } else {
@@ -144,7 +144,7 @@ export const getAllActiveSubCategories = (categoryId) => {
 
         } finally {
 
-            
+
 
         }
     };
@@ -184,8 +184,8 @@ export const getAllActiveSubCategoriesAll = (categoryId) => {
 };
 
 export const getAllActiveSelectedSubCategories = (subCategoryIds) => {
-    
-    console.log("check section id in action ",subCategoryIds)
+
+    console.log("check section id in action ", subCategoryIds)
     return async (dispatch) => {
 
         try {
@@ -199,7 +199,7 @@ export const getAllActiveSelectedSubCategories = (subCategoryIds) => {
             });
             if (response.status === 200) {
                 dispatch(getActiveSubCategoryListAll(
-                    {activeSubCategoriesList:response.data.data || []} 
+                    { activeSubCategoriesList: response.data.data || [] }
                 ));
             }
         } catch (error) {
@@ -214,7 +214,7 @@ export const getAllActiveSelectedSubCategories = (subCategoryIds) => {
     };
 };
 export const getActiveBusinessEmail = () => {
-   
+
     return async (dispatch) => {
         dispatch(updateLoading(true));
 
@@ -278,7 +278,7 @@ export const uploadVideo = (formData, fieldName) => {
         try {
             dispatch(updateUploadLoading(true))
             dispatch(updateContent("Uploading Video"))
-            
+
             let api = `${serviceAPIs.uploadVideo}`
 
             const response = await axios.put(`${api}`, formData, {
@@ -318,7 +318,7 @@ export const addsService = (service, navigate) => {
     return async (dispatch) => {
         try {
             dispatch(updateAdding(true))
-            const response = await axios.post(`https://backend-qqhv.onrender.com/api/admin/service`, service, {
+            const response = await axios.post(`${serviceAPIs.addService}`, service, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
@@ -406,6 +406,132 @@ export const updateStatus = (data) => {
             console.log(error, "error from update status")
             // toast.error(error.response.data.message)
             dispatch(updateStatusLoading(false))
+
+        }
+    }
+}
+
+
+export const uploadCsv = (data, page, navigate) => {
+    return async (dispatch) => {
+        try {
+            dispatch(uploadCsvLoading(true))
+
+            let api = `${serviceAPIs.uploadCsv}`
+
+            const response = await axios.post(`${api}`, data, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            console.log(response, "upload csv response")
+            if (response.status === 201) {
+                navigate(`/dashboard/admin/service?page=${page}`)
+                dispatch(uploadCsvLoading(false))
+               toast.success(response.data.message)
+            }
+        } catch (error) {
+            dispatch(uploadCsvLoading(false))
+            console.error('Error uploading csv:', error);
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
+
+        } finally {
+            dispatch(uploadCsvLoading(false))
+        }
+    };
+}
+
+export const getStateWiseServiceCharges = (serviceId, page=1, limit=10, search) => {
+    return async (dispatch) => {
+        try {
+            dispatch(updateSatateWiseServiceLoading(true));
+            let api = `${serviceAPIs.getAllStateWiseCharges}/${serviceId}?page=${page}&limit=${limit}`
+
+            if(search !== ""){
+                api+= `&search=${search}`
+            }
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            if (response.status === 200) {
+                dispatch(getAllStateWiseCharges({
+                    stateWiseChargesList: response?.data?.data,
+                    totalCount : response.data.total
+                }))
+                dispatch(updateSatateWiseServiceLoading(false));
+            }
+        } catch (error) {
+
+            if (!error.response) {
+
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
+            dispatch(updateSatateWiseServiceLoading(false));
+        }
+    };
+}
+
+
+
+export const getSingleServiceCharge=(serviceId)=>{
+    return async(dispatch)=>{
+        try{
+            dispatch(updateSingleServiceLoading(true));
+       
+            const response = await axios.get(`${serviceAPIs.getChargesById}/${serviceId}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            console.log(response, "get single cahrge")
+            if(response.status == 200){
+                dispatch(upadteSingleServiceCharges(response.data.data))
+                dispatch(updateSingleServiceLoading(false))
+            }
+        }catch(error){
+            console.log(error)
+            dispatch(updateSingleServiceLoading(false))
+            toast.error(error.response.data.error)
+
+        }
+    }
+}
+export const updateServiceCharges=(id,serviceId, data, editPage, navigate)=>{
+    console.log(editPage, "edit page")
+    return async (dispatch) => {
+        try {
+            dispatch(updateAdding(true))
+            const response = await axios.put(`${serviceAPIs.editCharges}/${id}`, data, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            console.log(response, "edit response")
+            if (response.status == 200) {
+                toast.success(response.data.message);
+                navigate(`/dashboard/admin/services/view-service-charges/${serviceId}`)
+                dispatch(updateAdding(false))
+                
+            }
+        } catch (error) {
+            dispatch(updateAdding(false))
+            console.log(error)
+            toast.error(error.response.data.message)
 
         }
     }

@@ -27,14 +27,13 @@ import subscriptionReducer from "./admin/slices/Subscriptions"
 import offerReducer from "./admin/slices/Offer"
 import serivceReducer from "./admin/slices/Service"
 import videoReducer from "./admin/slices/VIdeoIntroSlice"
-import logger from 'redux-logger'; // Import redux-logger
 import documentReducer from './admin/slices/Document'
 import roleReducer from "./admin/slices/rolesSlice"
 import teamReducer from "./admin/slices/teamsSlice"
 import logoReducer from "./admin/slices/LogoSlice"
 import bannerReducer from "./admin/slices/bannerSlice"
-
-
+import quotationReducer from './admin/slices/Quotation'
+import logsReducer from "./admin/slices/Logs"
 const customMiddleware = store => next => action => {
   console.log('Dispatching action:', action); // Log the action
   const result = next(action); // Pass the action to the next middleware/reducer
@@ -74,9 +73,11 @@ export const store = configureStore({
     role: roleReducer,
     team: teamReducer, 
     logo: logoReducer,
-    banner: bannerReducer
+    banner: bannerReducer,
+    quotation : quotationReducer,
+    logs : logsReducer
   },
     middleware: (getDefaultMiddleware) => 
-        getDefaultMiddleware().concat(customMiddleware, logger)
+        getDefaultMiddleware().concat(customMiddleware)
 });
 export default store;

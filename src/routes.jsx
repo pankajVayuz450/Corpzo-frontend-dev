@@ -31,6 +31,18 @@ import FolderDocuments from "./pages/dashboard/admin/DocumentManagement/Document
 import ViewService from "./pages/dashboard/admin/Services/ViewService";
 import ProtectedRoute from "./wrappers/ProtectedRoute";
 import ViewTransactionDocument from "./pages/dashboard/admin/UserManagement/ViewTransactionDocument";
+import VerifyUser from "./pages/dashboard/admin/UserManagement/verifyUser";
+import OtpVerification from "./pages/auth/admin/otp-verification";
+import Quotation from "./pages/dashboard/admin/Quotation";
+import QuotationForm from "./pages/dashboard/admin/Quotation/QuotationForm";
+import ArchivedUsers from "./pages/dashboard/admin/UserManagement/ArchivedUsers";
+import ViewLogs from "./pages/dashboard/admin/UserManagement/ViewLogs";
+import ApplicationLogs from "./pages/dashboard/admin/ApplicationManagement/ApplicationLogs";
+import ViewlAllDocuments from "./pages/dashboard/admin/DocumentManagement/ViewAllDocuments";
+import UploadCsv from "./pages/dashboard/admin/Services/UploadCsv";
+import ViewServiceCharges from "./pages/dashboard/admin/Services/ViewServiceCharges";
+import UpdateChargesForm from "./pages/dashboard/admin/Services/UpdateChargesForm";
+import ChangeRequestLogs from "./pages/dashboard/admin/ChangeReuqest";
 const Logo = lazy(()=> import("./pages/dashboard/admin/LogoModule"))
 const CouponForm = lazy(() => import('./pages/dashboard/admin/CouponManagement/CreateCoupon'));
 const CouponList = lazy(() => import('./pages/dashboard/admin/CouponManagement/coupounManagement'));
@@ -342,16 +354,40 @@ const adminRoutes = [
     element:<CreateBanner/>
   },
   {
+    path:"admin/quotation",
+    element:<Quotation/>
+  },
+  {
+    path:"admin/create-quotation",
+    element:<QuotationForm/>
+  },
+  {
+    path:"admin/update-quotation/:quotationId",
+    element:<QuotationForm/>
+  },
+  {
+    path:"admin/add-offer",
+    element:<CreateOffer/>
+  },
+  {
+    path:"admin/edit-offer/:id",
+    element:<CreateOffer/>
+  },
+  {
     path:"admin/application-management",
     element:<ApplicationManagement/>
   },
   {
-    path:"admin/add-application",
+    path:"admin/add-application/:id",
     element:<CreateApplication/>
   },
   {
     path:"admin/edit-application/:id",
     element:<CreateApplication/>
+  },
+  {
+    path: "admin/application-logs",
+    element : <ApplicationLogs/>
   },
   {
     path:"admin/team-history",
@@ -422,9 +458,21 @@ const adminRoutes = [
     element : <Service/>
   },
   {
+    path:"admin/service-upload-csv/:id",
+    element : <UploadCsv/>
+  },
+  {
+    path: "admin/services/view-service-charges/:serviceId",
+    element : <ViewServiceCharges/>
+  },
+  {
     path:"admin/services/create-service",
     element : <ServiceForm/>
-  },
+  },                                                                                                                  
+  {
+    path:"admin/services/update-charges/:serviceId/:id",
+    element : <UpdateChargesForm/>
+  },                                                                                                                  
   {
     path:"admin/services/update-service/:id",
     element : <ServiceForm/>
@@ -527,6 +575,19 @@ const adminRoutes = [
     name: "View All Business",
     element: <ViewTransactionDocument/>,
     showInSidebar: false,
+  },
+  {
+    path: "admin/usermanagement/verify-user/:userId",
+    element: <VerifyUser/>,
+    showInSidebar: false,
+  },
+  {
+    path : "admin/archived-users",
+    element: <ArchivedUsers/>
+  },
+  {
+    path : "admin/usermanagement/view-logs",
+    element: <ViewLogs/>
   }
   ,{
     path: "admin/profile",
@@ -574,13 +635,21 @@ const adminRoutes = [
     element : <FolderDocuments />
   },
   {
+    path : "admin/document-management/all-documents", 
+    element : <ViewlAllDocuments />
+  },
+  {
     path : "admin/document-management/view-document/:folderId/:docId", 
     element : <ViewDocument/>
   },
   {
+    path : 'admin/change-request/logs',
+    element : <ChangeRequestLogs/>
+  },
+  {
     path : "admin/document-management/partnership-firm-registration", 
     element : <ParntnerShipReistration/>
-  }
+  }, 
 ];
 
 const userRoutes = [
@@ -619,6 +688,10 @@ const authRoutes = [
     element: <SignIn />,
   },
   {
+    path: "/auth/otp-verification",
+    element: <OtpVerification />,
+  },
+  {
     path: "/auth/sign-up",
     element: <SignUp />,
   }
@@ -641,6 +714,10 @@ const routes = [
   {
     path: "/not-authorized",
     element: <div>Not Authorized</div>,
+  },
+  {
+    path : "/verify_temp_user/:userId",
+    element : <VerifyUser/>
   },
   {
     path : "/no-network",

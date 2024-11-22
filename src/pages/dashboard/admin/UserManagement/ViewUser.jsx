@@ -61,8 +61,8 @@ const ViewUser = () => {
     },
   ];
   const { id } = useParams();
-  const { user, isUserFetching,transactionFetching,  isBusinessFetching, isServiceFetching } = useSelector((state) => state.userMgmt);
-  console.log(user, "user")
+  const { user, isUserFetching, transactionFetching, isBusinessFetching, isServiceFetching } = useSelector((state) => state.userMgmt);
+  const { businessDetails, transactionDetails, servivceProgress } = useSelector((state) => state.userMgmt);
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -70,11 +70,11 @@ const ViewUser = () => {
       dispatch(getUserById(id))
     }
     // dispatch(getAllBusiness(10, 1, '','66da879e8ea314c944ea2db4'))
-    dispatch(getUserServices())
-    dispatch(getAllProgress())
-   
-   dispatch(getAllTransactions())
-   
+    dispatch(getUserServices(id))
+    dispatch(getAllProgress(id))
+
+    dispatch(getAllTransactions(id))
+
   }, [id])
   useEffect(() => {
     const query = searchParams.get('search') || '';
@@ -82,24 +82,24 @@ const ViewUser = () => {
     const limit = searchParams.get('limit') || 10;
 
     setSearchQuery(query);
-    dispatch(getAllBusiness(limit, page, query,'66da879e8ea314c944ea2db4'))
+    dispatch(getAllBusiness(limit, page, query, id))
   }, [searchParams, dispatch]);
   const breadcrumbData = [
     {
-          name: 'User Management',
-         url: "/dashboard/admin/usermanagement", 
-         children: [
-          {
-            name:  'View User Details',
-            url:'',
-          },
-        ],
+      name: 'User Management',
+      url: "/dashboard/admin/usermanagement",
+      children: [
+        {
+          name: 'View User Details',
+          url: '',
+        },
+      ],
     }
   ];
   return (
     <div>
-      <HeaderTitle title="View User"/>
-      <Breadcrumb items={breadcrumbData}/>
+      <HeaderTitle title="View User" />
+      <Breadcrumb items={breadcrumbData} />
       <Tabs value="basic_detail" >
         <TabsHeader className="w-full">
           {data.map(({ label, value, icon }) => (
@@ -112,7 +112,7 @@ const ViewUser = () => {
           ))}
         </TabsHeader>
         <TabsBody>
-          {isUserFetching ||isBusinessFetching || isServiceFetching || transactionFetching ? (
+          {isUserFetching || isBusinessFetching || isServiceFetching || transactionFetching ? (
             <div className="flex justify-center items-center min-h-screen">
               <TailSpin height={50} width={50} color="blue" />
             </div>
@@ -139,12 +139,16 @@ const ViewUser = () => {
                   <span className='w-1/3 font-semibold'> Gender : </span>
                   <p>{user.gender}</p>
                 </div>
+                <div className=' flex flex-row'>
+                  <span className='w-1/3 font-semibold'> Role : </span>
+                  <p>{user.role}</p>
+                </div>
               </div>
             </TabPanel>
           )}
           <TabPanel value={'business_detail'}>
             <span className='mr-auto'>
-            <SearchBoxNew placeholder='Search businesses' queryParam='search'/>
+              {businessDetails.length > 0 && <SearchBoxNew placeholder='Search businesses' queryParam='search' />}
             </span>
             <BusinessDetails />
           </TabPanel>

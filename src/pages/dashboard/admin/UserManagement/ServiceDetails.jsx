@@ -39,7 +39,16 @@ const ServiceDetails = () => {
 
     return (
         <>
-            {servivceProgress.map((service) => (
+        {servivceProgress.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full p-4">
+                {/* SVG for No Data Available */}
+                <svg className="h-24 w-24 text-gray-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-gray-500 text-lg">No Service Available</span>
+            </div>
+        ) : (
+            servivceProgress.map((service) => (
                 <Accordion 
                     key={service._id}
                     className="relative flex flex-col mt-6 gap-2 text-gray-700 bg-white shadow-md bg-clip-border p-3 rounded-xl w-full"
@@ -53,10 +62,8 @@ const ServiceDetails = () => {
                             <span className='text-sm'>Business :{service?.businessdetails[0]?.businessName}</span>
                         </div>
                     </AccordionHeader>
-                    {/* 3rd party api required */}
-
                     
-                    {/* <AccordionBody className="min-h-[200px] flex items-center">
+                    <AccordionBody className="min-h-[200px] flex items-center">
                         <div className="w-full px-24 py-4">
                             <Stepper
                                 activeStep={activeStep}
@@ -141,10 +148,11 @@ const ServiceDetails = () => {
                                 </Step>
                             </Stepper>
                         </div>
-                    </AccordionBody> */}
+                    </AccordionBody>
                 </Accordion>
-            ))}
-        </>
+            ))
+        )}
+    </>
     );
 }
 

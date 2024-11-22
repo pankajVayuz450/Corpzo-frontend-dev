@@ -63,7 +63,7 @@ export function Sidenav({ brandImg, brandName, routes }) {
       </div>
 
       <div className="m-4 ">
-        <ul>
+        <ul className="list-none">
           {menuConfig.map(({ key, path, label, icon: Icon, subMenu }) => (
             <li key={key}>
               {subMenu ? (

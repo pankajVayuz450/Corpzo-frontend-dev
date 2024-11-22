@@ -1,10 +1,36 @@
 import { routesData } from "@/configs/header-config";
 
-export function formatReadableDate(dateInput) {
-    const date = new Date(dateInput);
-    const options = { year: 'numeric', month: 'short', day: 'numeric' }; 
+// export function formatReadableDate(dateInput) {
+//     const date = new Date(dateInput);
+//     const options = { year: 'numeric', month: 'short', day: 'numeric' }; 
+//     return new Intl.DateTimeFormat('en-US', options).format(date);
+//   }
+  export function formatReadableDate(dateInput) {
+    // Attempt to parse the date string first
+    const timestamp = Date.parse(dateInput);
+    // if (isNaN(timestamp)) {
+    //     return 'Invalid Date';
+    // }
+
+    const date = new Date(timestamp);
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Intl.DateTimeFormat('en-US', options).format(date);
-  }
+}
+
+  export function formatReadableDateTime(dateInput) {
+    const date = new Date(dateInput);
+    const options = { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric', 
+        hour: 'numeric', 
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: true 
+    };
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+}
+
 // Function to validate number keys for input type tel
   const validKey = [
     "0",
@@ -135,5 +161,17 @@ export  const getCurrentDateTime = () => {
 
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
+
+export function extractErrorMessage(errorString) {
+  if (!errorString.includes(":")) {
+    return errorString; // Return the original string if no colon is found
+  }
+  return errorString.split(":")[1].trim(); // Extract and trim the part after the colon
+}
+
+export function formatString(input) {
+  // Input string ko uppercase mein convert karo aur spaces ko remove karo
+  return input.replace(/\s+/g, '').toUpperCase();
+}
 
 

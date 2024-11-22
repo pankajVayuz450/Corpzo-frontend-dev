@@ -18,6 +18,7 @@ import { ShimmerButton, ShimmerDiv, ShimmerTitle } from 'shimmer-effects-react';
 import { updateNext } from '@/redux/admin/slices/VIdeoIntroSlice';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import { MdCancel } from 'react-icons/md';
 
 const VideoIntro = () => {
   const dispatch = useDispatch();
@@ -27,10 +28,11 @@ const VideoIntro = () => {
   const [error, setError] = useState(null);
   const { videoList, isFetching, uploadVideoLoading, url } = useSelector((state) => state.video);
 
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    dispatch(getAllVideos());
+    !url && dispatch(getAllVideos());
   }, [dispatch]);
 
   const handleOpen = () => {
@@ -123,10 +125,10 @@ const VideoIntro = () => {
 
   const breadcrumbData = [
     {
-      
-        
-          name: 'Video Intro',
-          
+
+
+      name: 'Video Intro',
+
     }
   ];
 
@@ -135,7 +137,7 @@ const VideoIntro = () => {
       <div>
         <Breadcrumb items={breadcrumbData}></Breadcrumb>
         <TitleComponent title={"CORPZO | Video Intro"} />
-        <HeaderTitle title={'Video Intro'}/>
+        <HeaderTitle title={'Video Intro'} />
         {isFetching ? (
           <div className="mt-2 w-[60%]">
             <ShimmerTitle mode="light" line={1} />
@@ -167,7 +169,10 @@ const VideoIntro = () => {
           </div>
         )}
       </div>
-      <Dialog size='xs' open={open} handler={handleOpen}>
+      <Dialog size='xs' open={open} handler={handleOpen} className='relative'>
+        <div>
+          <MdCancel onClick={handleOpen} className='absolute cursor-pointer right-0 text-xl text-red-500' size={'2.5rem'} />
+        </div>
         <DialogHeader className='flex flex-col gap-1 items-start'>
           {selectedVideo ? "Preview Video" : "Upload Video"}
         </DialogHeader>

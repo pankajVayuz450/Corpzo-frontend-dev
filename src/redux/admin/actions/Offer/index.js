@@ -35,8 +35,17 @@ export const getAllOffers =(limit = 10, page = 1, search="")=>{
         }catch(error){
             dispatch(updateLoading(false));
             console.log(error)
-            if(error.response.data.statusCode === 400){
-                toast.warn(error.response.data.message)
+            // if(error.response.data.statusCode === 400){
+            //     toast.warn(error.response.data.message)
+            // }
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
             }
         }
     }
@@ -92,8 +101,15 @@ export const addOffer=(offer, navigate)=>{
         }catch(error){
             console.log(error, "add offer error");
             dispatch(updateAdding(false))
-            toast.error(error.response.data.message)
-        }
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }        }
     }
 }
 
@@ -141,7 +157,15 @@ export const editOffer=(offerId, offer,editPage, navigate)=>{
         }catch(error){
             dispatch(updateAdding(false))
             console.log(error)
-            toast.error(error.response.data.message)
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
 
         }
     }
@@ -166,29 +190,16 @@ export const updateStatus =(offerId, data)=>{
             }
         }catch(error){
             console.log(error, "error from update status")
-            // toast.error(error.response.data.message)
-            dispatch(updateStatusLoading(false))
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }            dispatch(updateStatusLoading(false))
            
-        }
-    }
-}
-
-export const deleteStep = (stepId) => {
-    return async (dispatch) => {
-        try {
-            const response = await axios.delete(`${StepsAPIs.deleteSteps}/${stepId}`, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`
-                }
-            });
-            if (response.status == 200) {
-                dispatch(deleteStepBId(stepId));
-                toast.success(response.data.message)
-            }
-            console.log(response, "delete response");
-        } catch (error) {
-            console.log(error)
-            toast.error(error.response.data.message)
         }
     }
 }

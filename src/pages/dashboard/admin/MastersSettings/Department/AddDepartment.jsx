@@ -19,6 +19,7 @@ import HeaderTitle from '@/components/common/HeaderTitle';
 const initialValues = {
   name: "",
   description: "",
+  active:true
 }
 
 const AddDepartment = () => {
@@ -44,22 +45,24 @@ const AddDepartment = () => {
     setErrors,
     dirty,
   } = useFormik({
-    initialValues: initialValues,
+    initialValues: data ? data : initialValues,
     validationSchema: validationSchema,
     validateOnChange: true,
     validateOnBlur: true,
+    enableReinitialize: true,
     onSubmit: async (values, action) => {
-      setTouched({}, false);
-      const data = {
+      
+      const departmentData = {
         name : handleExtraSpaces(values.name), 
         description : values.description, 
-        active : false
+        active : id ? data?.active : true
       }
+      setTouched({}, false);
       if (id !== undefined) {
         
-        dispatch(editDepartment(id, data, navigate, editPage));
+        dispatch(editDepartment(id, departmentData, navigate, editPage));
       } else {
-        dispatch(addDepartment(data, navigate));
+        dispatch(addDepartment(departmentData, navigate));
       }
       setErrors({});
     },
@@ -74,12 +77,16 @@ const AddDepartment = () => {
     if (id !== undefined && data) {
       setFieldValue("name", data.name || "")
       setFieldValue("description", data.description || "")
+      // setFieldValue('active', data.active || true)
+      setTouched({
+        name: false,
+        description: false, // Reset the description field from being marked as touched
+      });
     } else {
       setFieldValue("name", "")
       setFieldValue("description", "")
-      setFieldValue('active', false)
     }
-    setErrors({})
+    setErrors({});
 
 
   }, [data, setFieldValue])
@@ -109,7 +116,7 @@ const AddDepartment = () => {
     <div className=''>
       <Breadcrumb items={breadcrumbData}/>
       <TitleComponent title={id ? "CORPZO | Update Department" : "CORPZO | Create Department"} />
-      <HeaderTitle title={id ? "Update Department" : "Create Department"}/>
+      <HeaderTitle title={id ? "Update Department" : "Create Department"} path={"/dashboard/admin/masterSettings/Department"}/>
       {
         id !== undefined && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">
@@ -155,9 +162,11 @@ const AddDepartment = () => {
             {errors.description && touched.description && <p className='text-sm text-red-500'>{errors.description}</p>}
 
             <button
-              disabled={isAdding || !(dirty && isValid)}
-              onClick={handleSubmit}
-              className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
+              // disabled={isAdding || !(dirty && isValid)}
+              disabled={isAdding || !isValid}
+
+             type='submit'
+              className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !isValid ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !isValid  ? 'gray-400' : 'blue-500'}`}
             >
               {isAdding ?
                 <div className='flex justify-center items-center gap-3'>

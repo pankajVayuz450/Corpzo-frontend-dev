@@ -2,6 +2,7 @@ import HeaderTitle from '@/components/common/HeaderTitle';
 import LoadingPage from '@/components/common/LoadingPage';
 import TitleComponent from '@/components/common/TitleComponent';
 import { getCaseHistory } from '@/redux/admin/actions/ApplicationManagement';
+import { setApplicationId } from '@/redux/admin/slices/AppliationManagement/Index';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,11 +16,18 @@ const CaseHistory = () => {
     const { noteList, applicationId, userId, commentLoading ,isFetching,caseHistoryList} = useSelector((state) => state.applications);
     const dispatch = useDispatch();
 
+    let applicationIdLocal = localStorage.getItem("applicationId")
 
+    
+
+    if(!applicationId){
+      dispatch(setApplicationId(applicationIdLocal))
+    }
 
     useEffect(() => {
+      localStorage.setItem("applicationId",applicationId)
 
-        console.log("check note list ",noteList)
+     
         dispatch(getCaseHistory(applicationId));
       }, [dispatch, applicationId]);
 
@@ -32,7 +40,7 @@ const CaseHistory = () => {
               children: [
                 {
                   name: 'Application Form',
-                  url: '/dashboard/admin/add-application',
+                  url: `/dashboard/admin/add-application/${applicationId}`,
                   children: [
                     {
                       name:  'Case History',

@@ -10,17 +10,25 @@ import ReusableTable from '@/components/common/Tables';
 import Pagination from '@/components/common/Pagination';
 import { changeFormStatus, fetchAllForms } from '@/redux/admin/slices/FormManagement/formSlice';
 import { formatReadableDate } from '@/Helpers/globalfunctions';
-import { Switch } from '@material-tailwind/react';
+import { Button, Menu, MenuHandler, MenuItem, MenuList, Switch } from '@material-tailwind/react';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
+import TitleComponent from '@/components/common/TitleComponent';
+import SearchBoxNew from '@/components/common/SearchBoxNew';
+import { FaRegEye } from 'react-icons/fa';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import TableShimmer from '@/components/common/TableShimmer';
 
 
- 
+
 const Form = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   // const forms = useSelector((state) => state.forms.forms);
   const store = useSelector((state) => state.forms);
-  const { forms, isFormLoading, isStatusChanging ,total } = store;
+  const { forms, isFormLoading, isStatusChanging, total } = store;
+
+  console.log("isStatusChanging", isStatusChanging);
+
 
 
   //handling pagination here..
@@ -33,8 +41,8 @@ const Form = () => {
   console.log(page, limit, search);
 
   console.log("form list", forms);
-  console.log("total data:" ,total);
-  
+  console.log("total data:", total);
+
 
 
   const renderActionColumn = (form) => (
@@ -56,7 +64,7 @@ const Form = () => {
 
   useEffect(() => {
     dispatch(fetchAllForms({ page, limit, search }));
-  }, [ page, limit, search ]);
+  }, [page, limit, search]);
 
   const navigateToCreateForm = () => {
     navigate('/dashboard/admin/formManagement/create-form');
@@ -88,9 +96,9 @@ const Form = () => {
 
   // return <h1>Form</h1>
 
-  const handleStatusChange = (e,id) => {
+  const handleStatusChange = (e, id) => {
     // console.log("eeeeeeeeeee",);
-    
+
     console.log("handle status change", id);
     //dispact for status change
     dispatch(changeFormStatus({ formId: id, isActive: e.target.checked.toString() }));
@@ -106,7 +114,15 @@ const Form = () => {
     {
       Header: 'Description',
       accessor: 'description',
-      Cell: ({ row }) => (row?.original?.description),
+      Cell: ({ row }) => {
+        const description = row?.original?.description || "";
+        const maxLength = 50; // Set your desired max length
+        const truncated = description.length > maxLength
+          ? `${description.substring(0, maxLength)}...`
+          : description;
+
+        return truncated;
+      }
     },
     {
       Header: 'Created At',
@@ -114,40 +130,61 @@ const Form = () => {
       Cell: ({ row }) => (formatReadableDate(row?.original?.createdAt)),
     },
     {
-      Header: 'Updated At',
-      accessor: 'updatedAt',
-      Cell: ({ row }) => (formatReadableDate(row?.original?.updatedAt)),
-    },
-    {
       Header: 'Status',
       accessor: 'status',
       Cell: ({ row }) => (
-        isStatusChanging ?<TailSpin height="20" width="20" color="#4fa94d" ariaLabel="loading" visible={true} />        :
-          <Switch
-            checked={row.original.isActive}
-            onChange={(e) => handleStatusChange(e,row.original._id)}
-            color="primary"  
-            size="medium"   
-            inputProps={{ 'aria-label': 'basic switch' }}  // Accessibility props
-          />
+        // isStatusChanging ?<TailSpin height="20" width="20" color="#4fa94d" ariaLabel="loading" visible={true} />        :
+        <Switch
+          disabled={isStatusChanging}
+          checked={row.original.isActive}
+          onChange={(e) => handleStatusChange(e, row.original._id)}
+          color="primary"
+          size="medium"
+          inputProps={{ 'aria-label': 'basic switch' }}  // Accessibility props
+        />
       ),
     },
     {
       Header: 'Actions',
       Cell: ({ row }) => (
-        <div className="flex space-x-2">
-          <button
-            onClick={() =>navigate(`/dashboard/admin/formbuilder/create-form/${row.original._id}`)}
-            className="text-blue-500 hover:text-blue-700"
+        <div className={`flex space-x-2 ${row.original.isActive ? "text-blue-500" : "text-gray-500"}`}>
+          {/* <button
+            disabled={!row.original.isActive}
+            onClick={() => navigate(`/dashboard/admin/formbuilder/create-form/${row.original._id}`)}
+          // className="text-blue-500 hover:text-blue-700"
           >
             Add Fields
           </button>
+          <div>|</div>
           <button
-            onClick={() =>navigate(`/dashboard/admin/formbuilder/view-form/${row.original._id}`)}
-            className="text-blue-500 hover:text-blue-700"
+            disabled={!row.original.isActive}
+            onClick={() => navigate(`/dashboard/admin/formbuilder/view-form/${row.original._id}`)}
+          // className="text-blue-500 hover:text-blue-700"
           >
-            View
-          </button>
+            <FaRegEye />
+          </button> */}
+
+
+
+
+          <Menu placement="bottom-end">
+            <MenuHandler>
+              <Button className="p-0 shadow-none hover:shadow-none bg-white text-black hover:text-gray-700">
+                <BsThreeDotsVertical size={20} />
+              </Button>
+            </MenuHandler>
+            <MenuList>
+              <MenuItem className='flex gap-2' disabled={!row.original.isActive} onClick={() => navigate(`/dashboard/admin/formbuilder/create-form/${row.original._id}`)}>
+                Add Fields
+
+              </MenuItem>
+              <MenuItem className='flex gap-2' disabled={!row.original.isActive} onClick={() => navigate(`/dashboard/admin/formbuilder/view-form/${row.original._id}`)}>
+                <FaRegEye /> View
+
+              </MenuItem>
+
+            </MenuList>
+          </Menu>
         </div>
       ),
     },
@@ -163,12 +200,14 @@ const Form = () => {
 
   return (
     <div>
-            <Breadcrumb items={breadcrumbData} />
+      <TitleComponent title={"CORPZO | Form Management"}></TitleComponent>
+      <Breadcrumb items={breadcrumbData} />
       <h1 className="text-xl md:text-3xl font-semibold">All Forms</h1>
       {isFormLoading ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-          <TailSpin height="80" width="80" color="#4fa94d" ariaLabel="loading" visible={true} />
-        </div>
+        // <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+        //   <TailSpin height="80" width="80" color="#4fa94d" ariaLabel="loading" visible={true} />
+        // </div>
+        <TableShimmer/>
       ) : (
         <div>
           <div className="flex justify-between p-3">
@@ -178,16 +217,20 @@ const Form = () => {
             >
               Add form
             </button>
-            <SearchBox />
+            <SearchBoxNew />
           </div>
           <ReusableTable
             data={forms || []}
+            key={isStatusChanging}
             editPath={"/dashboard/admin/form/edit-form"}
             columns={columns}   //Must define table columns according to your data
           // onDelete={handleDelete}
           // onStatusChange={handleStatusChange}
           />
-          <Pagination totalItems={total} itemsPerPage={limit }/>
+          {(total / limit > 1) ?
+            <Pagination totalItems={total} itemsPerPage={limit} />
+            : ""
+          }
         </div>
       )}
     </div>

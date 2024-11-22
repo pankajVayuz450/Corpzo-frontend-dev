@@ -12,7 +12,7 @@ import { handleExtraSpaces } from '@/Helpers/globalfunctions';
 import { Spinner } from '@material-tailwind/react';
 import HeaderTitle from '@/components/common/HeaderTitle';
 
-function AddEditRolesAndTeams({ initialValues, type, subType }) {
+function AddEditRolesAndTeams({ initialValues, type, subType,roleId,teamId }) {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -88,18 +88,17 @@ function AddEditRolesAndTeams({ initialValues, type, subType }) {
         if (subType === "add") {
           dispatch(createRole({ role: handleExtraSpaces(values.role) }));
         } else if (subType === "edit") {
-          dispatch(updateRole({ role: handleExtraSpaces(values.role) }));
+          dispatch(updateRole({ role: handleExtraSpaces(values.role),roleId  }));
         }
       } else {
         if (subType === "add") {
           dispatch(createTeam({ team: handleExtraSpaces(values.team) }));
         } else if (subType === "edit") {
-          dispatch(updateTeam({ team: handleExtraSpaces(values.team) }));
+          dispatch(updateTeam({ team: handleExtraSpaces(values.team), teamId }));
         }
       }
     },
   });
-console.log(type, subType, "type sub type")
   return (
     <>
       {type === 'role' ? (
@@ -110,9 +109,9 @@ console.log(type, subType, "type sub type")
       <HeaderTitle title={subType === 'add' ? "Create Team" : "Update Team"} />
     </>}
 
-      <form onSubmit={formik.handleSubmit} className="space-y-6 p-4 bg-gray-100 rounded-md shadow-md">
+      <form onSubmit={formik.handleSubmit} className="space-y-6 p-4 bg-gray-100 w-1/2">
         {/* Element Name Field */}
-        <div className="w-full">
+        <div className="">
           <label htmlFor={type} className="block font-medium text-gray-700">
             {type === "role" ? "Role" : "Team"}
           </label>
@@ -123,6 +122,11 @@ console.log(type, subType, "type sub type")
             maxLength={35}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
+            placeholder={
+              type === 'role' 
+                ? (subType === 'add' ? "Create Role" : "Update Role") 
+                : (subType === 'add' ? "Create Team" : "Update Team")
+            }
             className="mt-1 block w-full p-2 border border-gray-300 bg-white rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
           {formik.touched[type] && formik.errors[type] ? (

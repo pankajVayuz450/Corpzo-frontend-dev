@@ -1,6 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import {
+  Button,
   Input,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
   Switch,
 } from "@material-tailwind/react";
 import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
@@ -20,6 +25,10 @@ import SearchBoxNew from "@/components/common/SearchBoxNew";
 import Pagination from "@/components/common/Pagination";
 import HeaderTitle from "@/components/common/HeaderTitle";
 import Breadcrumb from "@/widgets/layout/TopNavigation";
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { MdEdit } from "react-icons/md";
+import { FaEye } from "react-icons/fa";
+
 const Faq = () => {
 
   const dispatch = useDispatch();
@@ -109,19 +118,17 @@ const Faq = () => {
                           <div className="text-sm text-gray-500">{idx}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{form.question.slice(0, 10)}...</div>
+                          <div className="text-sm text-gray-500"> {form.question && form.question.length > 10 ? `${form.question.slice(0, 10)}...` : form.question}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
                         </td>
                         <td>
-                          {/* <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${form.active === true ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                            {form.active === true ? 'Active' : 'Inactive'}
-                          </span> */}
+
                           <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} />
 
                         </td>
-                        <td className="px-6 py-4">
+                        {/* <td className="px-6 py-4">
                           <div className="flex space-x-2">
                             <button onClick={() => handleEdit(form.faqId)} className="text-blue-500 hover:text-blue-700">
                               Edit
@@ -129,8 +136,30 @@ const Faq = () => {
                             <NavLink to={`/dashboard/admin/FAQ/view-faq/${form.faqId}`} className="text-blue-500 hover:text-blue-700">
                               View
                             </NavLink>
-                            {/* <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} /> */}
                           </div>
+                        </td> */}
+                         <td className="px-6 py-4">
+
+                        <Menu placement="bottom-end">
+                          <MenuHandler>
+                            <Button className="p-0 shadow-none bg-white text-black hover:text-gray-700">
+                              <BsThreeDotsVertical size={20} />
+                            </Button>
+                          </MenuHandler>
+                          <MenuList >
+                            <MenuItem className="flex gap-4" onClick={() => handleEdit(form.faqId)}>
+                            <MdEdit/>
+                              Update FAQ
+                            </MenuItem>
+                            <NavLink  to={`/dashboard/admin/FAQ/view-faq/${form.faqId}`}>
+                              
+                              <MenuItem className="flex gap-4">
+                              <FaEye/>
+                                View FAQ
+                              </MenuItem>
+                            </NavLink>
+                          </MenuList>
+                        </Menu>
                         </td>
                       </tr>
                     )

@@ -19,6 +19,7 @@ import { updateNext } from '@/redux/admin/slices/VIdeoIntroSlice';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import { getAllLogos, uploadImage } from '@/redux/admin/actions/logo';
+import { MdCancel } from 'react-icons/md';
 const Logo = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -26,11 +27,11 @@ const Logo = () => {
   const [imagePreviewUrl, setImagePreviewUrl] = useState(null);
   const [error, setError] = useState(null);
   const { logo, url, isFetching, uploadImageLoading } = useSelector((state) => state.logo);
-  
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    dispatch(getAllLogos());
+    !url && dispatch(getAllLogos());
   }, [dispatch]);
 
   const handleOpen = () => {
@@ -163,8 +164,11 @@ const Logo = () => {
         )}
       </div>
       <Dialog size='xs' open={open} handler={handleOpen}>
+        <div>
+          <MdCancel onClick={handleOpen} className='absolute cursor-pointer right-0 text-xl text-red-500' size={'2.5rem'} />
+        </div>
         <DialogHeader className='flex flex-col gap-1 items-start'>
-          {selectedImage ? "Preview Image" : "Upload Image"}
+          {selectedImage ? "Preview Logo" : "Upload Logo"}
         </DialogHeader>
         <DialogBody>
           {selectedImage ? (
@@ -177,7 +181,7 @@ const Logo = () => {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                className="mb-2"
+                className="mb-2 hidden"
                 ref={fileInputRef}
               />
               {error && <p className="text-red-500">{error}</p>}
@@ -192,7 +196,7 @@ const Logo = () => {
                 >
                   <path d="M12 4v16m8-8H4" />
                 </svg>
-                <p className="mt-2 text-gray-600">No image selected</p>
+                <p className="mt-2 text-gray-600">Click to choose image!</p>
               </div>
             </>
           )}

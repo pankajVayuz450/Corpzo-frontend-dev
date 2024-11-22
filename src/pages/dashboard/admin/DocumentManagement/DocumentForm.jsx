@@ -6,6 +6,7 @@ import { useFormik } from 'formik';
 import { addDocuments, updateDocument, uploadDocument } from '@/redux/admin/actions/Document';
 import { useParams } from 'react-router-dom';
 import { handleExtraSpaces } from '@/Helpers/globalfunctions';
+import { MdCancel } from 'react-icons/md';
 
 const folderInitalValues = {
     folderName: ""
@@ -32,6 +33,10 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
     const { isAdding, documentList } = useSelector((state) => state.document);
     const [file, setFile] = useState(null);
     const [fileError, setFileError] = useState("");
+    const handleClose=()=>{
+        handleOpen()
+        setFileError(null)
+    }
     const {
         values,
         errors,
@@ -60,8 +65,8 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                     dispatch(updateDocument(data._id, values.folderName));
                 } else {
                     console.log(values, "folder valuiesasdasd")
-                    const folderData ={
-                        folderName : handleExtraSpaces(values.folderName)
+                    const folderData = {
+                        folderName: handleExtraSpaces(values.folderName)
                     }
                     dispatch(addDocuments(folderData));
                 }
@@ -83,14 +88,48 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
             setFileError("");
         },
     });
-
+    const allowedExtensions = [
+        "pdf", "doc", "docx", "dot", "dotx", 
+        "xls", "xlsx", "xlsm", "xltx", 
+        "ppt", "pptx", "pps", "ppsx",
+        "odt", "ods", "odp",
+        "rtf", "txt", "csv",
+        "md", "xml", "html", "htm",
+        "epub", "mobi", "tex"
+      ];
+      
     // Function to handle file change
+    // const handleFileChange = (e) => {
+    //     const file = e.target.files[0]; // Get the first file from the input
+    //     setFile(file); // Set the file in state
+    //     console.log(file, "Selected file"); // Log the file to verify
+    //     setFileError(selectedFile ? "" : "Please select a file before proceeding.");
+    // };
     const handleFileChange = (e) => {
-        const file = e.target.files[0]; // Get the first file from the input
-        setFile(file); // Set the file in state
-        console.log(file, "Selected file"); // Log the file to verify
-        setFileError(selectedFile ? "" : "Please select a file before proceeding.");
+        const selectedFile = e.target.files[0]; // Get the first file from the input
+    
+        if (selectedFile) {
+            const fileName = selectedFile.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase(); // Extract the file extension and normalize case
+    
+            // Check if the file extension is allowed
+            if (allowedExtensions.includes(fileExtension)) {
+                setFile(selectedFile); // Set the file in state
+                setFileError(''); // Clear any previous errors
+                console.log(selectedFile, 'Selected file'); // Log the file to verify
+            } else {
+                setFile(null); // Clear the file in state
+                setFileError(`Invalid file type. Allowed types: ${allowedExtensions.join(', ')}`); // Set an error message
+                e.target.value = '';
+            }
+        } else {
+            setFile(null); // Reset file state if no file is selected
+            if (fileError) {
+                setFileError(''); // Clear the error if no file is selected
+            }
+        }
     };
+    
 
     useEffect(() => {
         if (id && modalType === 'folder') {
@@ -104,14 +143,18 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
 
     return (
         <div>
-            <Dialog size='xs' open={open} handler={handleOpen}>
+            <Dialog size='xs' open={open} handler={handleOpen} className='relative'>
+                <div>
+                    <MdCancel onClick={handleClose} className='absolute cursor-pointer right-0 text-xl text-red-500'  size={'2.5rem'} />
+                </div>
+
                 {id ? <DialogHeader>{modalType === 'folder' ? 'Update Folder' : 'Update File'}</DialogHeader> : <DialogHeader>{modalType === 'folder' ? 'Create Folder' : 'Add File'}</DialogHeader>}
                 <DialogBody>
                     <form onSubmit={handleSubmit} id='docform'>
                         {modalType === 'folder' ? (
                             <>
                                 <Typography>
-                                    Select folder
+                                    Enter folder name
                                 </Typography>
                                 <input
                                     size="sm"
@@ -119,7 +162,7 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                                     placeholder="Enter Folder Name..."
                                     value={values.folderName}
                                     name='folderName'
-                                    className="!border-t-blue-gray-200 p-2 focus:!border-t-gray-900 w-full"
+                                    className="border border-gray-400 p-2 focus:!border-t-gray-900 rounded-md w-full"
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     maxLength={30}
@@ -127,6 +170,7 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                                 {errors.folderName && touched.folderName && <p className='text-sm text-red-500'>{errors.folderName}</p>}
                             </>
                         ) : (
+                            <>
                             <input
                                 size="sm"
                                 type='file'
@@ -135,12 +179,15 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                                 onChange={handleFileChange}
                                 className="!border-t-blue-gray-200 focus:!border-t-gray-900 w-full"
                             />
+                           {fileError &&  <p className='text-red-500'>{fileError}</p>}
+                            </>
+                            
                         )}
                     </form>
                 </DialogBody>
                 <DialogFooter className='flex gap-2'>
                     <button
-                        disabled={isAdding || !(dirty && isValid)|| (!file && modalType !== 'folder')}
+                        disabled={isAdding || !(dirty && isValid) || (!file && modalType !== 'folder')}
                         form='docform'
                         type='submit'
                         className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) || (!file && modalType !== 'folder') ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
@@ -148,9 +195,9 @@ const DocumentForm = ({ open, handleOpen, modalType, id, folderId }) => {
                         {isAdding ?
                             <div className='flex justify-center items-center gap-3'>
                                 <Spinner color='white' className="h-4 w-4" />
-                                {id ? "Updating Document" : "Adding Document"}
+                                {modalType === 'folder' ? (id ? "Updating Folder" : "Creating Folder") : (id ? "Updating Document" : "Adding Document")}
                             </div>
-                            : id ? "Update Document" : "Add Document"}
+                            : modalType === 'folder' ? (id ? "Update Folder" : "Create Folder") : (id ? "Update Document" : "Add Document")}
                     </button>
                 </DialogFooter>
             </Dialog>

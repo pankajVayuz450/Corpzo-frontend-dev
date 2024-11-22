@@ -13,6 +13,7 @@ const initialState = {
  editPage : 1,
  serviceList : [], 
  folderDocuments : [], 
+ totalFolderDocuments : 0
 };
 
 
@@ -22,7 +23,7 @@ const documentSlice = createSlice({
   reducers: {
     getDocuments: (state, action) => {
       state.documentList = action.payload.documentList;
-      // state.totalCount = action.payload.totalCount;
+      state.totalCount = action.payload.totalCount;
     },
     getServices: (state, action) => {
       state.serviceList = action.payload.serviceList;
@@ -90,6 +91,7 @@ const documentSlice = createSlice({
   
   getFolderDocumentsReducer : (state, action)=>{
     state.folderDocuments = action.payload.folderDocuments;
+    state.totalFolderDocuments = action.payload.totalCount
   },
   
   }

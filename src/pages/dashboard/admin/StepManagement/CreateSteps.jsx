@@ -17,8 +17,9 @@ import { addSteps, editStep, getAllSteps, getSingleStep, } from '@/redux/admin/a
 import HeaderTitle from '@/components/common/HeaderTitle';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 const initialValues = {
-  serviceId: "66e17336b029b506bdd35f34",
-  details: ""
+  serviceId: "",
+  details: "",
+  active : true, 
 }
 
 const CreateSteps = () => {

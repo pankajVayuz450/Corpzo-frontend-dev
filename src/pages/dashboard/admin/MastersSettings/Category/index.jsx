@@ -1,35 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Input,
-  Switch
-} from "@material-tailwind/react";
-import ReusableTable from "@/components/common/Tables";
-import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
-import { getAllCategories, deleteCategory, updateStatus } from '@/redux/admin/actions/MasterSettings/Category';
-import { useDispatch, useSelector } from 'react-redux';
-import ReactPaginate from 'react-paginate';
-import TitleComponent from '@/components/common/TitleComponent';
-import TableShimmer from '@/components/common/TableShimmer';
-import { formatReadableDate } from '@/Helpers/globalfunctions';
-import { CiSearch } from "react-icons/ci";
-import { MdClear } from "react-icons/md";
-import { toast } from 'react-toastify';
-import { throttle } from '@/Helpers/globalfunctions';
-import { updateEditPage } from '@/redux/admin/slices/MasterSettings/CategorySlice/categorySlice';
-import Breadcrumb from '@/widgets/layout/TopNavigation';
+import HeaderTitle from '@/components/common/HeaderTitle';
+import NoData from '@/components/common/NoData';
 import Pagination from '@/components/common/Pagination';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
-import HeaderTitle from '@/components/common/HeaderTitle';
+import ReusableTable from "@/components/common/Tables";
+import TableShimmer from '@/components/common/TableShimmer';
+import TitleComponent from '@/components/common/TitleComponent';
+import { formatReadableDate } from '@/Helpers/globalfunctions';
+import { getAllCategories, updateStatus } from '@/redux/admin/actions/MasterSettings/Category';
+import { updateEditPage } from '@/redux/admin/slices/MasterSettings/CategorySlice/categorySlice';
+import Breadcrumb from '@/widgets/layout/TopNavigation';
+import { Switch } from "@material-tailwind/react";
+import { useEffect } from 'react';
+import { MdEdit } from "react-icons/md";
+import { TailSpin } from 'react-loader-spinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 const Category = () => {
 
   const dispatch = useDispatch()
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchParams, setSearchParams] = useSearchParams();
-  const data = useSelector((state) => state.category.categoryList);
-  const totalCount = useSelector((state) => state.category.totalCount)
-  const isFetching = useSelector((state) => state.category.isFetching)
-  const isStatusLoading = useSelector((state) => state.category.isStatusLoading)
-  const [isSearching, setIsSearching] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  const { categoryList, totalCount, isFetching, isStatusLoading, childLoading } = useSelector((state) => state.category)
 
   const navigate = useNavigate();
   const handleEdit = id => {
@@ -42,8 +33,6 @@ const Category = () => {
     const page = searchParams.get('page') || 1;
     const limit = searchParams.get('limit') || 10;
 
-    setSearchQuery(query);
-    
     dispatch(getAllCategories(limit, page, query));
 
   }, [searchParams, dispatch]);
@@ -57,6 +46,43 @@ const Category = () => {
     dispatch(updateStatus(form.categoryId, data, navigate));
   };
 
+  const columns = [
+    {
+      Header: 'Category',
+      accessor: 'categoryName',
+      Cell: ({ row }) => (row?.original?.categoryName),
+    },
+    {
+      Header: 'Created At',
+      accessor: 'createdAt',
+      Cell: ({ value }) => formatReadableDate(value),
+    },
+    {
+      Header: 'Status ',
+      accessor: 'active',
+      Cell: ({ row }) => (
+        <>
+          {/* <Switch disabled={isStatusLoading} checked={row.original.active} onChange={() => { handleStatus(row.original) }} /> */}
+          {childLoading[row.original.categoryId] ? <TailSpin height={20} width={20} color="blue" /> : <Switch disabled={isStatusLoading} checked={row.original.active} onChange={() => handleStatus(row.original)} />}
+
+        </>
+      ),
+    },
+    {
+      Header: 'Actions',
+      accessor: 'actions',
+      Cell: ({ row }) => (
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => handleEdit(row.original?.categoryId)}
+            className="transition-all p-2 rounded"
+          >
+            <MdEdit />
+          </button>
+        </div>
+      ),
+    }
+  ];
   const breadcrumbData = [
     {
 
@@ -74,7 +100,7 @@ const Category = () => {
     <>
       <Breadcrumb items={breadcrumbData} />
       <TitleComponent title={"CORPZO | Category"} />
-      <HeaderTitle title="Category Management" />
+      <HeaderTitle title="Category Management" totalCount={totalCount} />
       <div className='w-full mt-4'>
         <div className='flex gap-4 justify-between items-center w-full mb-4'>
           <NavLink to="/dashboard/admin/masterSettings/Category/add-category" className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
@@ -88,70 +114,10 @@ const Category = () => {
               <TableShimmer />
             ) : (
               <>
-                {data && data.length > 0 ? (
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Sr. No
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Category Name
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Created At
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {data && data.map((form, index) => {
-                        const idx = ((parseInt(searchParams.get("page") || 1) - 1) * parseInt(searchParams.get("limit") || 10)) + (index + 1);
-                        return (
-                          <tr key={index}>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{idx}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{form.categoryName}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-500">{formatReadableDate(form.createdAt)}</div>
-                            </td>
-                            <td className="h-full">
-                              <div className="flex justify-center items-center h-full">
-                                <span className="inline-flex text-xs leading-5 font-semibold">
-                                  <Switch disabled={isStatusLoading} checked={form.active} onChange={() => handleStatus(form)} />
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              {/* {renderActionColumn(form)} */}
-                              <div className="flex space-x-2">
-                                <button
-                                  onClick={() => handleEdit(form.categoryId)}
-                                  className="text-blue-500 hover:text-blue-700"
-                                >
-                                  Edit
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                {categoryList && categoryList.length > 0 ? (
+                  <ReusableTable data={categoryList || []} columns={columns} totalData={totalCount} key={isStatusLoading} />
                 ) : (
-                  <>
-                    <div className="flex justify-center items-center h-screen">
-                      <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
-                    </div>
-                  </>
+                  <><NoData /></>
                 )}
               </>
             )

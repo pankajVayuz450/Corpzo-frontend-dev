@@ -13,15 +13,17 @@ import DocumentForm from './DocumentForm';
 import TitleComponent from '@/components/common/TitleComponent';
 import { formatReadableDate, throttle } from '@/Helpers/globalfunctions';
 import { NavLink, useParams, useSearchParams } from 'react-router-dom';
-import { getAllDocuments, getFolderDocuments } from '@/redux/admin/actions/Document';
+import { getFolderDocuments } from '@/redux/admin/actions/Document';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import SearchBoxNew from '@/components/common/SearchBoxNew';
+import Pagination from '@/components/common/Pagination';
 
 const FolderDocuments = () => {
   const [openFile, setOpenFile] = useState(false);   // For file modal
   const [openFolder, setOpenFolder] = useState(false); // For folder modal
   const [selectedId, setSelectedId] = useState(null); // To store the ID of the item being edited
   const dispatch = useDispatch();
-  const { isFetching, folderDocuments, isAdding } = useSelector((state) => state.document);
+  const { isFetching, folderDocuments, isAdding,totalFolderDocuments } = useSelector((state) => state.document);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   // Function to toggle file modal with id
@@ -60,10 +62,21 @@ const FolderDocuments = () => {
   };
 
   // Automatically fetch documents based on searchParams
-  useEffect(() => {
+  // useEffect(() => {
 
-    dispatch(getFolderDocuments(folderId));
-  }, [dispatch]);
+  //   dispatch(getFolderDocuments(folderId));
+  // }, [dispatch]);
+  useEffect(() => {
+    const query = searchParams.get('search') || '';
+    const page = searchParams.get('page') || 1;
+    const limit = searchParams.get('limit') || 10;
+
+    setSearchQuery(query);
+
+    // dispatch(getAllDocuments(limit, page, query));
+    // dispatch(getFolderDocuments())
+    dispatch(getFolderDocuments(folderId, page, query));
+  }, [searchParams, dispatch]);
 
   useEffect(() => {
     if (!isAdding) {
@@ -86,7 +99,7 @@ const FolderDocuments = () => {
   return (
     <div className='w-full mt-4'>
       <TitleComponent title={"CORPZO | Document Management"} />
-      <HeaderTitle title="Document Files" totalCount={folderDocuments.length} />
+      <HeaderTitle title="Document Files" totalCount={totalFolderDocuments} />
       <Breadcrumb items={breadcrumbData} />
       {/* <div className='flex gap-4 justify-between items-center w-full mb-4 mt-4'>
         <div className='w-[20%]'>
@@ -96,6 +109,9 @@ const FolderDocuments = () => {
           </Select>
         </div>
       </div> */}
+      <div className='w-full flex justify-end'>
+      <SearchBoxNew queryParam='search'/>
+      </div>
 
       <>
         {
@@ -145,15 +161,11 @@ const FolderDocuments = () => {
                   <img src="/img/nodata_svg.svg" className="w-[40%]" alt="No data found" />
                 </div>
               )}
+              {totalFolderDocuments > 10 && <Pagination itemsPerPage={10} totalItems={totalFolderDocuments}/>}
             </>
           )
         }
       </>
-
-      {/* <DocumentForm open={openFile} handleOpen={handleFileModal} modalType="file" selectedId={selectedId}/>
-      <DocumentForm open={openFolder} handleOpen={handleFolderModal} modalType="folder" selectedId={selectedId}/> */}
-      {/* <DocumentForm open={openFile} handleOpen={handleFileModal} modalType="file" folderId={folderId} id={selectedId} />
-      <DocumentForm open={openFolder} handleOpen={handleFolderModal} modalType="folder" id={selectedId} /> */}
 
     </div>
   );

@@ -16,7 +16,8 @@ const initialState = {
   updatingBannerError: "",
   page: 1,
   limit: 10,
-  totalCount: 0
+  totalCount: 0,
+  bannerIdState:""
 };
 
 const bannerSlice = createSlice({
@@ -39,7 +40,11 @@ const bannerSlice = createSlice({
     removeUpdatingBannerError: (state, action) => {
         state.updatingBannerError = "";
         state.updatedBanner = null;
-    }
+    },
+    setBannerId: (state, action) => {
+    
+      state.bannerIdState = action.payload;
+  }
   },
   extraReducers: (builder) => {
     builder
@@ -100,6 +105,6 @@ const bannerSlice = createSlice({
   }
 });
 
-export const { removeUploadingBannerError, removeFetchingBannersError, removeFetchingSingleBannerError, removeUpdatingBannerError, resetBanner } = bannerSlice.actions;
+export const { removeUploadingBannerError, removeFetchingBannersError, removeFetchingSingleBannerError, removeUpdatingBannerError, resetBanner,setBannerId } = bannerSlice.actions;
 
 export default bannerSlice.reducer;

@@ -12,6 +12,12 @@ const userAPIs = {
     getAllTransactions :`${BASE_URL}/admin/applications/transaction`,
     getAllProgress :`${BASE_URL}/admin/all-service-progress`,
     downloadUsers : `${BASE_URL}/admin/users?role=user`,
-    viewInvoice : `${BASE_URL}/admin/applications/download-invoice`
+    viewInvoice : `${BASE_URL}/admin/applications/download-invoice`,
+    verifyUserFormTable : `${BASE_URL}/admin/verify-temp-user`,
+    verifyTemporaryUser : `${BASE_URL}/admin/email/verify-temp-user`,
+    getUserId : `${BASE_URL}/admin/user-id-number`,
+    promoteDemoteUser :  `${BASE_URL}/admin/promot-user`,
+    archiveUser : `${BASE_URL}/admin/delete-user`,
+    viewLogs : `${BASE_URL}/admin/applications/logs`
 }
 export default userAPIs;

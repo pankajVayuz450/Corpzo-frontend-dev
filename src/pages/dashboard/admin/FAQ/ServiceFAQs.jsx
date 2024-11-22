@@ -7,7 +7,7 @@ import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import TitleComponent from '@/components/common/TitleComponent';
 import TableShimmer from '@/components/common/TableShimmer';
-import {  addServiceFaq, getServiceFaqs } from "@/redux/admin/actions/FAQ";
+import { addServiceFaq, getServiceFaqs } from "@/redux/admin/actions/FAQ";
 import HeaderTitle from "@/components/common/HeaderTitle";
 import Breadcrumb from "@/widgets/layout/TopNavigation";
 const ServiceFaqs = () => {
@@ -80,7 +80,7 @@ const ServiceFaqs = () => {
             setSelectAll(false);
         }
     }, [selectedIds, serviceFaqs]);
-   
+
     const onSubmitChecked = () => {
         const faqData = {
             serviceId: serviceId,
@@ -91,74 +91,74 @@ const ServiceFaqs = () => {
     }
     const breadcrumbData = [
         {
-   
-          name: 'Service FAQs',
+
+            name: 'Service FAQs',
         }
-      ];
+    ];
     return (
         <>
             <TitleComponent title={"CORPZO | Service FAQs"}></TitleComponent>
-            <HeaderTitle title="Service FAQs"/>
-            <Breadcrumb items={breadcrumbData}/>
+            <HeaderTitle title="Service FAQs" />
+            <Breadcrumb items={breadcrumbData} />
             <div className='w-full h-full mt-4'>
-            <div className='flex gap-4 justify-between items-center w-full'>
-            </div>
+                <div className='flex gap-4 justify-between items-center w-full'>
+                </div>
 
 
-            {isFetching ? (
-                <TableShimmer />
-            ) : (
-                <div>
-                    {serviceFaqs && serviceFaqs.length > 0 ? (
-                        <div className="w-full">
-                            <div className="mb-1 flex items-center">
-                                <Checkbox
-                                    checked={selectAll}
-                                    onChange={handleSelectAll}
-                                />
-                                <label className="ml-2">Select All</label>
-                            </div>
-                            <div class=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 p-1">
-                                {serviceFaqs && serviceFaqs.map((serviceFaq) => (
-                                    <div className="shadow-md rounded-md px-2 py-1 flex justify-between items-center">
-                                        <NavLink className="w-[80%]" to={`/dashboard/admin/FAQ/view-faq/${serviceFaq._id}`}>{serviceFaq.question.slice(0, 15)}...</NavLink>
-                                        <Checkbox
-                                            checked={selectedIds.includes(serviceFaq._id)}
-                                            onChange={() => handleCheckboxChange(serviceFaq._id)}
-                                        />
-                                    </div>
+                {isFetching ? (
+                    <TableShimmer />
+                ) : (
+                    <div>
+                        {serviceFaqs && serviceFaqs.length > 0 ? (
+                            <div className="w-full">
+                                <div className="mb-1 flex items-center">
+                                    <Checkbox
+                                        checked={selectAll}
+                                        onChange={handleSelectAll}
+                                    />
+                                    <label className="ml-2">Select All</label>
+                                </div>
+                                <div class=" grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 p-1">
+                                    {serviceFaqs && serviceFaqs.map((serviceFaq) => (
+                                        <div className="shadow-md rounded-md px-2 py-1 flex justify-between items-center">
+                                            <NavLink className="w-[80%]" to={`/dashboard/admin/FAQ/view-faq/${serviceFaq.faqId}`}>{serviceFaq.question.slice(0, 15)}...</NavLink>
+                                            <Checkbox
+                                                checked={selectedIds.includes(serviceFaq._id)}
+                                                onChange={() => handleCheckboxChange(serviceFaq._id)}
+                                            />
+                                        </div>
 
 
-                                ))}
-                            </div>
-                            <div className="w-full flex justify-end mb-4">
-                                <button
-                                    onClick={onSubmitChecked}
-                                    disabled={isAdding}
-                                    className={`bg-blue-500 text-white font-bold mt-2 py-2 px-4 rounded-md
+                                    ))}
+                                </div>
+                                <div className="w-full flex justify-end mb-4">
+                                    <button
+                                        onClick={onSubmitChecked}
+                                        disabled={isAdding}
+                                        className={`bg-blue-500 text-white font-bold mt-2 py-2 px-4 rounded-md
     hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
     focus:ring-opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed`}>
-                                    {isAdding ? (
-                                        <div className='flex justify-center items-center gap-3'>
-                                            <Spinner color='white' className="h-4 w-4" />
-                                            {"Adding FAQs"}
-                                        </div>
-                                    ) : (
-                                        "Add FAQs"
-                                    )}
-                                </button>
+                                        {isAdding ? (
+                                            <div className='flex justify-center items-center gap-3'>
+                                                <Spinner color='white' className="h-4 w-4" />
+                                                {"Adding FAQs"}
+                                            </div>
+                                        ) : (
+                                            "Add FAQs"
+                                        )}
+                                    </button>
 
 
+                                </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="flex justify-center items-center h-screen">
-                            <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
-                        </div>
-                    )}
-                </div>
-            )}
-        </div>
+                        ) : (
+                            <div className="flex justify-center items-center h-screen">
+                                <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         </>
     );
 

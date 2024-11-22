@@ -16,18 +16,24 @@ import Breadcrumb from '@/widgets/layout/TopNavigation';
 import DocumentForm from './DocumentForm';
 import TitleComponent from '@/components/common/TitleComponent';
 import { formatReadableDate, throttle } from '@/Helpers/globalfunctions';
-import { NavLink, useSearchParams } from 'react-router-dom';
-import { getAllDocuments, getFolderDocuments } from '@/redux/admin/actions/Document';
+import { NavLink, useNavigate, useSearchParams } from 'react-router-dom';
+import { getAllDocuments, getAllFolders, getFolderDocuments } from '@/redux/admin/actions/Document';
 import HeaderTitle from '@/components/common/HeaderTitle';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import { MdGridView } from "react-icons/md";
+import { MdEdit, MdGridView } from "react-icons/md";
+import { IoIosAdd } from 'react-icons/io';
+import { IoDocuments, } from "react-icons/io5";
+import Pagination from '@/components/common/Pagination';
+import SearchBoxNew from '@/components/common/SearchBoxNew';
 
 const DocumentManagement = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
   const [openFile, setOpenFile] = useState(false);   // For file modal
   const [openFolder, setOpenFolder] = useState(false); // For folder modal
   const [selectedId, setSelectedId] = useState(null); // To store the ID of the item being edited
-  const dispatch = useDispatch();
-  const { isFetching, documentList, isAdding } = useSelector((state) => state.document);
+  
+  const { isFetching, documentList, isAdding,totalCount } = useSelector((state) => state.document);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const [folderId, setFolderId] = useState(null)
@@ -80,8 +86,8 @@ const DocumentManagement = () => {
 
     setSearchQuery(query);
 
-    dispatch(getAllDocuments(limit, page, query));
-    dispatch(getFolderDocuments())
+    dispatch(getAllFolders(limit, page, query));
+    // dispatch(getAllDocuments(page, query))
   }, [searchParams, dispatch]);
   useEffect(() => {
     if (!isAdding) {
@@ -97,10 +103,13 @@ const DocumentManagement = () => {
     }
   ];
 
+  const handleViewAllDOcuments=()=>{
+    navigate(`/dashboard/admin/document-management/all-documents`)
+  }
   return (
     <div className='w-full mt-4'>
       <TitleComponent title={"CORPZO | Document Management"} />
-      <HeaderTitle title="Document Management" totalCount={documentList.length} />
+      <HeaderTitle title="Document Management" totalCount={totalCount} />
       <Breadcrumb items={breadcrumbData} />
 
       <div className='flex gap-4 justify-between items-center w-full mb-4 mt-4'>
@@ -110,10 +119,14 @@ const DocumentManagement = () => {
             <Option onClick={() => handleFileModal()}>Add File</Option>
           </Select>
         </div>
-        {/* <Button className="flex items-center gap-3">
-          <MdGridView className="w-5 h-5 text-inherit" />
-          Add to Bookmark
-        </Button> */}
+        <div className='flex gap-4'>
+
+        <Button onClick={handleViewAllDOcuments} className="flex items-center gap-3 bg-blue-500 hover:bg-blue-800">
+          <IoDocuments className="w-5 h-5 text-inherit" />
+          View All Documents
+        </Button>
+        <SearchBoxNew queryParam='search'/>
+        </div>
       </div>
 
       <>
@@ -149,21 +162,24 @@ const DocumentManagement = () => {
                         </td>
                         <td className="px-6 py-4">
 
-                          <Menu>
+                          <Menu placement="bottom-end">
                             <MenuHandler>
                               <Button className="p-0 shadow-none bg-white text-black hover:text-gray-700">
                                 <BsThreeDotsVertical size={20} />
                               </Button>
                             </MenuHandler>
                             <MenuList>
-                              <MenuItem onClick={form.folderId ? () => handleFolderModal(form.folderId) : () => handleFileModal(form.fileId)}>
+                              <MenuItem className='flex gap-4' onClick={form.folderId ? () => handleFolderModal(form.folderId) : () => handleFileModal(form.fileId)}>
+                                <MdEdit/>
                                 Edit
                               </MenuItem>
-                              <MenuItem onClick={() => handleFileUploadFOrDoc(form._id)}>
+                              <MenuItem className='flex gap-4' onClick={() => handleFileUploadFOrDoc(form._id)}>
+                              <IoIosAdd />
                                 Add Document
                               </MenuItem>
                               <NavLink to={`/dashboard/admin/document-management/documents/${form._id}`}>
-                                <MenuItem>
+                                <MenuItem className='flex gap-4'>
+                                <IoDocuments />
                                   View Documents
                                 </MenuItem>
                               </NavLink>
@@ -183,6 +199,8 @@ const DocumentManagement = () => {
           )
         }
       </>
+
+      <Pagination totalItems={totalCount} itemsPerPage={10}/>
 
       {/* <DocumentForm open={openFile} handleOpen={handleFileModal} modalType="file" selectedId={selectedId}/>
       <DocumentForm open={openFolder} handleOpen={handleFolderModal} modalType="folder" selectedId={selectedId}/> */}

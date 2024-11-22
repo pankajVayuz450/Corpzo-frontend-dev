@@ -25,7 +25,8 @@ const initialValues = {
   amount: 0,
   serviceId: "",
   type: "",
-  duration: ""
+  duration: "",
+  // active: true
 }
 const MAX_EDITOR_LENGTH = 200;
 

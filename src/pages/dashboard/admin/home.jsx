@@ -1,5 +1,7 @@
 import HeaderTitle from "@/components/common/HeaderTitle";
 import TitleComponent from "@/components/common/TitleComponent";
+import MainLayout from "@/widgets/layout/MainLayout";
+// import MainLayout from "@/widgets/layout/MainLayout";
 import Breadcrumb from "@/widgets/layout/TopNavigation";
 import React from "react";
 
@@ -15,7 +17,7 @@ export function Home() {
       <HeaderTitle title={"Analytics"}/>
       <TitleComponent title={"CORPZO | Analytics"}/>
       <Breadcrumb items={breadcrumbData}/>
-      <h1>Coming Soon...</h1>
+      <><h1>Coming Soon...</h1></>
     </div>
   );
 }

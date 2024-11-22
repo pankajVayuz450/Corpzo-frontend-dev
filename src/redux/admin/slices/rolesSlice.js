@@ -22,7 +22,9 @@ const initialState = {
   assignedTo: [{ label: "Select Assignee", value: "" }],
   isFetchingAssignedTo: false,
   fetchingAssignedToError: "",
-  totalCount: 0
+  totalCount: 0,
+  isStatusLoading : false,
+
 };
 
 const rolesSlice = createSlice({
@@ -50,6 +52,21 @@ const rolesSlice = createSlice({
     removeFetchingAssignedTo: (state, action) => {
       state.fetchingAssignedToError = "";
     },
+    updateStatusLoading : (state, action)=>{
+      state.isStatusLoading = action.payload;
+    },
+    updateStatusState :(state,action)=>{
+        const {_id, active} = action.payload;
+
+        state.roles = state.roles.map((role) => {
+          if (role._id
+            === _id
+          ) {
+            return { ...role, active };
+          }
+          return role;  
+        });
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -132,6 +149,6 @@ const rolesSlice = createSlice({
   }
 });
 
-export const { removeAddingRoleError, removeDeletingRoleError, removeFetchingRolesError, removeFetchingSingleRoleError, removeUpdatingRoleError, removeFetchingAssignedTo } = rolesSlice.actions;
+export const { removeAddingRoleError, removeDeletingRoleError,updateStatusLoading, updateStatusState, removeFetchingRolesError, removeFetchingSingleRoleError, removeUpdatingRoleError, removeFetchingAssignedTo } = rolesSlice.actions;
 
 export default rolesSlice.reducer;

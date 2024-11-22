@@ -5,6 +5,7 @@ import { SignIn } from "./pages/auth";
 import routes from "./routes";
 import NoNetwork from "./pages/NoNetwork/NoNetwork";
 import "./index.css"
+import "./css/react-datepicker.css"
 
 function App() {
   const AppRoutes = () => {

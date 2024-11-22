@@ -1,3 +1,4 @@
+import { extractErrorMessage } from '@/Helpers/globalfunctions';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -15,7 +16,8 @@ export const addBanner = createAsyncThunk(
         });
         return response.data;
       } catch (error) {
-        return rejectWithValue(error.response.data);
+        console.log("check reject value",error.response.data)
+        return rejectWithValue(extractErrorMessage(error.response.data.error));
       }
     }
   );
@@ -63,7 +65,7 @@ export const updateBanner = createAsyncThunk(
         });
         return response.data;
       } catch (error) {
-        return rejectWithValue(error.response.data);
+        return rejectWithValue(error.response.data.error);
       }
     }
   );

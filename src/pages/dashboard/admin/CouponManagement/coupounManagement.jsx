@@ -1,42 +1,35 @@
 // src/pages/CouponList.js
-import CouponTable from '@/components/admin/couponTable';
+
 import HeaderTitle from '@/components/common/HeaderTitle';
-import LoadingPage from '@/components/common/LoadingPage';
 import Pagination from '@/components/common/Pagination';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
-import ReusableTable from '@/components/common/Tables';
+
 import TableShimmer from '@/components/common/TableShimmer';
-import couponAPIs from '@/constants/APIList/couponAPIs';
 import { formatReadableDate } from '@/Helpers/globalfunctions';
-import { deleteCoupon, getAllCoupons, updateCouponStatus } from '@/redux/admin/actions/coupon';
+import { getAllCoupons, updateCouponStatus } from '@/redux/admin/actions/coupon';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import { Switch, Typography } from '@material-tailwind/react';
 import React, { useEffect, useState } from 'react';
 import { TailSpin } from 'react-loader-spinner';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FaFilter } from "react-icons/fa";
 import { Dialog, DialogHeader, DialogBody, DialogFooter, Button } from '@material-tailwind/react';
 import Select from 'react-select';
-import { getActiveBusinessEmail, getAllActiveCategories, getAllActiveSelectedSubCategories, getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
+import {  getAllActiveSubCategoriesAll } from '@/redux/admin/actions/Services';
 import { setCouponIndex } from '@/redux/admin/slices/coupon';
-import Spinner from '@/components/common/Spinner';
+import { MdEdit } from 'react-icons/md';
+import TitleComponent from '@/components/common/TitleComponent';
 const CouponList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState([[], [], []]); // For three dropdowns
-  const [selectedCoupon, setSelectedCoupon] = useState(null);
   const { couponsList, coupons, isCouponsFetching, totalCount, currentPage, isCouponUpdating, isActiveCouponIndex } = useSelector((state) => state.coupons);
   console.log("coupons isCouponUpdating", isCouponUpdating);
   const { activeCategories, activeSubCategoriesList, getActiveBusinessEmailList } = useSelector((state) => state.service)
   const [selectedCategoryIds, setSelectedCategoryIds] = useState('[]');
-  const dropdownOptions = [
-    { value: 'Option 1', label: 'Option 1' },
-    { value: 'Option 2', label: 'Option 2' },
-    { value: 'Option 3', label: 'Option 3' },
-  ];
+ 
   const handleCreateCoupon = () => {
     navigate('/dashboard/admin/couponmanagement/create-coupon');
   };
@@ -47,7 +40,7 @@ const CouponList = () => {
 
 
 
-  console.log("check coupon value", isActiveCouponIndex, isCouponsFetching, isCouponUpdating)
+  
 
   const formattedActiveCategoryList = activeCategories?.map(category => ({
     value: category.categoryId,
@@ -92,25 +85,7 @@ const CouponList = () => {
     // Dispatch the updateCoupon action with the couponId and updated fields
     dispatch(updateCouponStatus(form.couponId, data)); // Pass the couponId and flattened data
   };
-  useEffect(() => {
-    dispatch(getAllActiveCategories(true))
-
-    dispatch(getActiveBusinessEmail());
-
-
-    dispatch(getAllCoupons({ page: page, limit: limit, search: search }));
-    // const foundCoupon = couponsList.find(coupon => coupon.couponId === id);
-
-    // setSelectedCoupon(foundCoupon);
-    // const userSubCatogory = foundCoupon?.subCategoryIds
-    //  const stringifyId= JSON.stringify(userSubCatogory)
-    // dispatch(getAllActiveSelectedSubCategories(stringifyId))
-    //  console.log("check user list id...",stringifyId)
-
-
-
-  }, [couponsList.length == 0, dispatch]);
-  const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
+    const toggleDialog = () => setIsDialogOpen(!isDialogOpen);
 
   const handleEdit = (id) => {
 
@@ -140,6 +115,7 @@ const CouponList = () => {
     <div className="p-6">
       <Breadcrumb items={breadcrumbData} />
       <HeaderTitle title={"Coupon Management"} totalCount={totalCount} />
+      <TitleComponent title={"CORPZO | Coupon Management"}/>
       <div className='flex justify-between'>
         <button onClick={handleCreateCoupon} className="bg-blue-500 text-white px-2 py-2 rounded mb-4">Create Coupon</button>
         <div className='flex gap-4 items-center'>
@@ -158,8 +134,7 @@ const CouponList = () => {
                 <input
                   type="radio"
                   value="option1"
-                  // checked={selectedRadio === 'option1'}
-                  // onChange={() => setSelectedRadio('option1')}
+                 
                   className="mr-2"
                 />
                 Fixed
@@ -168,8 +143,7 @@ const CouponList = () => {
                 <input
                   type="radio"
                   value="option2"
-                  // checked={selectedRadio === 'option2'}
-                  // onChange={() => setSelectedRadio('option2')}
+                 
                   className="mr-2"
                 />
                 Percentage
@@ -232,14 +206,7 @@ const CouponList = () => {
                 onBlur={() => setFieldTouched('activeBusinessEmail', true)}
               />
             </div>
-            {/* <div>
-              <label className="block">Select Options 4:</label>
-              <Select
-                options={dropdownOptions}
-                isMulti 
-                onChange={(selected) => setSelectedOptions((prev) => [prev[0], prev[1], prev[2], selected])}
-              />
-            </div> */}
+           
           </div>
         </DialogBody>
         <DialogFooter>
@@ -301,9 +268,7 @@ const CouponList = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap" >
                         <span className=''>
-                          {isCouponUpdating && isActiveCouponIndex === index ? <Spinner size="2" color="text-green-500" />:<Switch key={index} checked={form.active} disabled={isCouponUpdating} onChange={() => { handleStatus(form, index) }} color={form?.active == true ? 'green' : 'red'} />}
-
-                          
+                          {isCouponUpdating && isActiveCouponIndex === index ? <TailSpin height={20} width={20} color="blue" /> :<Switch key={index} checked={form.active} disabled={isCouponUpdating} onChange={() => { handleStatus(form, index) }}  />}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -311,9 +276,9 @@ const CouponList = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(form?.couponId)}
-                            className="text-blue-500 hover:text-blue-700"
+                            className="text-gray-500 hover:text-gray-700"
                           >
-                            Edit
+                            <MdEdit/>
                           </button>
 
                         </div>

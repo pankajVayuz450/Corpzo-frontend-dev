@@ -7,15 +7,15 @@ import {  getServices } from '../../slices/Offer';
 import {updateAdding,updateLoading,getFolderDocumentsReducer, getDocuments, addDocument, updateDocumentReducer} from "../../slices/Document"
 const authToken  = localStorage.getItem('authToken');
 
-export const getAllDocuments =(limit = 10, page = 1, search="")=>{
+export const getAllFolders =(limit = 10, page = 1, search="")=>{
    
     return async(dispatch)=>{
         try{
             dispatch(updateLoading(true));
-            let api = `${DocumentApis.getDocument}?limit=${limit}&page=${page}`
+            let api = `${DocumentApis.getDocument}?limit=${limit}&page=${page}&sort_by=date_asc`
             
             if(search !== ""){
-                api += `&search=${search}`
+                api += `&query=${search}`
             }
          
             const response = await axios.get(`${api}`, {
@@ -27,6 +27,7 @@ export const getAllDocuments =(limit = 10, page = 1, search="")=>{
             if(response.status == 200){
                 dispatch(getDocuments({
                     documentList : response.data.data,
+                    totalCount : response.data.total
                 }))
                 // dispatch(getOffers({
                 //     offerList : response.data.data.offers || [],
@@ -38,39 +39,96 @@ export const getAllDocuments =(limit = 10, page = 1, search="")=>{
         }catch(error){
             dispatch(updateLoading(false));
             console.log(error)
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
             if(error.response.data.statusCode === 400){
                 toast.warn(error.response.data.message)
             }
+            
         }
     }
 }
 
-export const getFolderDocuments=(folderId)=>{  
+export const getFolderDocuments=(folderId, page, search)=>{  
     return async(dispatch)=>{
         try{
             dispatch(updateLoading(true));
             // let api = `${DocumentApis.getFolderDocuments}?folderId=${folderId}`
-            let api = DocumentApis.getFolderDocuments;
+            let api = `${DocumentApis.getFolderDocuments}?page=${page}`;
+            if(search!== ""){
+                api += `&query=${search}`;
+            }
             if (folderId) {
-                api += `?folderId=${folderId}`;
+                api += `&folderId=${folderId}`;
             }
             const response = await axios.get(`${api}`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
             })
-            console.log(response, "docuekndknsoidnfcoindf")
+           
             if(response.status == 200){
                 dispatch(getFolderDocumentsReducer({
                     folderDocuments : response.data.data,
+                    totalCount : response.data.total
                 }))
                 dispatch(updateLoading(false))
                 
             }
         }catch(error){
             dispatch(updateLoading(false));
-            console.log(error)
-        }
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }        }
+    }
+}
+export const getAllDocuments=( page, search)=>{  
+    return async(dispatch)=>{
+        try{
+            dispatch(updateLoading(true));
+            // let api = `${DocumentApis.getFolderDocuments}?folderId=${folderId}`
+            let api = `${DocumentApis.getFolderDocuments}?page=${page}`;
+            if(search!== ""){
+                api += `&query=${search}`;
+            }
+            const response = await axios.get(`${api}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            })
+           
+            if(response.status == 200){
+                dispatch(getFolderDocumentsReducer({
+                    folderDocuments : response.data.data,
+                    totalCount : response.data.total
+                }))
+                dispatch(updateLoading(false))
+                
+            }
+        }catch(error){
+            dispatch(updateLoading(false));
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }        }
     }
 }
 export const getActiveServices =()=>{
@@ -89,6 +147,7 @@ export const getActiveServices =()=>{
             })
             console.log(response)
             if(response.status == 200){
+                console.log(response.data.data, "data")
                 dispatch(getServices({
                     serviceList : response.data.data || [],
                     
@@ -126,8 +185,15 @@ export const addDocuments=(documentData, navigate)=>{
         }catch(error){
             console.log(error, "add offer error");
             dispatch(updateAdding(false))
-            // toast.error(error.response.data.message)
-        }
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }        }
     }
 }
 
@@ -152,6 +218,15 @@ export const getFolderDocumentsList=(folderId)=>{
             console.log(error)
             dispatch(updateLoading(false))
             // toast.error(error.response.data.error)
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
 
         }
     }
@@ -176,8 +251,15 @@ export const updateDocument=(folderId, folder)=>{
         }catch(error){
             dispatch(updateAdding(false))
             console.log(error)
-            toast.error(error.response.data.message)
-
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
         }
     }
 }
@@ -214,6 +296,15 @@ export const uploadDocument = (formData) => {
             dispatch(updateAdding(false))
             console.error('Error uploading video:', error);
             // toast.error(error.response.data.error)
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
         }
     };
 };
@@ -239,6 +330,15 @@ export const updateStatus =(offerId, data)=>{
             console.log(error, "error from update status")
             // toast.error(error.response.data.message)
             dispatch(updateStatusLoading(false))
+            if (!error.response) {
+                // This means it's a network error
+                toast.error("Network error: Please check your internet connection.");
+                return
+            } else {
+                // Handle HTTP errors
+                const errorMessage = error.response.data?.message || "Something went wrong!";
+                toast.error(errorMessage);
+            }
            
         }
     }

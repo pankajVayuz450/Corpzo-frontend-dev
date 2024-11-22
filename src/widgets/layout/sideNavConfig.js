@@ -1,20 +1,14 @@
 import {
-  HomeIcon,
-  TableCellsIcon,
-  ServerStackIcon,
+  ChartBarIcon,
   RectangleStackIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  ChartBarIcon
+  TableCellsIcon
 } from "@heroicons/react/24/solid";
-import { IoIosImage } from "react-icons/io";
-import { FaUserGroup } from "react-icons/fa6";
 import { BiSolidOffer } from "react-icons/bi";
-import { FaImages, FaQuestion, FaUsersCog, FaWrench, FaWpforms } from "react-icons/fa";
-import { IoDocuments, } from "react-icons/io5";
-import { IoMdSettings } from "react-icons/io";
-import { MdRoomService } from "react-icons/md";
+import { FaArchive, FaExchangeAlt, FaQuestion, FaUsersCog, FaWpforms, FaWrench,FaImages } from "react-icons/fa";
 import { FaVideo } from "react-icons/fa6";
+import { IoIosImage, IoMdSettings } from "react-icons/io";
+import { IoDocuments, } from "react-icons/io5";
+import { RiMoneyRupeeCircleFill } from "react-icons/ri";
 export const menuConfig = [
   {
     key: 'analytics',
@@ -58,6 +52,12 @@ export const menuConfig = [
     label: 'User Management',
     icon: FaUsersCog,
   },
+  {
+    key: 'ArchivesUsers',
+    path: '/dashboard/admin/archived-users',
+    label: 'Archived Users',
+    icon: FaArchive , 
+  },
   // {
   //   key: 'investorManagement',
   //   path: '/dashboard/admin/investor-management',
@@ -100,17 +100,29 @@ export const menuConfig = [
     label: 'Intro Video',
     icon: FaVideo,
   },
-  {
-    key: 'bannerManagement',
-    path: '/dashboard/admin/banner-management',
-    label: 'Banner Management',
-    icon: FaImages,
-  },
+  // {
+  //   key: 'bannerManagement',
+  //   path: '/dashboard/admin/banner-management',
+  //   label: 'Banner Management',
+  //   icon: FaImages,
+  // },
   {
     key: 'logoManagement',
     path: '/dashboard/admin/logo-management',
     label: 'Logo Management',
     icon: IoIosImage,
+  },
+  {
+    key: 'QuotationManagement',
+    path: '/dashboard/admin/quotation',
+    label: 'Quotation Management',
+    icon: RiMoneyRupeeCircleFill , 
+  },
+  {
+    key: 'Change Request',
+    path: '/dashboard/admin/change-request/logs',
+    label: 'Change Request',
+    icon: FaExchangeAlt  , 
   },
   {
     key: 'masterSettings',

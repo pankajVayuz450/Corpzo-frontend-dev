@@ -1,6 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
+  Button,
   Input,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
   Switch,
 } from "@material-tailwind/react";
 import { MdEdit } from "react-icons/md";
@@ -21,6 +26,9 @@ import Breadcrumb from '@/widgets/layout/TopNavigation';
 import Pagination from '@/components/common/Pagination';
 import SearchBoxNew from '@/components/common/SearchBoxNew';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import { PiStepsBold } from "react-icons/pi";
+import { FaBell, FaFileUpload, FaQuestion } from 'react-icons/fa';
+import { RiMoneyRupeeCircleFill } from 'react-icons/ri';
 
 const Service = () => {
 
@@ -35,20 +43,12 @@ const Service = () => {
   dispatch(updateEditPage(searchParams.get("page") || 1));
 
   // Handle edit Service action
-  const handleEdit = (id) => {
-    navigate(`/dashboard/admin/edit-offer/${id}`);
+  const handleCsvNavigate = (id) => {
+    navigate(`/dashboard/admin/service-upload-csv/${id}`);
+    localStorage.setItem('currentPage', searchParams.get("page") || 1)
     dispatch(updateEditPage(searchParams.get("page") || 1));
   };
 
-  // Handle pagination
-  const handlePageClick = (e) => {
-    if (searchQuery !== "") {
-      setSearchParams({ page: e.selected + 1, limit: 10, search: searchQuery });
-    } else {
-
-      setSearchParams({ page: e.selected + 1, limit: 10 });
-    }
-  };
 
   // Toggle Service status
   const handleStatus = (form) => {
@@ -60,11 +60,7 @@ const Service = () => {
     dispatch(updateStatus(data));
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
+
   // Automatically fetch Services based on searchParams
   useEffect(() => {
     const query = searchParams.get('search') || '';
@@ -76,41 +72,10 @@ const Service = () => {
     dispatch(getAllServices(limit, page, query, ""));
   }, [searchParams, dispatch]);
 
-  // Clear filter
-  const handleClearFilter = () => {
-    setSearchQuery('');
-    setSearchParams({});
-  };
-
   const handleToggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id); // Toggle the dropdown
   };
 
-  const throttledSearch = useCallback(throttle(() => {
-    const regex = /^[a-zA-Z0-9 ]*$/;
-    if (searchQuery === "") {
-      toast.warn("Search cannot be empty");
-      return;
-    } else if (searchQuery.trim() === "") {
-      toast.warn("Search cannot be just spaces");
-      return;
-    } else if (!regex.test(searchQuery)) {
-      toast.warn("Special characters are not allowed");
-      return;
-    } else if (searchQuery !== "" && searchQuery.length > 50) {
-      toast.warn("Search term cannot be more than 50 characters long")
-      return
-    } else if (searchQuery.length < 2) {
-      toast.warn("Search cannot be less than 2 characters")
-      return
-    } else {
-      setSearchParams({ search: searchQuery });
-    }
-  }, 500), [searchQuery, dispatch, setSearchParams]);
-
-  const handleSearch = () => {
-    throttledSearch();
-  };
   const breadcrumbData = [
     {
       name: 'Service Management',
@@ -130,7 +95,9 @@ const Service = () => {
           <button onClick={handleCreateService} className="bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
             Create Service
           </button>
-          <SearchBoxNew queryParam='search' />
+          <div className='flex gap-4'>
+            <SearchBoxNew queryParam='search' />
+          </div>
         </div>
         {
           isFetching ? (
@@ -189,7 +156,7 @@ const Service = () => {
                               <Switch disabled={isStatusLoading} checked={form.active} onChange={() => { handleStatus(form) }} />
                             </td>
                             <td className="px-6 py-4 relative">
-                              <button onClick={() => handleToggleDropdown(form._id)}>
+                              {/* <button onClick={() => handleToggleDropdown(form._id)}>
                                 <BsThreeDotsVertical />
                               </button>
                               {openDropdownId === form._id && (
@@ -227,7 +194,74 @@ const Service = () => {
                                     </li>
                                   </NavLink>
                                 </ul>
-                              )}
+                              )} */}
+                              <Menu placement="bottom-end">
+                                <MenuHandler>
+                                  <Button className="p-0 shadow-none bg-white text-black hover:text-gray-700">
+                                    <BsThreeDotsVertical size={20} />
+                                  </Button>
+                                </MenuHandler>
+                                <MenuList>
+
+
+                                  <NavLink to={`/dashboard/admin/services/update-service/${form._id}`}>
+                                    {
+                                      <MenuItem className='flex gap-4'>
+                                        <MdEdit />
+                                        Update Service
+                                      </MenuItem>
+                                    }
+                                  </NavLink>
+                                  <NavLink to={`/dashboard/admin/steps/${form._id}`}>
+                                    {
+                                      <MenuItem className='flex gap-4'>
+                                        <PiStepsBold />
+                                        Step
+                                      </MenuItem>
+                                    }
+                                  </NavLink>
+                                  <NavLink to={`/dashboard/admin/Service-FAQs/${form._id}`}>
+                                    {
+                                      <MenuItem className='flex gap-4'>
+                                        <FaQuestion />
+                                        FAQ
+                                      </MenuItem>
+                                    }
+                                  </NavLink>
+                                  {form.isOneTime === false && <NavLink to={`/dashboard/admin/subscriptions/${form._id}`}>
+                                    {
+                                      <MenuItem className='flex gap-4'>
+                                        <FaBell />
+                                        Subscriptions
+                                      </MenuItem>
+                                    }
+                                  </NavLink>}
+                                  <NavLink to={`/dashboard/admin/services/view-service/${form._id}`}>
+                                    {
+                                      <MenuItem className='flex gap-4'>
+                                        <FaQuestion />
+                                        View Service
+                                      </MenuItem>
+                                    }
+                                  </NavLink>
+                                  <NavLink to={`/dashboard/admin/services/view-service-charges/${form._id}`}>
+                                    {
+                                      <MenuItem className='flex gap-4'>
+                                        <RiMoneyRupeeCircleFill />
+                                        view charges
+                                      </MenuItem>
+                                    }
+                                  </NavLink>
+                                  <button onClick={()=>handleCsvNavigate(form._id)}>
+                                    {
+                                      <MenuItem className='flex gap-4'>
+                                        <FaFileUpload />
+                                        Upload CSV
+                                      </MenuItem>
+                                    }
+                                  </button>
+                                </MenuList>
+                              </Menu>
                             </td>
                           </tr>
                         ))}

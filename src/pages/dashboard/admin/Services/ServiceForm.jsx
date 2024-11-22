@@ -7,19 +7,21 @@ import {
   Textarea,
 } from '@material-tailwind/react'
 import Select from 'react-select';
+import Papa from 'papaparse';  // Im
 import { Checkbox } from "@material-tailwind/react";
 import TitleComponent from '@/components/common/TitleComponent';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import { validationSchema } from './ValidationSchema';
-import { addsService, editService, getAllActiveCategories, getAllActiveSubCategories, getAllForms, getAllServices, uploadVideo } from '@/redux/admin/actions/Services';
+import { addsService, editService, getAllActiveCategories, getAllActiveSubCategories, getAllForms, getAllServices, uploadCsv, uploadVideo } from '@/redux/admin/actions/Services';
 import { TailSpin } from 'react-loader-spinner';
 import { validateNumber, handleExtraSpaces } from '@/Helpers/globalfunctions';
 import { updateVideoUrl } from '@/redux/admin/slices/Service';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import StepperWithContent from './StepForm';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import ReusableModal from '@/components/common/ReusableModal';
 
 const initialValues = {
   name: "",
@@ -30,34 +32,59 @@ const initialValues = {
   cost: 0,
   formId: "",
   duration: 0,
-  delivrableVideoUrl: "",
+  deliverableVideoUrl: "",
   stepsVideoUrl: "",
   documentVideoUrl: "",
   about: "",
+  active: true
 }
 const ServiceForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
   const [open, setOpen] = useState(false);
-  const [deliverableVideoPreview, setDeliverableVideoPreview] = useState(null);
-  const [stepsVideoPreview, setStepsVideoPreview] = useState(null);
-  const [documentVideoPreview, setDocumentVideoPreview] = useState(null);
-  const [errorState, setErrorState] = useState(false)
-  const [errorMessage, setErrorMessaage] = useState("")
-  const [fileToUpload, setFileToUpload] = useState(null)
-  const { service, delivrableVideoUrl, uploadVideoLoading, stepsVideoUrl, documentVideoUrl, isAdding, editPage, activeCategories, isFetching, activeSubCategories, forms, buttonContent, updateHeader } = useSelector((state) => state.service)
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
+  const [csvError, setCsvError] = useState(false)
+  const [csvFile, setCsvFile] = useState(null)
+  const [csv, setCsv] = useState(null)
+  const { service, deliverableVideoUrl, uploadVideoLoading, stepsVideoUrl, documentVideoUrl, isAdding, editPage, activeCategories, isFetching, activeSubCategories, forms, buttonContent, updateHeader } = useSelector((state) => state.service)
   const [isOneTime, setIsOneTime] = useState(false);
-  const [videoModal, setVideoModal] = useState({ open: false, type: '', fieldName: '' });
-  const [modalType, setModalType] = useState(null);
-  const [clickedButtons, setClickedButtons] = useState({
-    deliverable: false,
-    step: false,
-    document: false,
-  });
+  const openModal = () => {
+
+    setIsModalOpen(true); // Open the modal
+  };
+
+  // Function to handle closing the modal
+  const closeModal = () => {
+    setIsModalOpen(false); // Close the modal
+    setCsvError("")
+  };
   const handleClose = () => {
     setOpen((prevState) => !prevState)
   }
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Check if the file is a CSV
+      if (file.type === "text/csv" || file.name.endsWith(".csv")) {
+        const fileUrl = URL.createObjectURL(file);
+        setCsv(file)
+        setCsvFile(fileUrl); // Set the file URL or handle the CSV data accordingly
+        setCsvError(""); // Clear any previous error message
+      } else {
+        setCsv(null)
+        setCsvFile(null); // Clear the previous file URL if invalid
+        setCsvError("Only .csv files are allowed."); // Set the error message
+  
+        // Clear the file input field by resetting the value
+        event.target.value = "";  // This clears the file input
+      }
+    }
+ // Call any parent handler or other logic
+  };
+  
+
+
   const {
     values,
     errors,
@@ -88,14 +115,14 @@ const ServiceForm = () => {
         cost: values.cost || 0,
         formId: values.formId,
         duration: values.duration,
-        delivrableVideoUrl: delivrableVideoUrl,
+        deliverableVideoUrl: deliverableVideoUrl,
         stepsVideoUrl: stepsVideoUrl,
         documentVideoUrl: documentVideoUrl,
         about: handleExtraSpaces(values.about),
       }
-      console.log(data, "form data ")
+
       if (id !== undefined) {
-        dispatch(editService({ ...data, serviceId: id, delivrableVideoUrl: delivrableVideoUrl || (service?.delivrableVideoUrl || ""), stepsVideoUrl: stepsVideoUrl || (service?.stepsVideoUrl || ""), documentVideoUrl: documentVideoUrl || (service?.documentVideoUrl || ""), }, navigate, editPage))
+        dispatch(editService({ ...data, serviceId: id, deliverableVideoUrl: deliverableVideoUrl || (service?.deliverableVideoUrl || ""), stepsVideoUrl: stepsVideoUrl || (service?.stepsVideoUrl || ""), documentVideoUrl: documentVideoUrl || (service?.documentVideoUrl || ""), }, navigate, editPage))
       } else {
         dispatch(addsService(data, navigate));
       }
@@ -114,12 +141,26 @@ const ServiceForm = () => {
     handleOpen(type); // Using your existing handleOpen function
   };
 
-
-  console.log(forms, "from state");
+  const handleConfirm = () => {
+    if (csv) {
+      // Use PapaParse to parse the CSV file
+      console.log(csv, 'csv file')
+      Papa.parse(csv, {
+        complete: (result) => {
+          console.log('Parsed CSV Data:', result.data); 
+          dispatch(uploadCsv({data : result.data, serviceId : "672b660ed23f4271d17f1182"}))// Log the parsed CSV data
+        },
+        header: true, // Assume the CSV has headers
+      }); 
+    } else {
+      console.log('No valid CSV file selected');
+    }
+    setIsModalOpen(false) // Close the modal after confirming
+  };
 
   useEffect(() => {
-    dispatch(getAllActiveCategories(true))
-    dispatch(getAllForms())
+    activeCategories.length === 0 && dispatch(getAllActiveCategories(true))
+    forms.length === 0 && dispatch(getAllForms())
   }, [])
   const formattedFormsList = forms?.map(form => ({
     value: form._id,
@@ -136,8 +177,8 @@ const ServiceForm = () => {
       setFieldValue("duration", service.duration || "");
 
       dispatch(updateVideoUrl({
-        fieldName: "delivrableVideoUrl",
-        url: service.delivrableVideoUrl
+        fieldName: "deliverableVideoUrl",
+        url: service.deliverableVideoUrl
       }))
       dispatch(updateVideoUrl({
         fieldName: "documentVideoUrl",
@@ -147,7 +188,7 @@ const ServiceForm = () => {
         fieldName: "stepsVideoUrl",
         url: service.stepsVideoUrl
       }))
-      setFieldValue("delivrableVideoUrl", service.delivrableVideoUrl || "");
+      setFieldValue("deliverableVideoUrl", service.deliverableVideoUrl || "");
       setFieldValue("documentVideoUrl", service.documentVideoUrl || "");
       setFieldValue("stepsVideoUrl", service.stepsVideoUrl || "");
 
@@ -174,7 +215,7 @@ const ServiceForm = () => {
       setFieldValue("cost", "");
       setFieldValue("formId", "");
       setFieldValue("duration", "");
-      setFieldValue("delivrableVideoUrl", "");
+      setFieldValue("deliverableVideoUrl", "");
       setFieldValue("documentVideoUrl", "");
       setFieldValue("stepsVideoUrl", "");
       dispatch(updateVideoUrl({
@@ -209,7 +250,7 @@ const ServiceForm = () => {
     window.addEventListener("beforeunload", unloadCallback);
     return () => window.removeEventListener("beforeunload", unloadCallback);
   }, []);
-  
+
   useEffect(() => {
     if (id) {
       dispatch(getAllServices(1, 1, "", id))
@@ -239,7 +280,7 @@ const ServiceForm = () => {
     const { value } = e.target;
     // Check for at least one alphabet character
     const containsAlphabet = /[a-zA-Z]/.test(value);
-  
+
     // Only set the value if there’s at least one alphabet character
     if (containsAlphabet || value === "") {
       setFieldValue("details", value);
@@ -249,7 +290,7 @@ const ServiceForm = () => {
     const { value } = e.target;
     // Check for at least one alphabet character
     const containsAlphabet = /[a-zA-Z]/.test(value);
-  
+
     // Only set the value if there’s at least one alphabet character
     if (containsAlphabet || value === "") {
       setFieldValue("about", value);
@@ -260,9 +301,9 @@ const ServiceForm = () => {
     formData.append('files', file); // Pass file to FormData
     console.log(type, "video modal.fieldname")
     dispatch(uploadVideo(formData, type));
-    
+
   };
-  
+
   const handleSelectChange = (selectedOption) => {
     setFieldValue('formId', selectedOption ? selectedOption.value : '');
   };
@@ -281,7 +322,7 @@ const ServiceForm = () => {
       ],
     }
   ];
-  useEffect(()=>{
+  useEffect(() => {
     setErrors({})
     setTouched({}, false);
   }, [])
@@ -290,7 +331,7 @@ const ServiceForm = () => {
     <div className=''>
       <Breadcrumb items={breadcrumbData} />
       <TitleComponent title={id ? `CORPZO | Update Service` : `CORPZO | Create Service`}></TitleComponent>
-      <HeaderTitle title={id ? "Update service" : "Create Service"}/>
+      <HeaderTitle title={id ? "Update service" : "Create Service"} />
       {
         id !== undefined && isFetching ? (
           <div className="flex justify-center items-center min-h-screen">
@@ -467,7 +508,7 @@ const ServiceForm = () => {
                   </select>
                   {errors.duration && touched.duration && <p className='text-sm text-red-500'>{errors.duration}</p>}
                 </div>
-      
+
                 <div className='flex flex-row items-baseline'>
                   <div>
                     <Typography variant="small" color="blue-gray" className="font-medium">
@@ -534,27 +575,46 @@ const ServiceForm = () => {
 
               </div>
             </div>
-            <div className='flex flex-col justify-between w-56 gap-2'>
+            <div className='flex flex-row w-full gap-2'>
               <Button onClick={handleClose}>Upload Service Videos</Button>
-              {/* {(!delivrableVideoUrl && !stepsVideoUrl && !documentVideoUrl) && <p className='text-red-500'>Please upload service videos</p>} */}
+              {/* <Button onClick={openModal}>Upload CSV</Button> */}
+              {/* {(!deliverableVideoUrl && !stepsVideoUrl && !documentVideoUrl) && <p className='text-red-500'>Please upload service videos</p>} */}
             </div>
             <button
               type='submit'
-              disabled={isAdding || !(dirty && isValid) || (!delivrableVideoUrl && !stepsVideoUrl && !documentVideoUrl)}
-              className={`w-full mt-2 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) || (!delivrableVideoUrl && !stepsVideoUrl && !documentVideoUrl) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) || (!delivrableVideoUrl && !stepsVideoUrl && !documentVideoUrl) ? 'gray-400' : 'blue-500'}`}
+              disabled={isAdding || !(dirty && isValid)}
+              className={`w-full mt-2 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
             >
               {isAdding ?
                 <div className='flex justify-center items-center gap-3'>
                   <Spinner color='white' className="h-4 w-4" />
-                  {id ? "Updating Service" : "Adding Service"}
+                  {id ? "Updating Service" : "Creating Service"}
                 </div>
-                : id ? "Update Service" : "Add Service"}
+                : id ? "Update Service" : "Create Service"}
             </button>
           </form>
         )
       }
 
-      <StepperWithContent open={open} handleOpen={handleClose} handleConfirm={handleUpload}/>
+      <ReusableModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        title="Choose a CSV file."
+        confirmText="upload File"
+        cancelText="Close"
+        isConfirmVisible={true}
+        onConfirm={handleConfirm}
+      >
+        <input
+          type="file"
+          id="csvFileInput"
+          onChange={handleFileChange}
+         
+        />
+        {csvError && <p style={{ color: 'red' }}>{csvError}</p>}  {/* Display error message */}
+      </ReusableModal>
+
+      <StepperWithContent open={open} handleOpen={handleClose} handleConfirm={handleUpload} />
 
     </div>
   )

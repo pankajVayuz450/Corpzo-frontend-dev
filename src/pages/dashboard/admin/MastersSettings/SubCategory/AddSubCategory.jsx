@@ -19,7 +19,7 @@ const initialValues = {
   subSectionTitle: "",
   sectionId: "",
   sectionTitle: "",
-  active: false,
+  active: true,
   createdBy: "6f8e254d-0d1d-4f36-8d8c-52c61c4aeb4b"
 }
 
@@ -50,20 +50,28 @@ const AddSubCategory = () => {
     handleBlur,
     setErrors
   } = useFormik({
-    initialValues: initialValues,
+    initialValues: id ? subCategory : initialValues,
     validationSchema: validationSchema,
+    enableReinitialize: true,
     onSubmit: async (values, action) => {
       const data = {
         subSectionTitle: handleExtraSpaces(values.subSectionTitle),
         sectionId: values.sectionId,
         sectionTitle: handleExtraSpaces(values.sectionTitle),
-        active: false,
         createdBy: "6f8e254d-0d1d-4f36-8d8c-52c61c4aeb4b"
       }
+      const newData = {
+        ...initialValues,
+        subSectionTitle: handleExtraSpaces(values.subSectionTitle),
+        sectionId: values.sectionId,
+        sectionTitle: handleExtraSpaces(values.sectionTitle),
+        createdBy: "6f8e254d-0d1d-4f36-8d8c-52c61c4aeb4b",
+        active: id ? subCategory?.active : true
+      }
       if (id !== undefined) {
-        dispatch(editSubCategory(id, data, navigate, editPage))
+        dispatch(editSubCategory(id, newData, navigate, editPage))
       } else {
-        dispatch(addSubCategory(data, navigate))
+        dispatch(addSubCategory(newData, navigate))
       }
       setErrors({});
     },
@@ -71,24 +79,24 @@ const AddSubCategory = () => {
 
   const handleCategoryChange = (event) => {
     const value = event.target.value;
-    console.log(value, typeof(value), "value is available");
+    console.log(value, typeof (value), "value is available");
     const selectedCategory = data?.find(category => category.categoryId === value);
     console.log(selectedCategory, "selected cat ")
     if (selectedCategory) {
       setFieldValue('sectionId', selectedCategory.categoryId);
       setFieldValue('sectionTitle', selectedCategory.categoryName);
-    }else {
+    } else {
       console.error("Selected category not found in data.");
     }
   };
- 
+
 
   useEffect(() => {
     if (id !== undefined && subCategory) {
-
+      console.log(subCategory, "subcategory")
       setFieldValue("subSectionTitle", subCategory.subSectionTitle || "")
       setFieldValue("sectionTitle", subCategory.sectionTitle || "")
-      setFieldValue('active', subCategory.active || false)
+      // setFieldValue('active', subCategory.active || true)
       setFieldValue('sectionId', subCategory.sectionId || "");
     } else {
       setFieldValue("subSectionTitle", "")
@@ -103,40 +111,38 @@ const AddSubCategory = () => {
   }, [])
 
   useEffect(() => {
-    dispatch(getAllActiveCategories(true))
+    activeCategories.length ===0 &&  dispatch(getAllActiveCategories(true))
   }, [])
 
   const breadcrumbData = [
     {
-      
-        
-          name: 'Master Settings',
+      name: 'Master Settings',
+      children: [
+        {
+          name: 'Sub Category',
+          url: '/dashboard/admin/masterSettings/Sub-Category',
           children: [
             {
-              name: 'Sub Category',
-              url: '/dashboard/admin/masterSettings/Sub-Category',
-              children: [
-                {
-                  name: id ? 'Update Sub Category' : 'Create Sub Category',
-                  url: id
-                    ? ''
-                    : '/dashboard/admin/masterSettings/Sub-Category/add-sub-category',
-                },
-              ],
+              name: id ? 'Update Sub Category' : 'Create Sub Category',
+              url: id
+                ? ''
+                : '/dashboard/admin/masterSettings/Sub-Category/add-sub-category',
             },
           ],
+        },
+      ],
     }
   ];
   return (
     <div>
-      <Breadcrumb items={breadcrumbData}/>
+      <Breadcrumb items={breadcrumbData} />
       <TitleComponent title={id ? "CORPZO | Edit Sub Category" : "CORPZO | Add Sub Category"}></TitleComponent>
-      <HeaderTitle title={id ? " Update Sub Category" : "Add Sub Category"}/>
+      <HeaderTitle title={id ? " Update Sub Category" : "Add Sub Category"} path={"/dashboard/admin/masterSettings/Sub-Category"}/>
       {
         isFetching && id ? (
           <div className="flex justify-center items-center min-h-screen">
-          <TailSpin height={50} width={50} color="blue" />
-        </div>
+            <TailSpin height={50} width={50} color="blue" />
+          </div>
         ) : (
           <form onSubmit={handleSubmit} className="w-[50%] flex flex-col gap-4 mt-4">
             <Typography variant="small" color="blue-gray" className=" font-medium">
@@ -188,10 +194,11 @@ const AddSubCategory = () => {
             {errors.subSectionTitle && touched.subSectionTitle && <p className='text-sm text-red-500'>{errors.subSectionTitle}</p>}
 
             <button
-              disabled={isAdding || !(dirty && isValid)}
+              disabled={isAdding || !isValid}
               type='submit'
-              className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !(dirty && isValid) ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !(dirty && isValid) ? 'gray-400' : 'blue-500'}`}
+              className={`w-full mt-4 font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-opacity-50 ${isAdding || !isValid ? 'bg-gradient-to-br from-gray-500 to-gray-700 cursor-not-allowed text-white' : 'bg-blue-500 hover:bg-blue-700 text-white'} focus:ring-${isAdding || !isValid ? 'gray-400' : 'blue-500'}`}
             >
+                    
               {isAdding ?
                 <div className='flex justify-center items-center gap-3'>
                   <Spinner color='white' className="h-4 w-4" />

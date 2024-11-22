@@ -13,12 +13,21 @@ import * as Yup from 'yup';
 import LoadingPage from '@/components/common/LoadingPage';
 import Breadcrumb from '@/widgets/layout/TopNavigation';
 import HeaderTitle from '@/components/common/HeaderTitle';
+import { setApplicationId } from '@/redux/admin/slices/AppliationManagement/Index';
 
 const TeamNote = () => {
   const { noteList, applicationId, userId, commentLoading ,isFetching} = useSelector((state) => state.applications);
   const dispatch = useDispatch();
   const [comments, setComments] = useState({});
   const [commentsNoteId, setCommentsNoteId] = useState({});
+
+  let applicationIdLocal = localStorage.getItem("applicationId")
+
+
+
+  if(!applicationId){
+    dispatch(setApplicationId(applicationIdLocal))
+  }
 
   useEffect(() => {
     dispatch(getNoteAndComment(applicationId));
@@ -64,7 +73,7 @@ const TeamNote = () => {
           children: [
             {
               name: 'Application Form',
-              url: '/dashboard/admin/add-application',
+              url: `/dashboard/admin/add-application/${applicationId}`,
               children: [
                 {
                   name:  'Team Note',
@@ -98,7 +107,7 @@ const TeamNote = () => {
       </div>
 
       <div>
-        {noteList?.length === 0 || !noteList.some(item => !item.cloneFormFieldId) ? (
+        {noteList?.length == 0  || !noteList.some(item => !item.cloneFormFieldId) ? (
           // No Data Image
           <div className="flex justify-center items-center h-screen">
             <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />

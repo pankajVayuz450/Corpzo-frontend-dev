@@ -12,6 +12,7 @@ import {
     AccordionBody
 } from '@material-tailwind/react';
 import { FaHeart } from "react-icons/fa";
+import DocumentViewer from '@/components/common/DocumnetViewr';
 
 const ViewService = () => {
     const { serviceId } = useParams();
@@ -29,7 +30,7 @@ const ViewService = () => {
     };
 
     useEffect(() => {
-        dispatch(getUserServices())
+        dispatch(getUserServices(serviceId))
     }, [])
     const breadcrumbData = [
         {
@@ -44,14 +45,13 @@ const ViewService = () => {
             ],
         }
     ];
-    console.log(userSteps[0]?.faqservices, "user detailssssssss")
     return (
         <>
             <Breadcrumb items={breadcrumbData} />
             <HeaderTitle title={"View Service"} />
             <div className='mt-4'>
                 <div className='flex gap-4'>
-                    <h2 className='font-bold text-lg'>{userSteps[0]?.name}</h2>
+                    <h2 className='font-bold text-3xl'>{userSteps[0]?.name}</h2>
                     <span class="bg-gray-300 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-gray-900 dark:text-gray-300 flex justify-center items-center">
                         Business
                     </span>
@@ -81,7 +81,7 @@ const ViewService = () => {
                 </div>
                 {/* offers */}
 
-                <div className='mt-4 '>
+                {offersArray && offersArray.length > 0 && <div className='mt-4 '>
                     <h2 className='font-bold text-lg mb-4 '>Active Offers/Coupons</h2>
                     {
                         offersArray?.map((offer) => {
@@ -110,48 +110,49 @@ const ViewService = () => {
                             )
                         })
                     }
-                </div>
+                </div>}
 
 
 
                 {/* servcice avail buttomnn then delivverable video */}
-                <div className='w-full mb-4'>
+                {userSteps[0]?.delivrableVideoUrl && <div className='w-full my-4'>
                     <p className='font-semibold text-gray-700'>A. Deliverable Video</p>
 
                     <video className='w-full h-60 md:h-80 lg:h-96' controls>
                         <source src={userSteps[0]?.delivrableVideoUrl} type="video/mp4" />
                         {/* <source src={`https://bridge-media-2021.s3.ap-south-1.amazonaws.com/2024-101729234018651_WIN_20241018_12_16_29_Pro.mp4`} type="video/mp4" /> */}
                     </video>
-                </div>
+                    {/* <DocumentViewer docUrl={userSteps[0]?.delivrableVideoUrl}/> */}
+                </div>}
 
                 {/* service step video*/}
-                <div className='w-full mb-4'>
+                {userSteps[0]?.stepsVideoUrl && <div className='w-full my-4'>
                     <p className='font-semibold text-gray-700'>B. Service Step</p>
 
                     <video className='w-full h-60 md:h-80 lg:h-96' controls>
                         <source src={userSteps[0]?.stepsVideoUrl} type="video/mp4" />
                         {/* <source src={`https://bridge-media-2021.s3.ap-south-1.amazonaws.com/2024-101729234018651_WIN_20241018_12_16_29_Pro.mp4`} type="video/mp4" /> */}
                     </video>
-                </div>
+                </div>}
                 {/* service dcuents video */}
-                <div className='w-full mb-4'>
+                {userSteps[0]?.documentVideoUrl && <div className='w-full my-4'>
                     <p className='font-semibold text-gray-700'>C. Documents</p>
 
                     <video className='w-full h-60 md:h-80 lg:h-96' controls>
                         <source src={userSteps[0]?.documentVideoUrl} type="video/mp4" />
                         {/* <source src={`https://bridge-media-2021.s3.ap-south-1.amazonaws.com/2024-101729234018651_WIN_20241018_12_16_29_Pro.mp4`} type="video/mp4" /> */}
                     </video>
-                </div>
+                </div>}
                 {/* about service */}
                 <div className='mb-4'>
-                    <h3 className='text-lg font-bold'>About Service.</h3>
+                    <h3 className='text-2xl font-bold'>About Service.</h3>
                     <p>
                         {userSteps[0]?.about}
                     </p>
                 </div>
                 {/* service details  */}
                 <div className='mb-4'>
-                    <h3 className='text-lg font-bold'>Service Details.</h3>
+                    <h3 className='text-2xl font-bold'>Service Details.</h3>
                     <p>
                         {userSteps[0]?.details}
                     </p>
@@ -159,7 +160,7 @@ const ViewService = () => {
                 {/* faqs */}
 
 
-                <div className="max-w-2xl">
+                {userSteps[0]?.faqservices.length>0  && <div className="max-w-2xl">
                     <h2 className="text-2xl font-bold mb-4">FAQ</h2>
                     {userSteps[0]?.faqservices.map((faq, faqIndex) => (
                         faq.faq.map((item, index) => (
@@ -184,7 +185,7 @@ const ViewService = () => {
                             </Accordion>
                         ))
                     ))}
-                </div>
+                </div>}
 
             </div>
         </>

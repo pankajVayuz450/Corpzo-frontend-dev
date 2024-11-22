@@ -31,9 +31,12 @@ const SearchBoxNew = ({ placeholder = "Search", queryParam = "search"}) => {
     if (searchValue.trim() === "") {
       // Remove the search parameter if the search is cleared
       searchParams.delete(queryParam);
+      searchParams.delete("page");
     } else {
       // Set the search parameter to the value in the input field
       searchParams.set(queryParam, searchValue);
+      searchParams.set("page", "1"); // Set page to 1 on new search
+
     }
     navigate({ search: searchParams.toString() });
   };

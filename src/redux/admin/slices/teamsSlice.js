@@ -19,7 +19,8 @@ const initialState = {
   deletedTeam: null,
   isDeletingTeam: false,
   deletingTeamError: "",
-  totalCount: 0
+  totalCount: 0,
+  isStatusLoading : false,
 };
 
 
@@ -46,6 +47,21 @@ const teamsSlice = createSlice({
         state.deletingTeamError = "";
         state.deletedTeam = null;
     },
+    updateStatusLoading : (state, action)=>{
+      state.isStatusLoading = action.payload;
+    },
+    updateStatusState :(state,action)=>{
+        const {_id, active} = action.payload;
+
+        state.teams = state.teams.map((team) => {
+          if (team._id
+            === _id
+          ) {
+            return { ...team, active };
+          }
+          return team;  
+        });
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -116,6 +132,6 @@ const teamsSlice = createSlice({
   }
 });
 
-export const { removeAddingTeamError, removeDeletingTeamError, removeFetchingTeamsError, removeFetchingSingleTeamError, removeUpdatingTeamError } = teamsSlice.actions;
+export const { removeAddingTeamError, removeDeletingTeamError, updateStatusLoading,updateStatusState, removeFetchingTeamsError, removeFetchingSingleTeamError, removeUpdatingTeamError } = teamsSlice.actions;
 
 export default teamsSlice.reducer;

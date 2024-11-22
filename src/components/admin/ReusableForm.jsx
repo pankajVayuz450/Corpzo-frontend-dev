@@ -17,7 +17,7 @@ const Label = ({ labelText }) => {
 };
 
 // Reusable Textarea Component
-const TextArea = ({ placeholder, value, onChange, error, touched }) => {
+const TextArea = ({ placeholder, value, onChange, error, touched,maxLength }) => {
   return (
     <div>
       <textarea
@@ -27,6 +27,7 @@ const TextArea = ({ placeholder, value, onChange, error, touched }) => {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        maxLength={maxLength}
       />
       {touched && error && <p className="text-red-500 text-xs mt-1">{error}</p>} {/* Display error based on touched */}
     </div>
@@ -77,6 +78,7 @@ const ReusableForm = ({
         onChange={handleChange('note')}
         error={errors.note} // Pass error message for textarea
         touched={touched.note} // Pass touched state
+        maxLength={600}
       />
       <div className="mt-4">
         <Button buttonText={buttonText} loading={loading} /> {/* Pass loading to Button */}

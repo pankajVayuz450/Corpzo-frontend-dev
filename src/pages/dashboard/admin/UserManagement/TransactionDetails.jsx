@@ -8,10 +8,10 @@ const TransactionDetails = () => {
     const { transactionDetails } = useSelector((state) => state.userMgmt)
 
     const navigate = useNavigate();
-    useEffect(() => {
-        dispatch(getAllTransactions())
-    }, [])
-    const handleView=(id)=>{
+    // useEffect(() => {
+    //     dispatch(getAllTransactions())
+    // }, [])
+    const handleView = (id) => {
         navigate(`/dashboard/admin/usermanagement/view-business-document/${id}`);
     }
     return (
@@ -52,8 +52,8 @@ const TransactionDetails = () => {
                                             <div className="text-sm text-gray-900">{form.user_data[0].email}</div>
                                         </td>
                                         <td className={`px-6 py-4 whitespace-nowrap ${form.paymentStatus === 'pending' ? 'text-blue-500' :
-                                                form.paymentStatus === 'CAPTURED' ? 'text-green-500' :
-                                                    'text-gray-500'
+                                            form.paymentStatus === 'CAPTURED' ? 'text-green-500' :
+                                                'text-gray-500'
                                             }`}>
                                             <div className="text-sm">
                                                 {form.paymentStatus.toUpperCase()}
@@ -86,8 +86,14 @@ const TransactionDetails = () => {
                         </table>
                     </div>
                 ) : (
-                    <div className="flex justify-center items-center h-screen">
-                        <img src="/img/nodata_svg.svg" className="w-[50%]" alt="No data found" />
+                    <div className="flex flex-col items-center justify-center h-full p-4">
+                        {/* SVG for No Transactions Available */}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-24 w-24 text-gray-400 mb-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 3h6a1 1 0 011 1v2a1 1 0 01-1 1H9a1 1 0 01-1-1V4a1 1 0 011-1zM4 8h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V8z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6M9 16h3" />
+                        </svg>
+
+                        <span className="ml-4 text-gray-500">No Transactions Available</span>
                     </div>
                 )}
         </>

@@ -114,7 +114,7 @@ export const saveVideoDetails =(videoDetails)=>{
             console.log(response, "add Video details response")
             if(response.status === 200){
                 dispatch(updateUploadLoading(false))
-                toast.success(response.data.message);
+                toast.success('Logo updated successfully');
                 // navigate(`/dashboard/admin/faq`)
             }
         }catch(error){
